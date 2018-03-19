@@ -1,0 +1,63 @@
+<ul class="breadcrumb">
+  <li><a href="<?php echo $this->url('admin') ?>">Home</a> <span class="divider">/</span></li>
+  <li><a href="<?php echo $this->url('admin/client') ?>">Clients</a> <span class="divider">/</span></li>
+  <li><a href="<?php echo $this->url('admin/client/view').'/'.$this->report->getClientId() ?>"><?php echo $this->client->getName();?></a> <span class="divider">/</span></li>
+  <li class="active"><?php echo $report->getTitle();?></li>
+</ul>
+
+<?php 
+$metrics_value 		   = $metrics_service->getMetrics($report->getMetricsType(),$report->getMetrics());
+$metrics_value_compare = $metrics_service->getMetrics($report->getMetricsTypeCompare(),$report->getMetricsCompare());
+
+$metrics_title = '';
+
+
+if( $metrics_value ) {
+ $metrics_title = $metrics_value;
+ 
+ if( $metrics_value_compare )
+	 $metrics_title.= ' vs ' .$metrics_value_compare;
+}
+$date_range = $report->getDateRange();
+
+if(isset($postParams['date_range']))
+  $date_range = $postParams['date_range'];
+  
+?>
+<form class="form-vertical" action="<?php echo $this->url().'/'.$report->getId();?>" method="post" id="report_filter_form">  
+<fieldset>
+<legend>Filters</legend>
+<div class="control-group">  
+               
+            <div class="controls">  	
+                    <label><strong>Date Range</strong></label>
+                    <select name="date_range">
+                     <?php 
+                        foreach($metrics_service->getDateRangeOptions() as $key => $value){
+                              $selected = '';
+                             if($date_range == $key)
+                                $selected = 'selected="selected"';
+                     ?>
+                            <option <?php echo $selected; ?> value="<?php echo $key;?>"><?php echo $value;?></option> 
+                    <?php	
+                     }
+                    ?>
+                    </select>        
+                    <button type="button" id="btnFilter" style="height:30px;margin-bottom:10px">Go</button>
+      		</label>
+            </div>
+            <div class="controls">  	
+                    <label></label>
+            </div>
+            
+       </div>  
+       </fieldset>
+</form>
+<div id="container" style="min-width: 400px; height: 200px; margin: 0 auto;border-top:1px solid #e5e5e5;"></div>
+<div id="raw-data"></div>
+<script>
+//var jj = new JimmyJS();
+JimmyJS.loadAdminGraphData(<?php echo $report->getId()?>);
+JimmyJS.loadAdminRawData(<?php echo $report->getId()?>);
+$('#btnFilter').bind('click',function(){JimmyJS.filterData(<?php echo $report->getId()?>)})
+</script>	

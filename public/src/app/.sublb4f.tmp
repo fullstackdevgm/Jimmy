@@ -1,0 +1,3876 @@
+var JimmyDashboard  =  angular.module('Jimmy.dashboard',['ngResource','ngRoute','angular-loading-bar']);
+
+var widgetHtml = null;
+var widgetCanceler,campaignCanceler,profileCanceler;
+
+
+var generalInfo = function($resource){
+    return $resource('/info', {}, {'query': {method: 'GET', isArray: false}});
+}
+
+
+var blog = function($resource){
+    return $resource('/blog', {}, {'query': {method: 'GET', isArray: false}});
+}
+
+var user = function($resource){
+    return $resource('/user/:user_id', {user_id:'@user_id'} , {'query': {method: 'GET', isArray: false},'update': {method: 'PUT', isArray: false}});
+}
+
+var clientList = function($resource){
+   return $resource("/clients",{}, {'query':{method:'GET',isArray: true}});
+}
+
+var packageList = function($resource){
+   return $resource("/packages",{}, {'query':{method:'GET',isArray: true}});
+}
+
+var client  = function($resource){
+   return $resource("/clients/:client_id",{client_id:'@client_id'},
+                {
+                  query:  {method:'GET'},
+                  delete: { method: 'DELETE'},
+                  update: {method:'PUT'},
+             });
+}
+
+var clientSourceList = function($resource){
+    return $resource("/clients/:client_id/sources",{}, {'query':{method:'GET',params:{client_id:'@client_id'},isArray: true}});
+}
+
+var clientSource = function($resource){
+    return $resource("/clients/sources/:source_id",{}, {
+        delete: { method: 'DELETE', params: {source_id: '@source_id'}  }
+    })
+}
+
+var campaignList = function($resource){
+    return $resource("/clients/campaigns/:client_account_id",{}, {'query':{method:'GET',params:{client_account_id:'@client_account_id'},isArray: true}});
+}
+
+var profileList = function($resource){
+    return $resource("/clients/profiles/:client_account_id",{}, {'query':{method:'GET',params:{client_account_id:'@client_account_id'},isArray: true}});
+}
+
+var goalsList = function($resource){
+    return $resource("/clients/goals/:client_account_id/:profile_id",{}, {'query':{method:'GET',params:{profile_id:'@profile_id',client_account_id:'@client_account_id'},isArray: true}});
+}
+
+var clientAccounts = function($resource){
+    return $resource("/clients/client-accounts",{}, {'query':{method:'GET',params:{client_account_id:'@client_account_id'},isArray: true}});
+}
+
+var metricsOptions = function($resource){
+    return $resource("/metrics-options",{}, {'query':{method:'GET',params:{channel:'@channel'},isArray: false}});
+}
+
+var reportList = function($resource){
+   return $resource("/clients/:client_id/reports/:report_id",{}, {
+       // query : {method:'GET',isArray: true},
+        update: { method: 'PUT',    params: {report_id: '@report_id'}  },
+        delete: { method: 'DELETE', params: {report_id: '@report_id'}  }
+    })
+}
+
+var recentReportList = function($resource){
+   return $resource("/reports/recent/:agency_id",{},{});
+}
+
+var report = function($resource){
+   return $resource("/reports/:report_id/:action/:id",{report_id:'@report_id',agency_id:'@agency_id'}, {
+        query:{method:'GET',params:{agency_id:'@agency_id'}},
+        update: {method:'PUT',params:{report_id:'@report_id'},isArray:false},
+        clone:  {method:'POST',params:{report_id:'@report_id',action:'clone'}},
+        share:  {method:'POST',params:{report_id:'@report_id',action:'share'}},
+        schedule:  {method:'POST',params:{report_id:'@report_id',action:'schedule'}},
+        updateSchedule:  {method:'PUT',params:{report_id:'@report_id',action:'schedule'}},
+        getShared:     {method:'GET',params:{report_id:'@report_id', action:'share'},isArray: true},
+        getScheduled:  {method:'GET',params:{report_id:'@report_id', action:'schedule'},isArray: true},
+        removeSharing: {method:'DELETE',params:{report_id:'@report_id', action:'share',id:'@id'}},
+        removeSchedule: {method:'DELETE',params:{report_id:'@report_id', action:'schedule',id:'@id'}}
+    })
+}
+
+
+
+var widgetList = function($resource){
+   return $resource("/reports/:report_id/widgets",{}, {
+        update: { method: 'PUT',    params: {report_id: '@report_id'} },
+        delete: { method: 'DELETE', params: {report_id: '@report_id'} }
+ })
+}
+
+var widget = function($resource,$q){
+    canceler = $q.defer();
+
+    var res  = $resource("/widget/:widget_id",{widget_id:'@widget_id'}, {
+              'get'    :{method:'GET',params:{widget_id:'@widget_id'},timeout:canceler.promise,isArray: false},
+              'update' :{method:'PUT',isArray: false}
+              });
+
+    return res;
+}
+
+
+var coworker = function($resource){
+    return $resource("/coworker/:coworker_id",{}, {'query':{method:'GET',params:{coworker_id:'@coworker_id'},isArray: true}});
+}
+
+var currentReport = function($rootScope){
+
+  return {
+    report:null,
+    sources:null,
+    setSources:function(sources){
+      this.sources = sources;
+    },
+    getSources:function(){
+      return this.sources;
+    },
+    setReport:function(report){
+      this.report = report;
+    },
+    getReport:function(){
+      return this.report;
+    }
+  }
+}
+
+
+var flashMessage = function($rootScope) {
+  var queue = [];
+  var currentMessage = "";
+
+
+  return {
+    message:'',
+    icon_font:'',
+    bg:'',
+    header:'',
+    setMessage: function(message) {
+      if(message.success){
+        this.icon_font = 'font-blue';
+        this.bg = 'bg-blue';
+        this.header='Success!';
+      } else {
+        this.icon_font = 'font-red';
+        this.bg        = 'bg-red';
+        this.header    = 'Oops!';
+      }
+      this.message = message.message;
+    },
+    getMessage: function() {
+      var msg = this.message;
+      this.message = '';
+      return msg;
+    },
+    getBg:function(){
+      return this.bg;
+    },
+    getIconFont:function(){
+      return this.icon_font;
+    },
+    getHeaderMessage:function(){
+      return this.header;
+    }
+
+  };
+};
+var appAuthorization = function($q,$rootScope,$timeout,ClientAccounts,ClientSourceList,$routeParams){
+  var appAuth;
+
+  appAuth =  {
+      authorized:false,
+      re_authorized:false,
+      channel:null,
+      timeout:null,
+      authWin:null,
+      reauthWin:null,
+      defer:null,
+      check_authorization : function() {
+
+        if(!appAuth.defer){
+            appAuth.defer  = $q.defer();
+        }
+
+        appAuth.timeout = $timeout(appAuth.check_authorization, 1000);
+
+        if(angular.isDefined(appAuth.authWin.authorized)){
+
+            appAuth.authorized= appAuth.authWin.authorized;
+            if(appAuth.authorized){
+              appAuth.authWin.close();
+
+              if(appAuth.defer){
+                 $rootScope.$broadcast('authorized');
+                 appAuth.defer.resolve();
+              }
+
+              $timeout.cancel(appAuth.timeout);
+
+            } else
+              appAuth.defer.reject();
+        }
+
+        return appAuth.defer.promise;
+     },
+     check_reauthorization : function() {
+       appAuth.timeout = $timeout(appAuth.check_reauthorization, 1000);
+
+        if(angular.isDefined($rootScope.reauthorization_window)){
+            $rootScope.re_authorized  = $rootScope.reauthorization_window.re_authorized;
+            appAuth.re_authorized     = $rootScope.re_authorized;
+
+          if($rootScope.re_authorized){
+            $timeout.cancel(appAuth.timeout);
+            $rootScope.reauthorization_window.close();
+
+            appAuth.defer.resolve();
+          }
+
+          return appAuth.defer.promise;
+
+
+        }
+     }
+  }
+
+  return appAuth;
+}
+
+JimmyDashboard.factory('GeneralInfo', generalInfo);
+JimmyDashboard.factory('Blog', blog);
+JimmyDashboard.factory('User', user);
+JimmyDashboard.factory('ClientList', clientList);
+JimmyDashboard.factory('Client', client);
+JimmyDashboard.factory('ReportList', reportList);
+JimmyDashboard.factory('Report', report);
+JimmyDashboard.factory('WidgetList', widgetList);
+JimmyDashboard.factory('RecentReports', recentReportList);
+JimmyDashboard.factory('CampaignList', campaignList);
+JimmyDashboard.factory('MetricsOptions', metricsOptions);
+JimmyDashboard.factory('Widget', widget);
+JimmyDashboard.factory('ClientAccounts', clientAccounts);
+JimmyDashboard.factory('ClientSourceList', clientSourceList);
+JimmyDashboard.factory('ClientSource', clientSource);
+JimmyDashboard.factory('ProfileList', profileList);
+JimmyDashboard.factory('GoalsList', goalsList);
+JimmyDashboard.factory('PackageList', packageList);
+JimmyDashboard.factory('Coworker', coworker);
+JimmyDashboard.factory('FlashMessage', flashMessage);
+JimmyDashboard.factory('AppAuth', appAuthorization);
+JimmyDashboard.factory('CurrentReport', currentReport);
+// The core natural service
+JimmyDashboard.factory("naturalService", ["$locale", function($locale) {
+    "use strict";
+        // the cache prevents re-creating the values every time, at the expense of
+        // storing the results forever. Not recommended for highly changing data
+        // on long-term applications.
+    var natCache = {},
+        // amount of extra zeros to padd for sorting
+        padding = function(value) {
+            return "00000000000000000000".slice(value.length);
+        },
+
+        // Converts a value to a string.  Null and undefined are converted to ''
+        toString = function(value) {
+            if(value === null || value === undefined) return '';
+            return ''+value;
+        },
+
+        // Calculate the default out-of-order date format (dd/MM/yyyy vs MM/dd/yyyy)
+        natDateMonthFirst = $locale.DATETIME_FORMATS.shortDate.charAt(0) === "M",
+        // Replaces all suspected dates with a standardized yyyy-m-d, which is fixed below
+        fixDates = function(value) {
+            // first look for dd?-dd?-dddd, where "-" can be one of "-", "/", or "."
+            return toString(value).replace(/(\d\d?)[-\/\.](\d\d?)[-\/\.](\d{4})/, function($0, $m, $d, $y) {
+                // temporary holder for swapping below
+                var t = $d;
+                // if the month is not first, we'll swap month and day...
+                if(!natDateMonthFirst) {
+                    // ...but only if the day value is under 13.
+                    if(Number($d) < 13) {
+                        $d = $m;
+                        $m = t;
+                    }
+                } else if(Number($m) > 12) {
+                    // Otherwise, we might still swap the values if the month value is currently over 12.
+                    $d = $m;
+                    $m = t;
+                }
+                // return a standardized format.
+                return $y+"-"+$m+"-"+$d;
+            });
+        },
+
+        // Fix numbers to be correctly padded
+        fixNumbers = function(value) {
+
+        //value.replace(/(\d+)((\,)*)?((\.\d+)+)?/g
+
+            // First, look for anything in the form of d.d or d.d.d...
+            return value.replace(/(\d+)((\,\d+)(\.\d+)+)?/g, function ($0, integer, decimal, $3) {
+                // If there's more than 2 sets of numbers...
+                //if(decimal==',')
+
+                if(decimal==','){
+                    return $0.replace(/(\,+)/g, function ($d) {
+                        return $d + $d;
+                    });
+                }
+
+                 if (decimal !== $3) {
+                    // treat as a series of integers, like versioning,
+                    // rather than a decimal
+                    return $0.replace(/(\d+)/g, function ($d) {
+                        return padding($d) + $d;
+                    });
+                } else {
+                    // add a decimal if necessary to ensure decimal sorting
+                    decimal = decimal || ".0";
+                    return padding(integer) + integer + decimal + padding(decimal);
+                }
+            });
+        },
+
+        // Finally, this function puts it all together.
+        natValue = function (value) {
+            if(natCache[value]) {
+                return natCache[value];
+            }
+            natCache[value] = fixNumbers(fixDates(value));
+            return natCache[value];
+        };
+
+    // The actual object used by this service
+    return {
+        naturalValue: natValue,
+        naturalSort: function(a, b) {
+            a = natVale(a);
+            b = natValue(b);
+            return (a < b) ? -1 : ((a > b) ? 1 : 0);
+        }
+    };
+}])
+
+
+JimmyDashboard.factory('AuthService', ['$q','$location','$rootScope','GeneralInfo',function($q,$location,$rootScope,GeneralInfo){
+    return {
+           isAuthenticated:function(roles){
+               var defer = $q.defer();
+
+               if(!angular.isDefined($rootScope.generalInfo)){
+                    $rootScope.generalInfo = GeneralInfo.query(function(generalInfo){
+
+
+
+                    if(angular.isArray(roles) && $.inArray(generalInfo.current_user.type,roles)!=-1){
+                      defer.resolve(generalInfo);
+                    }
+                    else
+                      defer.reject(generalInfo);
+
+                    },function(data){
+                      defer.reject(generalInfo);
+                    });
+                } else {
+
+                    if(angular.isArray(roles) && $.inArray($rootScope.generalInfo.current_user.type,roles)!=-1){
+                      defer.resolve($rootScope.generalInfo);
+                    }
+                    else
+                      defer.reject($rootScope.generalInfo);
+
+                }
+
+                return defer.promise;
+            }
+    }
+}])
+
+
+JimmyDashboard.config(function($routeProvider) {
+
+    var bootstrap =  ['$q','AuthService',function($q, $rootScope, AuthService,GeneralInfo,$route) {
+
+          $rootScope.showSearch = false;
+       if($route.current.$$route.originalPath=="/clients" || $route.current.$$route.originalPath=="/reports" || $route.current.$$route.originalPath=="/clients/:client_id/reports"){
+          $rootScope.showSearch = true;
+       }
+
+       return AuthService.isAuthenticated($route.current.roles);
+    }];
+
+
+
+  $routeProvider.
+        when('/',                               {controller:"DashboardCtrl",  templateUrl:'src/app/dashboard/index.html',resolve:bootstrap,roles:['user','agency','coworker']}).
+        when('/user',                           {controller:"UserCtrl",       templateUrl:'src/app/dashboard/account.html',resolve:bootstrap,roles:['user','agency','coworker']}).
+        when('/account/upgrade',                {controller:"UpgradeCtrl",    templateUrl:'src/app/dashboard/upgrade.html',resolve:bootstrap,roles:['agency']}).
+        when('/clients',                        {controller:"ClientListCtrl", templateUrl:'src/app/client/list.html',resolve:bootstrap,roles:['agency','coworker']}).
+        when('/clients/:client_id',             {controller:"ClientCtrl",     templateUrl:'src/app/client/index.html',resolve:bootstrap,roles:['agency','coworker']}).
+        when('/clients/:client_id/reports',     {controller:"ReportListCtrl", templateUrl:'src/app/report/list.html',resolve:bootstrap,roles:['agency','coworker']}).
+        when('/reports/:list',                  {controller:"ReportListCtrl", templateUrl:'src/app/report/shared-list.html',resolve:bootstrap,roles:['agency','coworker']}).
+        when('/report/new/',                    {controller:"NewReportCtrl",  templateUrl:'src/app/report/form.html',resolve:bootstrap,roles:['agency','coworker']}).
+        when('/report/:report_id',              {controller:"ReportCtrl",     templateUrl:'src/app/report/index.html',resolve:bootstrap,roles:['user','agency','coworker']}).
+        when('/report/:report_id/widget/new',   {controller:"NewReportCtrl",  templateUrl:'src/app/report/form.html',resolve:bootstrap,roles:['agency','coworker'],action:'new-widget'}).
+        when('/reports',                        {controller:"ReportListCtrl", templateUrl:'src/app/report/list.html',resolve:bootstrap,roles:['agency','coworker']}).
+        when('/reports/:report_id/widgets/:action/:type',   {controller:"WidgetCtrl",     templateUrl:'src/app/client/view.html',resolve:bootstrap,roles:['agency','coworker']}).
+        when('/coworker',                       {controller:"CoworkerCtrl",   templateUrl:'src/app/coworker/list.html',resolve:bootstrap,roles:['agency']}).
+        otherwise({redirectTo:'/'});
+});
+
+
+JimmyDashboard.run(function ($rootScope, $location,GeneralInfo,naturalService) {
+
+    $rootScope.$on("$routeChangeError",function(event, next, current){
+        console.log("Unauthorised Access");
+        event.preventDefault();
+        $location.path("#/");
+        return false;
+    });
+
+    $rootScope.$on("$routeChangeStart",function(event, next, current){
+         console.log("Cancelling Pending Requests");
+          if(widgetCanceler)  {
+            widgetCanceler.resolve();
+            widgetCanceler  = null;
+          }
+
+          if(campaignCanceler) {
+            campaignCanceler.resolve();
+            campaignCanceler = null;
+          }
+
+          if(profileCanceler){
+            profileCanceler.resolve();
+            profileCanceler  = null;
+          }
+
+
+        event.preventDefault();
+
+        if(widgetCanceler)
+          return widgetCanceler.promise;
+        else
+          return true;
+    });
+
+    $rootScope.natural = function (field) {
+        return function (item) {
+           return naturalService.naturalValue(item[field]);
+        }
+    };
+
+});
+
+JimmyDashboard.controller("MainCtrl",function($scope,$rootScope,$timeout,FlashMessage,GeneralInfo){
+      $scope.flashMessage = FlashMessage;
+
+      $scope.$on('report_deleted',function(){
+        $rootScope.generalInfo.templates_used--;
+        $rootScope.templates_used_perc = ($rootScope.generalInfo.templates_used/$rootScope.generalInfo.package.templates_allowed)*100;
+      });
+
+      $scope.$on('report_cloned',function(){
+        $rootScope.generalInfo.templates_used++;
+        $rootScope.templates_used_perc = ($rootScope.generalInfo.templates_used/$rootScope.generalInfo.package.templates_allowed)*100;
+      });
+
+
+      $scope.$on("settings_updated",function(e,settings){
+        var    logo = "/images/"+$rootScope.generalInfo.logo_config.logo_url;
+
+          if(settings && settings.replace_app_logo){
+             logo = "/resources/logos/agencies/" + $rootScope.generalInfo.current_user.logo;
+          }
+           $("#header-logo").css("background","url(" +logo+ ")  no-repeat -30px");
+           $("#header-logo").css("background-size","100%");
+      })
+
+
+});
+
+JimmyDashboard.controller("UserCtrl",function($q,$scope,$rootScope,$resource,$location,$http,GeneralInfo,ClientAccounts,FlashMessage){
+    $scope.changepass = {user_id:$scope};
+    $scope.settings   = {};
+
+
+    GeneralInfo.query(function(generalInfo){
+      $scope.user = generalInfo.current_user;
+      $scope.changepass.user_id = $scope.user.id;
+      $scope.settings = generalInfo.settings;
+    });
+
+
+    $scope.changePassword = function(){
+
+        if($("#password_form").parsley('validate')){
+
+            $http({
+                method: 'POST',
+                url: "/changepwd",
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                transformRequest: function (data) {
+
+                    var formData = $.param(data);
+                    return formData;
+                },
+                data: $scope.changepass
+            }).
+            success(function (data, status, headers, config) {
+                FlashMessage.setMessage(data);
+                $scope.changepass.password   = '';
+                $scope.changepass.c_password = '';
+            }).
+            error(function (data, status, headers, config) {
+                FlashMessage.setMessage(data);
+            });
+
+        }
+
+    }
+
+
+    $scope.updateTitle = function(name){
+
+          return $resource('/user/save-title/:user_id', {},{update:{method:'post',headers: {'Content-Type': 'application/x-www-form-urlencoded'}}})
+                          .update({user_id:$scope.user.id},$.param({name:name}));
+    }
+
+
+    $scope.uploadFinish = function(data){
+        $rootScope.generalInfo = GeneralInfo.query(function(data){
+            $scope.$emit("settings_updated",data.settings);
+
+        });
+    }
+
+    $scope.saveSettings = function(){
+     // console.log($scope.settings);
+      //return;
+        $http({
+                  method: 'POST',
+                  url: "/settings/save",
+                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                  transformRequest: function (data) {
+                      var formData = $.param(data);
+                      return formData;
+                  },
+                  data: $scope.settings
+              }).
+              success(function (data, status, headers, config) {
+                  FlashMessage.setMessage(data);
+                  $scope.$emit("settings_updated",data.settings);
+
+              }).
+              error(function (data, status, headers, config) {
+                  FlashMessage.setMessage(data);
+              });
+    }
+
+
+    $scope.cancelAccount=function(){
+             $http({
+                  method: 'POST',
+                  url: "/cancel",
+                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              }).
+              success(function (data, status, headers, config) {
+                if(data.success==true){
+                  FlashMessage.setMessage(data);
+                  location.href = '/user/logout';
+                }
+              }).
+              error(function (data, status, headers, config) {
+                  FlashMessage.setMessage(data);
+              });
+    }
+
+
+});
+
+
+JimmyDashboard.controller("DashboardCtrl",function($q,$scope,$rootScope,$location,$timeout,$http,$resource,Client,ClientList,GeneralInfo,RecentReports,ReportList,Report,Blog,FlashMessage){
+
+    if($rootScope.generalInfo.package!=null)
+        $rootScope.templates_used_perc = ($rootScope.generalInfo.templates_used/$rootScope.generalInfo.package.templates_allowed)*100;
+
+    if($rootScope.generalInfo.current_user.type=='agency' || $rootScope.generalInfo.current_user.type=='coworker'){
+
+        RecentReports.query({list:'recent' },function(recentReports){
+           $scope.recentReports  = recentReports;
+        });
+
+        ClientList.query({list:'recent'},function(clients){
+           $scope.clients        = clients;
+        });
+
+        $scope.template       = 'src/app/dashboard/agency.html';
+
+        Blog.query(function(blog){
+            $scope.posts  = blog.posts;
+        });
+
+    } else {
+        $rootScope.showSearch  = true;
+        $scope.reports        = ReportList.query();
+        $scope.template       = 'src/app/dashboard/user.html';
+    }
+
+    $scope.$on('client_saved',function(e,client_id){
+        $scope.clients          = ClientList.query({list:'recent'});
+        $location.path("/clients/" + client_id+"/reports")
+
+    });
+
+    $scope.$on("report_cloned",function(){
+        $scope.recentReports  = RecentReports.query({list:'recent' });
+    })
+
+
+    // When the Sharing is removed completely from a particular report update the model
+    $scope.$on("sharing_removed",function(e,data){
+        if(data.length==1){
+           _.filter($scope.recentReports,function(report){
+                 if(data[0].report_id==report.id)
+                    report.shared = false;
+          });
+        }
+    })
+
+    //When the Sharing is added to a particular report update the model
+    $scope.$on("report_shared",function(e,data){
+        if(data.length==1){
+           _.filter($scope.recentReports,function(report){
+                 if(data[0].report_id==report.id)
+                    report.shared = true;
+          });
+        }
+    })
+
+
+    // When the Schedule is removed completely from a particular report update the model
+    $scope.$on("schedule_removed",function(e,data){
+        if(data.length==1){
+           _.filter($scope.recentReports,function(report){
+                 if(data[0].report_id==report.id)
+                    report.scheduled = false;
+          });
+        }
+    })
+
+    //When the Schedule is added to a particular report update the model
+    $scope.$on("scheduled",function(e,data){
+        if(data.length==1){
+           _.filter($scope.recentReports,function(report){
+                 if(data[0].report_id==report.id)
+                    report.scheduled = true;
+          });
+        }
+    })
+
+
+
+    $scope.deleteClient = function(client_id){
+
+        Client.delete({client_id:client_id},function(data){
+            FlashMessage.setMessage(data);
+
+            if(data.success==true){
+              $scope.clients        = ClientList.query({list:'recent'});
+            }
+       });
+    }
+
+    $scope.delete = function(report_id){
+
+          Report.delete({report_id:report_id},function(data){
+             FlashMessage.setMessage(data);
+             $scope.$emit("report_deleted");
+             $scope.recentReports  = RecentReports.query({list:'recent' });
+          });
+
+    }
+});
+
+
+
+JimmyDashboard.controller("CoworkerCtrl",function($scope,$rootScope,GeneralInfo,Coworker,FlashMessage){
+
+     $scope.coworkers = Coworker.query();
+     $scope.coworker = {};
+     $scope.saveDisabled = false;
+
+     $scope.save = function(){
+
+        if($("#coworker_form").parsley('validate')){
+
+                Coworker.save($scope.coworker,function(data){
+                    FlashMessage.setMessage(data);
+                    if(data.success==true){
+                        $scope.$emit("coworker_saved",data.client_id);
+                        $scope.coworkers = Coworker.query();
+                    }
+                });
+        }
+     }
+
+     $scope.delete = function(coworker_id){
+        Coworker.delete({coworker_id:coworker_id},function(data){
+            FlashMessage.setMessage(data);
+            if(data.success==true){
+              $scope.coworkers = _.filter($scope.coworkers,function(coworker){
+                  return !(coworker.user_id==coworker_id);
+              })
+
+            }
+        });
+     }
+
+});
+
+
+
+JimmyDashboard.controller("SupportCtrl",function($scope,$rootScope,$http,GeneralInfo,Coworker,FlashMessage){
+
+     $scope.support = {}
+     $scope.support_types = [{id:'general',name:'General'},{id:'sales',name:'Sales'},{id:'technical',name:'Technical'}];
+
+     $scope.submit = function(){
+
+
+        if($("#support_form").parsley('validate')){
+
+             $http({
+                      method: 'POST',
+                      url: "/support",
+                      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                      transformRequest: function (data) {
+                          var formData = $.param(data);
+                          return formData;
+                      },
+                      data: $scope.support
+                  }).
+                  success(function (data, status, headers, config) {
+                      FlashMessage.setMessage(data);
+                  }).
+                  error(function (data, status, headers, config) {
+                      FlashMessage.setMessage(data);
+                  });
+        }
+    }
+
+});
+
+
+
+JimmyDashboard.controller("ClientCtrl",function($scope,$rootScope, $http,$location, $routeParams,$timeout, Client,ClientSourceList,ClientSource,ClientAccounts,AppAuth,FlashMessage){
+
+    $scope.client        = Client.query({client_id:$routeParams.client_id },function(client){
+
+        if(angular.isDefined(client.client_id))
+           $scope.clientSources = ClientSourceList.query({client_id:$routeParams.client_id});
+        else
+          $scope.error_msg   = client.message;
+
+    });
+
+    $scope.$on('client_source_added',function(e,args){
+        $scope.clientSources          = ClientSourceList.query({client_id:args.client_id});
+    });
+
+    $scope.uploadFinish = function(data){
+        $scope.client        = Client.query({client_id:$routeParams.client_id });
+    }
+
+    $scope.deleteSource = function(source_id){
+      ClientSource.delete({source_id:source_id},function(data){
+
+          FlashMessage.setMessage(data);
+
+          if(data.success==true){
+              $scope.clientSources = _.filter($scope.clientSources,function(source){
+                  return !(source.id==source_id);
+              })
+          }
+      });
+    }
+
+
+    $scope.updateTitle = function(name){
+         return  Client.update({client_id:$scope.client.client_id},{name:name,action:'update-name'});
+    }
+
+
+    $scope.reauthorizeAccess = function(source_id){
+      var left  = ($(window).width()/2)-(900/2);
+      var top   = ($(window).height()/2)-(600/2);
+
+      $rootScope.reauthorization_window = window.open('/re-authapp/'+source_id, 'Reauthorization Window', 'width=600,height=600,top=' + top + ', left=' + left);
+      $rootScope.reauthorization_window.focus();
+      // Init the check reauthorization method and invoke the promise callback function
+      $timeout(AppAuth.check_reauthorization, 1000).then(function(){
+          $scope.clientSources = ClientSourceList.query({client_id:$routeParams.client_id});
+      });
+    }
+});
+
+
+
+
+
+
+JimmyDashboard.controller('ClientAddCtrl', function($scope,$rootScope,$location,Client,FlashMessage,AppAuth){
+
+    $scope.authorized    = false;
+    $scope.show_upload   = false;
+    $scope.client        = {};
+    $scope.saveDisabled  = false;
+
+
+    $scope.uploadFinish = function(data){
+
+        $scope.client  = Client.query({client_id:$scope.client.client_id});
+        $scope.success = true;
+        $scope.msg     = "Logo updated";
+        $scope.bg      = "success-bg";
+        $scope.header  = 'Success!';
+    }
+
+
+
+
+    $scope.save = function(){
+
+      angular.forEach($scope.client_accounts, function(v, k){
+          if($scope.client.account==v.id){
+                $scope.client.email = v.email;
+                $scope.client.account_name  = v.name;
+          }
+      });
+
+      if($("#client_form").parsley('validate')){
+
+        Client.save($scope.client,function(data){
+            $scope.show_upload = true;
+            FlashMessage.setMessage(data);
+            $scope.client.client_id = data.client_id;
+            $scope.$emit("client_saved",data.client_id);
+        });
+      }
+    }
+})
+
+
+
+JimmyDashboard.controller('ClientSourceAddCtrl', function($scope,$rootScope,$routeParams,Client,FlashMessage,AppAuth){
+
+    $scope.authorized    = false;
+    $scope.client        = {};
+    $scope.saveDisabled  = false;
+
+
+    if($routeParams.client_id)
+       $scope.client.client_id  = $routeParams.client_id;
+    else {
+       $scope.client.client_id  = $scope.$parent.$parent.report.user_id;
+    }
+
+    $scope.$on('report_client_selected',function(data,args){
+       $scope.client.client_id   = args.client_id;
+    });
+
+    $scope.$on('$destroy',function(){
+
+    });
+
+
+    $scope.save = function(){
+
+        angular.forEach($scope.client_accounts, function(v, k){
+            if($scope.client.account==v.id){
+                $scope.client.email = v.email;
+                $scope.client.account_name  = v.name;
+            }
+        });
+
+       $scope.client.action = 'add-source';
+
+      if($("#client_source_form").parsley('validate')){
+
+         Client.save($scope.client,function(data){
+              FlashMessage.setMessage(data);
+              $scope.$emit("client_source_added",{client_id:$scope.client.client_id});
+         });
+       }
+    }
+})
+
+JimmyDashboard.controller("AuthCallbackCtrl",function($scope, $rootScope,$http,$routeParams, ClientAccounts){
+    if(typeof window.error != 'undefined')
+       window.authorized   = true;
+    else {
+       window.authorized   = false;
+    }
+
+
+});
+
+
+JimmyDashboard.controller("ReAuthCallbackCtrl",function($scope, $rootScope,$http,$routeParams){
+    window.re_authorized      = true;
+});
+
+
+JimmyDashboard.controller('DownloadReportCtrl', function($scope, $rootScope,$http,$routeParams, $resource,Report,ReportList){
+
+// For future Use
+
+})
+
+JimmyDashboard.controller('CloneReportCtrl', function($scope, $rootScope,$http,$routeParams, $resource,Report,ReportList,FlashMessage){
+
+
+    var reports = $scope.$parent.reports;
+    $scope.report_clone = true;
+    $scope.clone_report = {};
+    $scope.saveDisabled  = false;
+    $scope.clone = function(){
+
+        if($("#clone_form").parsley('validate')){
+                $scope.clone_report.id = $scope.report.id;
+
+                Report.clone({report_id:$scope.report.id},$scope.clone_report,function(data){
+
+                    FlashMessage.setMessage(data);
+                    if(data.success==true){
+                      $scope.$emit("report_cloned");
+                    }
+                 });
+        }
+    }
+})
+
+JimmyDashboard.controller('ShareReportCtrl', function($scope, $rootScope,$http,$routeParams, $resource,Report,ReportList,FlashMessage){
+
+    var reports = $scope.$parent.reports;
+
+    $scope.share_report  = null;
+    $scope.saveDisabled  = false;
+
+    $scope.removeSharing = function(sharing_id){
+        Report.removeSharing({id:sharing_id},function(data){
+            FlashMessage.setMessage(data);
+            if(data.success==true){
+              $scope.$emit("sharing_removed",$scope.sharing_list);
+              $scope.sharing_list = _.filter($scope.sharing_list,function(share){
+                  return !(share.id==sharing_id);
+              });
+            }
+       });
+    }
+
+
+     $scope.save = function(){
+
+        if($("#share_form").parsley('validate')){
+
+                Report.share({report_id:$scope.report.id},$scope.share_report,function(data){
+                    FlashMessage.setMessage(data);
+
+                    if(data.success==true){
+                     Report.getShared({report_id:$scope.report.id },function(sharing_list){
+                          $scope.sharing_list =  sharing_list;
+                          $scope.$emit("report_shared",sharing_list);
+                      });
+                    }
+                });
+        }
+    }
+})
+
+
+
+JimmyDashboard.controller('ScheduleReportCtrl', function($scope, $rootScope,$http,$routeParams, $resource,Report,ReportList,FlashMessage){
+
+    var reports = $scope.$parent.reports;
+
+    $scope.schedule_report = {};
+    $scope.saveDisabled    = false;
+    $scope.schedule_label  = 'Schedule';
+
+    $resource("/src/app/timezones.json").query(function(timezones){
+      $scope.timezones =  timezones;
+      $scope.timezones.loaded = true;
+    });
+
+    $scope.frequency = [{'id':'send-now','title':'Send-now'},{'id':'one-off','title':'One-off'},{'id':'daily','title':'Daily'},{'id':'weekly','title':'Weekly'},{'id':'fortnightly','title':'Fortnightly'},{'id':'monthly','title':'Monthly'}];
+
+    $scope.removeSchedule = function(schedule_id){
+        Report.removeSchedule({id:schedule_id},function(data){
+            FlashMessage.setMessage(data);
+
+            if(data.success==true){
+              $scope.$emit("schedule_removed",$scope.scheduled_list);
+              $scope.scheduled_list = _.filter($scope.scheduled_list,function(schedule){
+                  return !(schedule.id==schedule_id);
+              });
+            }
+       });
+    }
+
+    $scope.editSchedule = function(schedule_id){
+        angular.forEach($scope.scheduled_list, function(value, key){
+              if(value.id == schedule_id){
+                $scope.schedule_report = Object.create(value);
+
+                //Copy the properties and the value
+                for (prop in value) {
+                    if (value.hasOwnProperty(prop)) {
+                      $scope.schedule_report[prop] = value[prop];
+                    }
+                }
+
+                var start_date = value.start_date.split(" ");
+
+                $scope.schedule_report.start_date = start_date[0];
+                $scope.schedule_report.time       = start_date[1];
+
+                angular.forEach($scope.timezones, function(v, k){
+                  if(v.id == value.timezone){
+                    $scope.schedule_report.timezone = v;
+                    $scope.timezones.loaded = false;
+                  }
+                })
+
+              }
+        });
+
+    }
+
+    $scope.selectFreq = function(freq_id){
+
+      if(freq_id=='send-now'){
+         $scope.schedule_label =  'Send';
+      } else {
+         $scope.schedule_label =  'Schedule';
+      }
+    }
+
+     $scope.save = function(){
+
+
+        if($("#schedule_form").parsley('validate')){
+                $scope.saveDisabled = true;
+                if($scope.schedule_report.frequency=='send-now')
+                   $scope.schedule_label =  'Sending...';
+                else{
+
+                   $scope.schedule_label =  'Scheduling...';
+                }
+
+                 var params = {report_id:$scope.report.id}
+
+                if($scope.schedule_report.id){
+                  params = {report_id:$scope.report.id,id:$scope.schedule_report.id}
+                  $scope.schedule_report.timezone  = $scope.schedule_report.timezone.id;
+                 // $scope.schedule_report.next_schedule_date = null;
+                  Report.updateSchedule(params,$scope.schedule_report,function(data){
+                      FlashMessage.setMessage(data);
+                      $scope.saveDisabled = false;
+                      $scope.schedule_label =  'Schedule';
+                      if(data.success==true){
+                        $scope.schedule_report = {};
+                        $scope.scheduled_list = Report.getScheduled({report_id:$scope.report.id });
+                      }
+                  });
+                } else {
+
+                    Report.schedule(params,$scope.schedule_report,function(data){
+                        FlashMessage.setMessage(data);
+                        $scope.saveDisabled = false;
+                        $scope.schedule_label =  'Schedule';
+                        if(data.success==true){
+                          $scope.schedule_report = {};
+                         Report.getScheduled({report_id:$scope.report.id },function(scheduled_list){
+                            $scope.scheduled_list = scheduled_list;
+                            $scope.$emit("scheduled",$scope.scheduled_list);
+                          });
+                        }
+                    });
+
+                }
+
+
+
+        }
+    }
+})
+
+JimmyDashboard.controller("ClientListCtrl",function($scope, $rootScope,$location,$routeParams,$timeout,$http,$filter,ReportList,ClientList,Client,ClientAccounts,FlashMessage){
+
+   ClientList.query(function(clients){
+        $scope.clients    =  clients;
+        $scope.clients.loaded = true;
+    });
+
+    $scope.$on('client_saved',function(e,client_id){
+        $scope.clients          = ClientList.query({list:'recent'},function(){
+        });
+
+        $location.path("/clients/" + client_id+"/reports")
+    });
+
+
+
+    $scope.delete = function(client_id){
+        Client.delete({client_id:client_id},function(data){
+
+            FlashMessage.setMessage(data);
+
+            if(data.success==true){
+              $scope.clients = _.filter($scope.clients,function(client){
+                  return !(client.id==client_id);
+              })
+          }
+       });
+    }
+});
+
+
+JimmyDashboard.controller("ReportListCtrl",function($scope, $rootScope,$routeParams, $filter,ReportList,Client,Report,FlashMessage){
+
+      var params = {client_id:$routeParams.client_id }
+
+      if($routeParams.shared=='shared')
+          params.shared = 'shared';
+
+
+
+      if(!$routeParams.client_id) // If no client_id present in the route load all reports
+         ReportList.query($routeParams,function(reports){
+            $scope.reports = reports;
+         });
+
+
+      $scope.$on("report_cloned",function(){
+          $scope.reports = ReportList.query($routeParams);
+      })
+
+      // When the Sharing is removed completely from a particular report update the model
+      $scope.$on("sharing_removed",function(e,data){
+          if(data.length==1){
+             _.filter($scope.reports,function(report){
+                   if(data[0].report_id==report.id)
+                      report.shared = false;
+            });
+          }
+      })
+
+      // When the Sharing is added to a particular report update the model
+      $scope.$on("report_shared",function(e,data){
+          if(data.length==1){
+             _.filter($scope.reports,function(report){
+                   if(data[0].report_id==report.id)
+                      report.shared = true;
+            });
+          }
+      })
+
+      // When the schedule is removed completely from a particular report update the model
+      $scope.$on("schedule_removed",function(e,data){
+          if(data.length==1){
+             _.filter($scope.reports,function(report){
+                   if(data[0].report_id==report.id)
+                      report.scheduled = false;
+            });
+          }
+      })
+
+      //When the schedule is added to a particular report update the model
+      $scope.$on("scheduled",function(e,data){
+          if(data.length==1){
+             _.filter($scope.reports,function(report){
+                   if(data[0].report_id==report.id)
+                      report.scheduled = true;
+            });
+          }
+      })
+
+
+
+
+      if(angular.isDefined($routeParams.client_id)){
+         $scope.client  = Client.get({client_id:$routeParams.client_id},function(client){
+             if(angular.isDefined(client.client_id))
+                ReportList.query($routeParams,function(reports){
+                     $scope.reports = reports;
+                });
+             else
+                $scope.error_msg = client.message
+
+
+         });
+      }
+
+      $scope.delete = function(report_id){
+
+          Report.delete({report_id:report_id},function(data){
+              FlashMessage.setMessage(data);
+              $scope.reports = _.filter($scope.reports,function(report){
+                  return !(report.id==report_id);
+              })
+
+              $scope.$emit("report_deleted");
+          });
+
+      }
+});
+
+JimmyDashboard.controller('NewReportCtrl',function($scope, $rootScope,$http,$routeParams,$location, $timeout,Widget,CurrentReport,FlashMessage,Client,ClientList,ClientAccounts,ClientSourceList,CampaignList,MetricsOptions,ProfileList,GoalsList,Report){
+
+
+
+    $scope.new_report    = true;
+    $scope.show_wizard   = false;
+
+
+    $scope.report        = {};
+    $scope.report.widget = {};
+    $scope.report.widget.device_type  = [];
+    $scope.report.widget.network_type = [];
+    $scope.report.widget.type = '';
+    $scope.metrics            = null;
+    $scope.client = {};
+    $scope.selectedMetrics    = [];
+    $scope.saveDisabled = false;
+
+
+    $scope.listSources = function(fetchNew){
+        $scope.clientSources = CurrentReport.getSources();
+
+        if(!$scope.clientSources || fetchNew)
+        $scope.clientSources = ClientSourceList.query({client_id:$scope.report.user_id});
+        $scope.$broadcast('report_client_selected',{client_id:$scope.report.user_id});
+    }
+
+    if(angular.isDefined($routeParams.report_id)){
+        $scope.new_report    = false;
+        $scope.show_wizard   = true;
+        $scope.report        = CurrentReport.getReport();
+
+        // If report exists in the cache
+        if(!$scope.report){
+
+            $scope.report    = Report.get({report_id:$routeParams.report_id},function(){
+               $scope.listSources();
+
+               $scope.listSources();
+               $scope.report.widget = {};
+               $scope.report.widget.device_type  = [];
+               $scope.report.widget.network_type = [];
+               $scope.report.widget.type = '';
+
+            });
+        } else {
+           $scope.listSources();
+
+           $scope.report.widget = {};
+           $scope.report.widget.device_type  = [];
+           $scope.report.widget.network_type = [];
+           $scope.report.widget.type = '';
+        }
+
+    }  else {
+      $scope.clients  = ClientList.query(function(){
+          $scope.clients.loaded = true;
+      });
+    }
+
+    $scope.$on('client_source_added',function(e,args){
+        $scope.clientSources          = ClientSourceList.query({client_id:args.client_id});
+    });
+
+
+    $scope.$on('client_saved',function(e,client_id){
+        $scope.clients   = ClientList.query(function(){
+                    $scope.clients.loaded = true;
+        });
+    });
+
+
+    $scope.createReport = function(){
+        if($('#report_title').parsley( 'validate' )){
+            $scope.show_wizard = true;
+            return true;
+        }
+    }
+
+
+    $scope.selectSource = function(){
+        $scope.report.client_account_id = this.source.id;
+        $scope.report.channel = this.source.channel;
+
+
+        if($scope.report.channel=='googleadwords' || $scope.report.channel=='bingads'){
+            $scope.campaigns = CampaignList.query({client_account_id:this.source.id},function(){
+                $scope.campaigns.loaded = true;
+            });
+        } else {
+            $scope.profiles = ProfileList.query({client_account_id:this.source.id},function(){
+                $scope.profiles.loaded = true;
+            });
+
+        }
+    }
+
+
+    $scope.widget_type_table  = false;
+    $scope.widget_type_graph  = false;
+    $scope.widget_type_kpi    = false;
+
+    $scope.metricsoptions = MetricsOptions.query();
+
+    $scope.date_range_compare = [{id:'previous_period',title:'Previous Period'},{id:'custom',title:'Custom'}];
+
+    $scope.selectWidget = function(){
+            $scope.report.widget.type = $scope.report.widget_type;
+
+
+            $scope.widget_type_table  = false;
+            $scope.widget_type_graph  = false;
+            $scope.widget_type_kpi    = false;
+
+            $scope.date_ranges         = $scope.metricsoptions.date_ranges;
+
+            $scope.report.widget.metric_type = null;
+            $scope.metrics = null;
+            $scope.metrics_compare  = null;
+
+           if($scope.report.widget.type=='kpi'){
+              $scope.widget_type_kpi    = true;
+           } else if($scope.report.widget.type=='table'){
+             $scope.widget_type_table  = true;
+            if($scope.report.channel=='googleanalytics')
+              $scope.metrics_types = [{'id':1,'title':'Source Medium'},{'id':2,'title':'Geo'},{'id':3,'title':'Site Content'}];
+            else if($scope.report.channel=='googleadwords')
+              $scope.report_types = [{'id':1,'title':'Campaign'},{'id':3,'title':'Ad Group'},{'id':4,'title':'AdCopy'},{'id':5,'title':'Keyword'},{'id':6,'title':'Search Query'}];
+            else if($scope.report.channel=='bingads')
+              $scope.report_types = [{'id':1,'title':'Campaign'},{'id':3,'title':'Ad Group'},{'id':4,'title':'AdCopy'},{'id':5,'title':'Keyword'}];
+
+          } else if($scope.report.widget.type=='graph'){
+               $scope.widget_type_graph  = true;
+
+              if($scope.report.channel=='googleadwords')
+                $scope.metrics_types = [{'id':1,'title':'Performance'},{'id':2,'title':'Conversions'},{'id':4,'title':'Competitive'}];
+              else if($scope.report.channel=='googleanalytics')
+                $scope.metrics_types = [{'id':1,'title':'Traffic'},{'id':2,'title':'Goals'},{'id':3,'title':'Ecommerce'}];
+              else if($scope.report.channel=='bingads')
+                $scope.metrics_types = [{'id':1,'title':'Performance'},{'id':2,'title':'Conversions'}];
+          }
+
+
+
+        $scope.metrics         = $scope.metricsoptions.metrics[$scope.report.channel][$scope.report.widget.type];
+        $scope.metrics_compare = $scope.metricsoptions.metrics[$scope.report.channel][$scope.report.widget.type];
+
+
+        angular.forEach($scope.report.widget.metrics, function(value, key){
+            angular.forEach($scope.metrics,function(v,k){
+              if(v.id == value){
+                 $scope.selectedMetrics.push(v);
+              }
+            })
+        });
+
+        if($scope.report.widget.type=='kpi'){
+          $scope.$broadcast('widget_selected');
+        }
+    }
+
+    $scope.selectReportType = function(report_type_id){
+        $scope.metrics  = [];
+
+      if(report_type_id==4){
+
+        angular.forEach($scope.metricsoptions.metrics[$scope.report.channel][$scope.report.widget.type], function(value, key){
+              if(value.id != 11){ // Exclude the Search Impr Share When report type is Ad Copy
+                 $scope.metrics.push(value);
+              }
+        });
+
+      } else {
+        $scope.metrics    = $scope.metricsoptions.metrics[$scope.report.channel][$scope.report.widget.type];
+      }
+
+
+
+      $scope.$broadcast('widget_selected');
+
+    }
+
+    $scope.selectMetricType = function(val){
+        $scope.metrics  = null;
+        $scope.metrics = $scope.metricsoptions.metrics[$scope.report.channel][$scope.report.widget.type][val];
+
+        $scope.$broadcast('widget_selected');
+
+        return true;
+    }
+
+    $scope.displayGoals = function(val){
+
+
+        return true;
+    }
+
+    $scope.selectMetricTypeCompare = function(val){
+        $scope.metrics_compare  = $scope.metricsoptions.metrics[$scope.report.channel][$scope.report.widget.type][val];
+
+
+
+        return true;
+    }
+
+    $scope.cancel = function(){
+       window.history.back();
+    }
+
+    $scope.loadGoals = function(){
+        $scope.goals = GoalsList.query({profile_id:$scope.report.widget.profile_id,client_account_id:$scope.report.widget.client_account_id},function(){
+          $scope.goals.loaded = true;
+        });
+    }
+
+    $scope.save = function(){
+
+      if(angular.isDefined($scope.goals))
+        $scope.report.widget.goals_list = $scope.goals;
+
+      if($scope.new_report) {
+
+          Report.save($scope.report,function(data){
+              FlashMessage.setMessage(data);
+
+              if(data.success){
+                $location.path('/report/'+data.report_id);
+                $rootScope.generalInfo.templates_used++;
+              }
+
+          });
+
+      } else {
+
+        $scope.report.widget.report_id = $scope.report.id;
+
+        Widget.save($scope.report.widget,function(data){
+            FlashMessage.setMessage(data);
+
+            if(data.success)
+              $location.path('/report/'+data.report_id);
+
+        });
+
+      }
+    }
+});
+
+
+JimmyDashboard.directive('onChange',function($location){
+
+  return {
+        scope:false,
+        link:function($scope, element, attrs){
+            var list    = attrs['chosenSelect'];
+            var elem_id = attrs['onChange'];
+
+
+             $(element).chosen()
+              .change(function(e) {
+                  var val                = $(element).chosen().val()
+                  var newVal             = [];
+
+                  $scope.selectedMetrics.length=0;
+
+                  angular.forEach(val, function(value, key){
+                      newVal.push($scope[list][value].title);
+                      $scope.selectedMetrics.push($scope[list][value]);
+                  });
+                  $scope.selectedMetrics.loaded = true;
+                  $scope.$apply();
+
+
+                  if($.inArray("Goal Completions",newVal)>=0 || $.inArray("Goal Conversion Rate",newVal)>=0 || $.inArray("Goal Value",newVal)>=0|| $.inArray("Goal Total Abandonment",newVal)>=0){                 // console.log(newVal);
+                      $("#"+elem_id).removeClass('ng-hide');
+                      $("#"+elem_id).addClass('ng-show');
+                  } else {
+                      $scope.report.widget.goals = null;
+                      $("#"+elem_id).removeClass('ng-show')
+                      $("#"+elem_id).addClass('ng-hide');
+                  }
+
+              });
+      }
+  }
+});
+
+
+JimmyDashboard.directive('displayGoalsCompare',function($location){
+
+  return {
+        link:function($scope, element, attrs){
+            var elem_id = attrs['displayGoalsCompare'];
+
+           $(element).click(function(e) {
+                if($scope.report.channel == 'googleanalytics' && $scope.report.widget.type=='graph' && $scope.report.widget.metrics_type_compare==2){
+                    $("#"+elem_id).removeClass('ng-hide');
+                    $("#"+elem_id).addClass('ng-show');
+                } else {
+                    $scope.report.widget.goals_compare = null;
+                    $("#"+elem_id).removeClass('ng-show')
+                    $("#"+elem_id).addClass('ng-hide');
+                }
+            });
+      }
+  }
+});
+
+
+JimmyDashboard.directive('chosenSelect',function($location){
+ return {
+        require: '?ngModel',
+        link: function($scope, element, attrs,ngModel){
+            var list  = attrs['chosenSelect'];
+            var watchAttr = attrs['watchResource'];
+
+            $(element).chosen();
+
+            if(watchAttr==null)
+                watchAttr = list;
+
+
+            $scope.$watch(watchAttr, function(){
+                $(element).chosen();
+                $(element).trigger("liszt:updated");
+                $(element).trigger("chosen:updated");
+            });
+
+            $(element).chosen()
+            .change(function(e) {
+                var val    = $(element).chosen().val();
+                var newVal = [];
+
+                if($(element).prop("multiple")){
+
+                    angular.forEach(val, function(value, key){
+                        newVal[key] = $scope[list][value].id;
+                    });
+
+                } else {
+                  if($scope[list][val])
+                    newVal = $scope[list][val].id;
+                }
+
+                ngModel.$setViewValue(newVal);
+
+            });
+
+        }
+    }
+
+})
+
+
+
+JimmyDashboard.controller("ReportCtrl",function($q,$scope,$resource, $rootScope,$http,$routeParams, $location, $timeout,FlashMessage,WidgetList,Report,ClientSourceList,ProfileList,CampaignList,MetricsOptions,Widget,CurrentReport,GoalsList){
+    var timeout;
+
+    $scope.template = "/src/app/widget/list.html";
+
+
+    $scope.show_wizard   = false;
+    $scope.device_types  = [];
+    $scope.network_types = [];
+    $scope.reload_after_reauthorization = false;
+    $scope.saveDisabled  = false;
+
+
+    $scope.metricsoptions = MetricsOptions.query();
+
+    $scope.report  = Report.get({report_id:$routeParams.report_id },function(report){
+        CurrentReport.setReport(report);
+
+        if($rootScope.generalInfo.current_user.type!='user'){
+            $scope.clientSources = ClientSourceList.query({client_id:report.user_id},function(){
+                CurrentReport.setSources($scope.clientSources);
+            });
+        }
+    });
+
+
+
+
+    $scope.kpiwidgetsbg   = ['error-bg','success-bg','warning-bg','notice-bg','error-bg','success-bg','warning-bg','notice-bg','error-bg','success-bg','warning-bg','notice-bg','error-bg','success-bg','warning-bg','notice-bg',]
+
+    if(!widgetCanceler)
+        widgetCanceler = $q.defer();
+
+
+    $scope.loadWidget  = function(widget_id,key,opParams){
+
+
+        var params = {widget_id:widget_id};
+
+        if(angular.isObject(opParams)) {
+             if(angular.isDefined(opParams.min) && angular.isDefined(opParams.max)){
+                params.min = opParams.min;
+                params.max = opParams.max;
+                params.date_range = opParams.date_range
+            } else {
+                params.date_range = opParams.date_range;
+            }
+        }
+        $scope.widgets[key].loaded = false;
+        $scope.widgets[key].error_msg = null;
+
+
+        var WidgetRes = $resource("/widget/:widget_id",{}, {'get':{method:'GET',params:{widget_id:'@widget_id'},timeout:widgetCanceler.promise,isArray: false}});
+
+        $scope.widgets[key].data = WidgetRes.get(params,function(data){
+                    $scope.widgets[key].loaded = true;
+                if(data.success==false){
+                    $scope.widgets[key].error_msg = data.message;
+                }
+
+                if($scope.widgets[key].type=='table'){
+
+                } else if($scope.widgets[key].type == 'graph'){
+                        var totals      = $scope.widgets[key].data.totals;
+                        var totals_comp = $scope.widgets[key].data.totals_comp;
+
+
+                     if($scope.widgets[key].data.args){
+                        var yKeys  = ['y'];
+                        var labels = [$scope.widgets[key].data.args.field[2]];
+
+                        if($scope.widgets[key].data.args.field_compare){
+                          yKeys[1]  = 'z';
+                          labels[1] = $scope.widgets[key].data.args.field_compare[2];
+                        }
+
+                        $scope.widgets[key].chartData = {};
+                        $scope.widgets[key].chartData = {
+                               data: totals,
+                               xkey: 'x',
+                               ykeys: yKeys,
+                               labels: labels,
+                               barColors:['#5bccf6','#fa7753'],
+                               yMax:4,
+                               parseTime: false,
+                               integerYLabels: true,
+                               hideHover: "auto",
+
+                               hoverCallbacks:function(index, options, content){
+                                  var row = "<b>"+options.data[index].x + "</b><br><b>" + options.labels[0] + "</b>: " + options.data[index].y;
+
+                                  if(options.data[index].z && options.labels[1])
+                                    row+= "<br><b>" + options.labels[1] + "</b>: " + options.data[index].z;
+
+                                  return row;
+                              }
+                        }
+                     }
+                }
+
+
+        });
+    }
+
+    $scope.changeGraph = function(key){
+
+
+        var chartData = Object.create($scope.widgets[key].chartData);
+
+         $(chartData.element).html('');
+
+
+        if(angular.isDefined($scope.widgets[key].graph_type)){
+          if($scope.widgets[key].graph_type == 'line'){
+            Morris.Bar(chartData);
+            $scope.widgets[key].graph_type='bar';
+          } else {
+            Morris.Line(chartData);
+            $scope.widgets[key].graph_type='line';
+          }
+        } else {
+          $scope.widgets[key].graph_type = 'bar';
+          Morris.Bar(chartData);
+        }
+
+
+
+      //var widget = Object.create($scope.widgets[key]);
+      var widget = jQuery.extend(true, {}, $scope.widgets[key]);
+
+      delete widget.chartData;
+
+      widget.report_id = $scope.report.id;
+      return  Widget.update({widget_id:widget.id},widget,function(data){
+              FlashMessage.setMessage(data);
+      });
+    }
+
+    $scope.loadWidgets = function(){
+       if(!campaignCanceler)
+           campaignCanceler = $q.defer();
+
+       if(!profileCanceler)
+           profileCanceler = $q.defer();
+
+        $scope.widgets = WidgetList.query({report_id:$routeParams.report_id },function(data){
+            var campaignList  = $resource("/clients/campaigns/:client_account_id",{}, {'query':{method:'GET',params:{client_account_id:'@client_account_id'},timeout:campaignCanceler.promise,isArray: true}});
+            var profileList   = $resource("/clients/profiles/:client_account_id",{}, {'query':{method:'GET',params:{client_account_id:'@client_account_id'},timeout:profileCanceler.promise,isArray: true}});
+
+            angular.forEach($scope.widgets, function(widget, key){
+
+                if(widget.channel=='googleadwords')
+                    $scope.campaigns =  campaignList.query({client_account_id:widget.client_account_id});
+                else if(widget.channel=='googleanalytics')
+                    $scope.profiles  =  profileList.query({client_account_id:widget.client_account_id});
+
+                if(angular.isDefined($scope.reauth_source_id) && widget.client_account_id == $scope.reauth_source_id)
+                  $scope.loadWidget(widget.id,key);
+                else
+                  $scope.loadWidget(widget.id,key);
+
+            });
+        });
+    }
+
+    $scope.$watch("report.id",function(){
+
+       if($scope.report.id){
+          $scope.report.show = true;
+          $scope.loadWidgets();
+       } else {
+          $scope.report.show = false;
+       }
+
+    })
+
+
+    $scope.newNote = function(){
+        $scope.template = "/src/app/widget/note.html"
+        $scope.report.widget = {};
+        $scope.report.widget.type = 'notes';
+    }
+
+    $scope.createReport = function(){
+        if($('#report_title').parsley( 'validate' )){
+            $scope.show_wizard = true;
+            return true;
+        }
+    }
+
+
+    $scope.report_title_edit = false;
+
+    $scope.toggleEdit = function(){
+        if(!$scope.report_title_edit)
+           $scope.report_title_edit = true;
+        else
+           $scope.report_title_edit = false;
+
+    }
+
+    $scope.date_range_compare = [{id:'previous_period',title:'Previous Period'},{id:'custom',title:'Custom'}];
+
+    $scope.$on('report_cloned_broadcast',function(){
+        $scope.$broadcast("report_cloned");
+    })
+
+    $scope.$on('report_shared_done_broadcast',function(){
+        $scope.$broadcast("report_shared");
+    })
+
+    $scope.editWidget = function(val,index){
+
+        $scope.report.widget = $scope.widgets[index];
+        $scope.report.index  = index;
+
+        if($scope.report.widget.type=='notes'){
+          $scope.report.widget.notes =  $scope.report.widget.data.notes;
+          $scope.template = "/src/app/widget/note.html"
+          return;
+        }
+
+        // Campaigns
+        angular.forEach($scope.report.widget.campaigns, function(v, k){
+            $scope.report.widget.campaigns[k]    = parseInt(v);
+        });
+
+        // Metrics
+        if(typeof $scope.report.widget.metrics=='string'){
+            $scope.report.widget.metrics    = parseInt($scope.report.widget.metrics);
+        } else {
+            angular.forEach($scope.report.widget.metrics, function(v, k){
+                $scope.report.widget.metrics[k]    = parseInt(v);
+            });
+        }
+
+        // Date Range
+        $scope.report.widget.date_range         = parseInt( $scope.report.widget.date_range);
+
+
+        if($scope.report.widget.device_type==null)
+            $scope.report.widget.device_type = [];
+        else {
+            // Device Types
+            angular.forEach($scope.report.widget.device_type, function(v, k){
+                $scope.report.widget.device_type[k]    = parseInt(v);
+            });
+        }
+
+        // Network Types
+        $scope.report.widget.network_type    = $scope.report.widget.network_type?parseInt($scope.report.widget.network_type):null;
+
+
+        if($scope.report.widget.type=='kpi'){
+            $scope.widget_type_kpi  = true;
+        } else if($scope.report.widget.type=='table'){
+            $scope.widget_type_table  = true;
+        } else if($scope.report.widget.type=='graph'){
+            $scope.widget_type_graph  = true;
+        }
+
+
+        if($scope.report.widget.channel == 'googleadwords' || $scope.report.widget.channel == 'bingads'){
+            $scope.campaigns = CampaignList.query({client_account_id:$scope.report.widget.client_account_id},function(){
+                $scope.campaigns.loaded = true;
+            });
+        } else if($scope.report.widget.channel == 'googleanalytics'){
+            $scope.profiles = ProfileList.query({client_account_id:$scope.report.widget.client_account_id},function(){
+                $scope.profiles.loaded = true;
+            });
+        }
+
+        $scope.report.channel = $scope.report.widget.channel;
+
+        angular.forEach($scope.clientSources, function(value, key){
+            if(value.id==$scope.report.widget.client_account_id)
+                $scope.report.client_source = value;
+        });
+
+        $scope.metrics             = $scope.metricsoptions.metrics[$scope.report.widget.channel][$scope.report.widget.type];
+        $scope.metrics_compare     = $scope.metricsoptions.metrics[$scope.report.widget.channel][$scope.report.widget.type];
+        $scope.selectedMetrics     = [];
+
+
+        if($scope.report.channel=='googleanalytics'){
+              if($scope.report.widget.type=='table' || $scope.report.widget.type == 'graph'){
+                $scope.metrics     = $scope.metricsoptions.metrics[$scope.report.widget.channel][$scope.report.widget.type][parseInt($scope.report.widget.metrics_type)-1];
+                $scope.metrics_compare   = $scope.metricsoptions.metrics[$scope.report.widget.channel][$scope.report.widget.type][parseInt($scope.report.widget.metrics_type_compare)-1];
+                $scope.metrics_types = [{'id':1,'title':'Traffic'},{'id':2,'title':'Goals'},{'id':3,'title':'Ecommerce'}];
+              }
+
+             $scope.loadGoals();
+
+        } else if($scope.report.channel=='googleadwords'){
+            if($scope.report.widget.type == 'graph'){
+                 $scope.metrics           = $scope.metricsoptions.metrics[$scope.report.widget.channel][$scope.report.widget.type][parseInt($scope.report.widget.metrics_type)-1];
+                 $scope.metrics_compare   = $scope.metricsoptions.metrics[$scope.report.widget.channel][$scope.report.widget.type][parseInt($scope.report.widget.metrics_type_compare)-1];
+                 $scope.metrics_types = [{'id':1,'title':'Performance'},{'id':2,'title':'Conversions'},{'id':4,'title':'Competitive'}];
+              }
+        } else if($scope.report.channel=='bingads'){
+            if($scope.report.widget.type == 'graph'){
+                $scope.metrics     = $scope.metricsoptions.metrics[$scope.report.widget.channel][$scope.report.widget.type][parseInt($scope.report.widget.metrics_type)-1];
+                $scope.metrics_compare   = $scope.metricsoptions.metrics[$scope.report.widget.channel][$scope.report.widget.type][parseInt($scope.report.widget.metrics_type_compare)-1];
+                $scope.metrics_types = [{'id':1,'title':'Performance'},{'id':2,'title':'Conversions'}];
+              }
+        }
+
+        angular.forEach($scope.report.widget.metrics, function(value, key){
+            angular.forEach($scope.metrics,function(v,k){
+              if(v.id == value){
+                 $scope.selectedMetrics.push(v);
+              }
+            })
+        });
+
+
+        $scope.date_ranges = $scope.metricsoptions.date_ranges;
+
+        $scope.date_ranges.loaded = true;
+
+        $scope.template = "/src/app/widget/edit.html"
+    }
+
+
+    $scope.loadGoals = function(){
+
+      if(!$scope.report.widget.profile_id.length)
+        return false;
+
+        $scope.goals = GoalsList.query({profile_id:$scope.report.widget.profile_id,client_account_id:$scope.report.widget.client_account_id},function(){
+          $scope.goals.loaded = true;
+        });
+    }
+
+    $scope.showGoals = function(element){
+
+            var newVal = [];
+            angular.forEach($scope.report.widget.metrics, function(value, key){
+               if($scope.metrics[value])
+                  newVal.push($scope.metrics[value].title);
+            });
+
+            if($.inArray("Goal Completions",newVal)>=0 || $.inArray("Goal Conversion Rate",newVal)>=0){                 // console.log(newVal);
+              return true;
+            }
+        return false;
+    }
+
+    $scope.setMetrics = function(el){
+
+        $(element).chosen()
+            .change(function(e) {
+                var val    = $(element).chosen().val()
+
+                $scope.sort_metrics = [];
+                angular.forEach(val, function(value, key){
+                    $scope.sort_metrics.push($scope.widget.metric);
+                });
+            });
+    }
+
+
+
+    $scope.selectMetricTypeCompare = function(val){
+        $scope.metrics_compare  = $scope.metricsoptions.metrics[$scope.report.channel][$scope.report.widget.type][val];
+        return true;
+    }
+
+    $scope.check_reauthorization = function() {
+
+        timeout = $timeout($scope.check_reauthorization, 1000);
+
+        if(angular.isDefined($scope.reauthorization_window)){
+            $scope.re_authorized      = $scope.reauthorization_window.re_authorized;
+           if($scope.re_authorized){
+            if(angular.isDefined($scope.reload))
+                $scope.loadWidgets($scope.reauth_source_id);
+
+              $timeout.cancel(timeout);
+              $scope.reauthorization_window.close();
+           }
+
+        }
+    }
+
+    $scope.reauthorizeAccess = function(source_id,reload){
+        var left  = ($(window).width()/2)-(900/2);
+        var top   = ($(window).height()/2)-(600/2);
+        $scope.reauthorization_window = window.open('/re-authapp/'+source_id, 'Reauthorization Window', 'width=600,height=600,top=' + top + ', left=' + left);
+        $scope.reauthorization_window.focus();
+        $scope.re_authorized = false;
+        $scope.reload = true;
+        $scope.reauth_source_id = source_id;
+        $timeout($scope.check_reauthorization, 1000);
+    }
+
+    $scope.save = function(){
+      if($('#report_form').parsley( 'validate' )) {
+         $scope.report.widget.data = null;
+         delete $scope.report.widget.chartData;
+
+         if( $scope.report.widget.type == 'notes'  && $scope.report.widget.id==null){
+           $scope.report.widget.report_id  = $scope.report.id;
+           return  Widget.save($scope.report.widget,function(data){
+                FlashMessage.setMessage(data);
+                if(data.success){
+                 $scope.loadWidgets();
+                 $scope.template = "/src/app/widget/list.html";
+                }
+           });
+         }
+
+
+        if(angular.isDefined($scope.goals))
+          $scope.report.widget.goals_list = $scope.goals;
+
+         return  Widget.update({widget_id:$scope.report.widget.id},$scope.report.widget,function(data){
+              FlashMessage.setMessage(data);
+              if(data.success){
+               $scope.loadWidgets();
+               $scope.template = "/src/app/widget/list.html";
+              }
+         });
+     }
+    }
+
+
+    $scope.updateTitle = function(title){
+
+         return  Report.update({report_id:$scope.report.id},{title:title,action:'update-title'});
+    }
+
+
+
+
+    $scope.updateOrder = function(idsInOrder){
+
+       return  Report.update({report_id:$scope.report.id},{widget_ids:idsInOrder,action:'update-widget-orders'},function(data){
+            FlashMessage.setMessage(data);
+       });
+    }
+
+    $scope.deleteWidget = function(widget_id){
+
+       return  Widget.delete({widget_id:widget_id},function(data){
+            $scope.widgets = _.filter($scope.widgets,function(widget){
+                    return !(widget.id==widget_id);
+            })
+           FlashMessage.setMessage(data);
+
+       });
+    }
+
+
+
+    $scope.cancel = function(){
+        $scope.template = "/src/app/widget/list.html";
+    }
+
+    $scope.delete = function(report_id){
+          Report.delete({report_id:report_id},function(data){
+              $scope.reports = _.filter($scope.reports,function(report){
+                  return !(report.id==report_id);
+              })
+
+              $location.path("/reports");
+              FlashMessage.setMessage(data);
+              $scope.$emit("report_deleted");
+
+          });
+    }
+
+
+});
+
+JimmyDashboard.controller("UpgradeCtrl",function($scope, $rootScope,$http,$resource,$location,$routeParams,GeneralInfo,PackageList,FlashMessage){
+    $scope.packages    = PackageList.query();
+    $scope.step = 1;
+    $scope.checkout = {};
+    $scope.msg  = '';
+    $scope.bg = '';
+    $scope.msg_header = '';
+    $scope.countries = $resource("/src/app/countries.json").query();
+    $scope.saveDisabled = false;
+
+    $scope.bg   = ['bg-blue','bg-orange','bg-green','bg-blue','bg-orange','bg-green','bg-blue','bg-orange','bg-green','bg-blue','bg-orange','bg-green','bg-blue','bg-orange','bg-green','bg-blue','bg-orange','bg-green']
+
+    $scope.selectPackage = function(pack){
+        $scope.package_selected = pack;
+        $scope.checkout.package = pack.id;
+    }
+
+    $scope.doCheckout = function(){
+     $scope.step = 2;
+     $scope.checkout.email = $rootScope.generalInfo.current_user.email;
+    }
+
+    $scope.doCancel = function(){
+     $scope.step = 1;
+     $scope.package_selected = null;
+    }
+
+    $scope.doContinue = function(){
+     $scope.step = 3;
+     if($("#billing-form").parsley( 'validate' ))
+        $("#checkout h3").click();
+    }
+
+    $scope.doPay = function(){
+      $scope.step = 4;
+
+        if($("#cc-form").parsley( 'validate' )){
+            $scope.saveDisabled = true;
+            $("#do-pay").text("Processing...");
+            $resource('/upgrade').save($scope.checkout,function(data){
+                $("#do-pay").text("Make Payment");
+                $scope.saveDisabled = false;
+                FlashMessage.setMessage(data);
+
+                if(data.success==true){
+                    $rootScope.generalInfo = GeneralInfo.query();
+                    $location.path('#/');
+                }
+            });
+        }
+
+    }
+});
+
+
+
+
+JimmyDashboard.directive("renderForm",['$timeout',function(timer){
+    return {
+
+        link:function(scope,elem,attrs,ctrl){
+            var render = function(){
+                if(widgetHtml){
+                    elem.html(widgetHtml.html);
+                }
+            }
+
+            timer(render,0);
+        }
+    }
+}])
+
+JimmyDashboard.directive("renderChart",function($rootScope,$timeout){
+    return {
+
+        link:function($scope,elem,attrs,ctrl){
+
+
+
+                $rootScope.$watch("templates_used_perc",function(){
+                   if(!angular.isDefined($(elem).data('easyPieChart'))){
+                     $(elem).easyPieChart({
+                         barColor: function(percent) {
+                              percent /= 100;
+                              return "rgb(" + Math.round(254 * (1-percent)) + ", " + Math.round(255 * percent) + ", 0)";
+                          },
+                          animate: 1000,
+                          scaleColor: '#ccc',
+                          lineWidth: 3,
+                          size: 50,
+                          lineCap: 'cap',
+                          onStep: function() {
+                              this.$el.find('span').text(~~$rootScope.templates_used_perc);
+                          }
+                      });
+                  } else {
+                   $(elem).data('easyPieChart').update($rootScope.templates_used_perc);
+                  }
+                });
+
+
+        }
+    }
+
+})
+
+
+JimmyDashboard.directive("reportWizard",function($resource){
+ return {
+        link: function($scope, element, attrs) {
+            var wiz = $(element).smartWizard({
+              onLeaveStep:leaveAStepCallback,
+              onFinish:finishCallback,
+              transitionEffect: 'slide'
+            });
+
+            var cancel =  angular.element('<a href="javascript:;" class="btn medium bg-gray float-left" ng-click="cancel()"><span class="glyph-icon icon-separator"><i class="glyph-icon icon-remove"></i></span><span class="button-content">Cancel</span></a>');
+            angular.element(".actionBar").prepend(cancel);
+
+
+
+            cancel.click(function(){
+              $scope.cancel();
+            });
+
+            $scope.$on('widget_selected',function(){
+                wiz.smartWizard('goToStep',3);
+            })
+
+
+            function leaveAStepCallback(obj, context){
+
+                return validateSteps(context.fromStep); // return false to stay on step and true to continue navigation
+            }
+
+            function finishCallback(obj, context){
+
+               if($('#report_form').parsley( 'validate' )){
+                  angular.element(".actionBar").find(".buttonFinish").addClass("disabled");
+                  angular.element(".actionBar").find(".buttonFinish").val("Saving...");
+                  $scope.save();
+               }
+
+            }
+
+            function validateSteps(stepnumber){
+                var isStepValid = true;
+
+                if(stepnumber == 1){
+
+                    if($('#client-select').parsley( 'validate' )){
+                        return $("input[name='client-accounts']").parsley( 'validate' );
+                    } else                         return $("input[name='client-accounts']").parsley( 'validate' );
+
+
+                } else if(stepnumber==2){
+
+                      $("input[name='type']").parsley( 'validate' );
+
+                     if($('#widget_graph').prop('checked')){
+                        $("#report_type_error").html('');
+                        return $("input[name='metric_type']").parsley( 'validate' );
+                     } else if($('#widget_table').prop('checked')){
+                        $("#metric_type_error").html('');
+                        return  $("input[name='report_type']").parsley( 'validate' ) ||  $("input[name='metric_type']").parsley( 'validate' );
+                     }  else {
+                       return $("input[name='type']").parsley( 'validate' );
+                     }
+                }
+
+                return true;
+            }
+
+
+        }
+    }
+});
+
+JimmyDashboard.directive("deviceCheckboxList",function(){
+    return {
+
+         link:function($scope,element,attrs){
+
+            element.on('click',function(){
+                var  index = $scope.report.widget.device_type.indexOf($scope.device.id);
+
+                if($scope.device.id==1){
+                    $("input[name='deviceTypes[]']:not(:first)").prop('checked', false);
+                    $scope.report.widget.device_type = [1];
+                } else {
+                    $("input[name='deviceTypes[]']").first().prop('checked', false);
+                    var i = $scope.report.widget.device_type.indexOf(1);
+
+                    if(i!=-1)
+                      $scope.report.widget.device_type.splice(i,1);
+
+                    if($(element).is(":checked")){
+                        $scope.report.widget.device_type.push($scope.device.id)
+                    } else {
+                        $scope.report.widget.device_type.splice(index,1);
+                    }
+                }
+
+                $scope.$apply();
+
+            })
+         }
+
+    }
+});
+
+
+JimmyDashboard.directive("dateSelect",function(){
+  return {
+        link: function($scope, element, attrs) {
+            $(element).chosen()
+            .on('change', function() {
+                    if($(element).chosen().val()==13){
+                       $("#"+attrs.dateSelect).removeClass('ng-hide');
+                    } else {
+                       $("#"+attrs.dateSelect).addClass('ng-hide');
+                    }
+            });
+        }
+    }
+})
+
+
+JimmyDashboard.directive("dateSelectCompare",function(){
+  return {
+        link: function($scope, element, attrs) {
+            $(element).chosen();
+
+            $(element).on('change', function() {
+
+                if($(element).val()==1){
+                // $("#"+attrs.dateSelectCompare).show();
+                 $("#"+attrs.dateSelectCompare).removeClass('ng-hide');
+                }
+                else {
+                 //$("#"+attrs.dateSelectCompare).hide();
+                 $("#"+attrs.dateSelectCompare).addClass('ng-hide');
+                }
+
+            });
+
+        }
+    }
+})
+
+JimmyDashboard.directive("datePicker",function(){
+
+    return {
+        require: '?ngModel',
+        link:function($scope,element,attrs,ngModel){
+           var format  = 'yy-mm-dd';
+           var minDate = attrs['minDate'];
+           var maxDate = attrs['maxDate'];
+
+           var dp= $(element).datepicker({
+                  changeMonth: true,
+                  numberOfMonths: 1,
+                  dateFormat:format,
+                  maxDate: maxDate,
+                  minDate:minDate,
+            });
+
+
+             $(element).on('change',function(val){
+                ngModel.$setViewValue($(element).val());
+             });
+        }
+    }
+
+})
+
+
+JimmyDashboard.directive("timePicker",function(){
+
+    return {
+        require: '?ngModel',
+        link:function($scope,element,attrs,ngModel){
+
+           var dp= $(element).timepicker({showMeridian:false,minuteStep:60,showInputs:false});
+
+             $(element).on('change',function(val){
+                ngModel.$setViewValue($(element).val());
+             });
+        }
+    }
+
+})
+
+
+
+
+JimmyDashboard.directive("widgetButton",function(){
+  return {
+        link: function($scope, element, attrs) {
+            $(".buttonNext").addClass("disabled");
+
+             element.on('click', function() {
+                $("a.widget").removeClass("bg-blue-alt");
+                element.next("input").attr("checked","checked");
+                $scope.report.widget_type = attrs.widgetButton;
+                element.addClass("bg-blue-alt");
+                $(".buttonNext").removeClass("disabled");
+            });
+
+        }
+    }
+})
+
+JimmyDashboard.directive("compareFields",function(){
+  return {
+        link: function($scope, element, attrs) {
+            element.on('click', function() {
+
+                $scope.report.compare = $(element).is(":checked");
+                if($(element).is(":checked")){
+                    $("."+attrs.compareFields).show();
+                } else {
+                    $("."+attrs.compareFields).hide();
+                }
+            });
+
+        }
+    }
+})
+
+
+
+JimmyDashboard.directive('jimmyChart',function($location){
+ return {
+        require: '?ngModel',
+
+        link: function($scope, element, attrs,ngModel){
+
+           // var data = attrs['jimmyChart'];
+            var key  = attrs['key'];
+
+            $scope.$watch("widgets[" + key + "].chartData", function(){
+                 var opts =  {"dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
+                              "tickFormatX": function (x) { return d3.time.format('%d')(x); }
+                             };
+
+
+                if(angular.isDefined($scope.widgets[key].chartData))  {
+
+
+
+                    $(element).html('');
+                    $scope.widgets[key].chartData.element = element[0];
+                    if(angular.isDefined($scope.widgets[key].graph_type) &&  $scope.widgets[key].graph_type=='bar')
+                      Morris.Bar($scope.widgets[key].chartData);
+                    else
+                      Morris.Line($scope.widgets[key].chartData);
+
+                }
+
+            });
+        }
+    }
+
+});
+
+
+
+JimmyDashboard.directive('kpiSparkline',function($location){
+
+  return {
+    link:function($scope, element, attrs){
+           var data = attrs['data'];
+          $(element).sparkline(JSON.parse(data), {
+               type: 'bar',
+               height: '53',
+               barWidth: 5,
+               barSpacing: 2,
+               zeroAxis: false,
+               barColor: '#ccc',
+               negBarColor: '#ddd',
+               zeroColor: '#ccc',
+               stackedBarColor: ['#5bccf6','#ffebeb']
+          });
+
+    }
+  }
+})
+
+
+
+
+JimmyDashboard.directive('addClientDialog',function($q,$rootScope,$location,$timeout,$interval,AppAuth,ClientAccounts){
+
+ return {
+        require: '?ngModel',
+        scope:false,
+        link: function($scope, element, attrs,ngModel){
+             var timer = null;
+             var client_dialog=null;
+
+             var width  = attrs['dialogWidth'];
+             var height = attrs['dialogHeight'];
+
+            if(!angular.isDefined(width) || width =="")
+                width = 500;
+
+            if(!angular.isDefined(height) || height =="")
+                height = 300;
+
+            $scope.$on('client_source_added',function(data){
+              if(client_dialog) client_dialog.dialog('destroy');
+            })
+
+
+            $scope.$on('client_saved',function(data,args){
+
+               $( "#add-client" ).find('#sourceSelect').hide();
+               $( "#add-client").find('#sourceForm').hide();
+               $( "#add-client").find('#show-upload').show();
+            })
+
+
+              var DialogCtrlScope  = null;
+              var authWin = null;
+
+              /*
+              var unregister = $scope.$watch("auths",function(newval,oldval){
+                  console.log(newval+" " + oldval);
+                  console.log(newval!=oldval);
+                  if($scope.auth && oldval){
+                     var q = ClientAccounts.query(function(data){
+
+                        if(data.length>0){
+                          DialogCtrlScope.client_accounts = data;
+                          DialogCtrlScope.client_accounts.loaded = true;
+                        }
+                      })
+
+                    unregister();
+                  }
+
+               })
+              */
+
+            var checkAuth = function(){
+                    if(angular.isDefined(authWin.authorized)){
+                        $scope.auth = authWin.authorized;
+
+                        if(authWin.authorized){
+
+                          authWin.close();
+                          $interval.cancel(timer);
+                          timer = null;
+
+                          DialogCtrlScope.authorized  = authWin.authorized;
+                          DialogCtrlScope.authorized  = false;
+
+                          $( "#"+attrs['addClientDialog'] ).find('#sourceSelect').hide();
+                          $( "#"+attrs['addClientDialog'] ).find('#sourceForm').show();
+
+
+                        } else {
+                           DialogCtrlScope.authorized  = authWin.authorized;
+                           DialogCtrlScope.error       = true;
+                           authWin.close();
+                        }
+                    }
+
+            }
+
+            $( element).click(function() {
+
+               client_dialog = $( "#"+attrs['addClientDialog'] ).dialog({
+                    modal: true,
+                    minWidth: width,
+                    minHeight: height,
+                    resizable:false,
+                    dialogClass: "modal-dialog",
+                    show: "fadeIn" ,
+                    close: function(event, ui)
+                    {
+                         client_dialog.dialog('destroy');
+
+                    }
+              });
+
+              DialogCtrlScope = angular.element($( "#"+attrs['addClientDialog'])).scope();
+
+              DialogCtrlScope.show_upload = false;
+              DialogCtrlScope.authorized  = false;
+
+             $( "#"+attrs['addClientDialog'] ).find('#sourceSelect').show();
+             $( "#"+attrs['addClientDialog'] ).find('#sourceForm').hide();
+             $( "#"+attrs['addClientDialog'] ).find('#show-upload').hide();
+
+
+
+              $('.ui-widget-overlay').addClass('bg-black opacity-60');
+
+              $( "#"+attrs['addClientDialog'] ).find("a#skip").click(function(){
+                client_dialog.dialog('destroy');
+
+              })
+
+              $( "#"+attrs['addClientDialog'] ).find("a#done").click(function(){
+                client_dialog.dialog('destroy');
+
+              })
+
+
+              $( "#"+attrs['addClientDialog'] ).find("button#done").click(function(){
+                client_dialog.dialog('destroy');
+
+              })
+
+
+              $( "#"+attrs['addClientDialog'] ).find("a.channel").click(function(){
+                var left  = ($(window).width()/2)-(900/2);
+                var top   = ($(window).height()/2)-(600/2);
+
+                DialogCtrlScope.client.channel = $(this).attr("id");
+
+                authWin = window.open('/authapp/'+$(this).attr("id")+"/addclient", 'window name', 'width=600,height=600,top=' + top + ', left=' + left);
+                authWin.focus();
+
+
+                var timer = null;
+
+
+                $scope.auth                 = false;
+                DialogCtrlScope.error       = false;
+                DialogCtrlScope.error_msg   = null;
+
+                timer = $interval(function(e){
+                    if(angular.isDefined(authWin.authorized)){
+                        if(authWin.authorized){
+                          $scope.auth   = true;
+                          authWin.close();
+                          $interval.cancel(timer);
+                          timer = null;
+
+                          DialogCtrlScope.authorized  = authWin.authorized;
+                          DialogCtrlScope.authorized  = false;
+
+                          ClientAccounts.query(function(data){
+                            DialogCtrlScope.client_accounts = data;
+                            DialogCtrlScope.client_accounts.loaded = true;
+                          })
+
+                          $( "#"+attrs['addClientDialog'] ).find('#sourceSelect').hide();
+                          $( "#"+attrs['addClientDialog'] ).find('#sourceForm').show();
+
+                         } else {
+
+                          console.log(authWin.authorized);
+
+                           $interval.cancel(timer);
+                           timer = null;
+                           authWin.close();
+                           DialogCtrlScope.authorized  = authWin.authorized;
+                           DialogCtrlScope.error       = true;
+                           DialogCtrlScope.error_msg   = authWin.error_msg;
+                        }
+                    }
+
+               }, 1000);
+
+
+              })
+
+            });
+
+
+        }
+    }
+
+});
+
+
+JimmyDashboard.directive('addCoworkerDialog',function($location){
+ return {
+        require: '?ngModel',
+
+        link: function($scope, element, attrs,ngModel){
+
+             $scope.authorized   = false;
+             $scope.saveDisabled = false;
+
+             var width = attrs['dialogWidth'];
+             var height = attrs['dialogHeight'];
+
+             if(!angular.isDefined(width) || width =="")
+                width = 500;
+
+             if(!angular.isDefined(height) || height =="")
+                height = 300;
+
+
+            $scope.$on('coworker_saved',function(data){
+                $( "#"+ attrs['addCoworkerDialog']   ).dialog('destroy');
+            })
+
+            $( element).click(function() {
+
+              $( "#"+attrs['addCoworkerDialog'] ).dialog({
+                modal: true,
+                minWidth: width,
+                minHeight: height,
+                resizable:false,
+                dialogClass: "modal-dialog",
+                show: "fadeIn"
+              });
+
+              $('.ui-widget-overlay').addClass('bg-black opacity-60');
+
+
+            });
+
+
+        }
+    }
+
+});
+JimmyDashboard.directive('sidebarMenu',function($q,$location,$timeout,$rootScope,$http){
+    return {
+        restrict: 'EA',
+        scope:false,
+        templateUrl:'/src/app/dashboard/sidebar-menu.html',
+        link: function($scope, element, attrs,ngModel){
+
+            $rootScope.$watch("generalInfo.current_user",function(){
+                if(angular.isDefined($rootScope.generalInfo.current_user)){
+                    if($rootScope.generalInfo.current_user.type == 'agency'){
+                        $scope.menu = [{title:'Dashboard',route:'#/',icon:'icon-dashboard'},
+                                       {title:'Clients',route:'#/clients',icon:'icon-users',color:'font-orange'},
+                                       {title:'Reports',icon:'icon-bar-chart-o',color:'font-blue',children:[{title:'All',route:'#/reports',icon:'icon-chevron-right'},
+                                                                  {title:'Shared With Me',route:'#/reports/shared',icon:'icon-chevron-right'}]},
+                                       {title:'Co-worker',route:'#/coworker',icon:'icon-smile-o',color:'font-green'}];
+                    } else if($rootScope.generalInfo.current_user.type == 'coworker'){
+                        $scope.menu = [{title:'Dashboard',route:'#/',icon:'icon-dashboard'},
+                                       {title:'Clients',route:'#/clients',icon:'icon-users',color:'font-orange'},
+                                       {title:'Reports',icon:'icon-bar-chart-o',color:'font-blue',children:[{title:'All',route:'#/reports',icon:'icon-chevron-right'},
+                                                                  {title:'Shared With Me',route:'#/reports/shared',icon:'icon-chevron-right'}]}];
+                    } else if($rootScope.generalInfo.current_user.type == 'user'){
+                        $scope.menu = [{title:'Dashboard',route:'#/',icon:'icon-dashboard'}];
+
+                    }
+                }
+
+                $timeout(function () {
+                  $('#sidebar-menu li').click(function(){
+                            if($(this).is('.active')) {
+                              $(this).removeClass('active');
+                              $('ul', this).slideUp();
+                            } else {
+                              $('#sidebar-menu li ul').slideUp();
+                              $('ul', this).slideDown();
+                              $('#sidebar-menu li').removeClass('active');
+                              $(this).addClass('active');
+                            }
+
+                    });
+                 });
+
+            })
+
+
+        }
+    }
+
+});
+
+JimmyDashboard.directive('reportMenu',function($q,$timeout,$location,$http,Report,FlashMessage){
+ var downloads = 0;
+ var q;
+ return {
+        restrict: 'E',
+        replace:true,
+        templateUrl:'/src/app/report/menu.html',
+        link: function($scope, element, attrs,ngModel){
+
+
+          $timeout(function() {
+
+              $(element).find('a.clone').click(function(){
+                var   CloneCtrlScope = angular.element($( "#clone-report")).scope();
+
+                  $scope.$apply(function(){
+                    CloneCtrlScope.report       = $scope.report;
+                  })
+
+
+                 var clone_dialog =  $( "#clone-report").dialog({
+                      modal: true,
+                      minWidth: 400,
+                      minHeight: 200,
+                      resizable:false,
+                      dialogClass: "modal-dialog",
+                      show: "fadeIn" ,
+                      close: function(event, ui)
+                      {
+                          $(this).dialog('destroy');
+                      }
+                   });
+
+                  CloneCtrlScope.$on('report_cloned',function(){
+                    clone_dialog.dialog('destroy');
+                  })
+
+
+                  $("#clone-report").find("#report_title").val('');
+
+                  $ ('.ui-widget-overlay').addClass('bg-black opacity-60');
+
+                  $( "#clone-report").find( "#done-cancel").click(function(){
+                      clone_dialog.dialog('destroy');
+                  })
+
+              });
+
+              $(element).find('a.share').click(function(){
+                 var   ShareCtrlScope = angular.element($( "#share-report")).scope();
+
+                  ShareCtrlScope.report       = $scope.report;
+                  ShareCtrlScope.sharing_list = Report.getShared({report_id:$scope.report.id});
+
+                 var share_dialog =  $( "#share-report").dialog({
+                      modal: true,
+                      minWidth: 400,
+                      minHeight: 200,
+                      resizable:false,
+                      dialogClass: "modal-dialog",
+                      show: "fadeIn" ,
+                      close: function(event, ui)
+                      {
+                          $(this).dialog('destroy');
+                      }
+                   });
+                  $("#share-report").find("#email").val('');
+
+                  $ ('.ui-widget-overlay').addClass('bg-black opacity-60');
+
+                  $( "#share-report").find("#done-share").click(function(){
+                      share_dialog.dialog('destroy');
+                  })
+              });
+
+              $(element).find('a.schedule').click(function(){
+                 var   ScheduleCtrlScope = angular.element($( "#schedule-report")).scope();
+
+                  ScheduleCtrlScope.report      = $scope.report;
+                  ScheduleCtrlScope.scheduled_list = Report.getScheduled({report_id:$scope.report.id});
+
+                 var schedule_dialog =  $( "#schedule-report").dialog({
+                      modal: true,
+                      minWidth: 700,
+                      minHeight: 200,
+                      resizable:false,
+                      dialogClass: "modal-dialog",
+                      show: "fadeIn" ,
+                      close: function(event, ui)
+                      {
+                          $(this).dialog('destroy');
+                      }
+                   });
+
+                  $("#schedule-report").find("#email").val('');
+
+                  $ ('.ui-widget-overlay').addClass('bg-black opacity-60');
+
+                  $( "#schedule-report").find("#done-share").click(function(){
+                      schedule_dialog.dialog('destroy');
+                  })
+
+              });
+
+               q  = $q.defer();
+
+
+              $(element).find('a.download').click(function(){
+                  $scope.$parent.report = $scope.report;
+                  var iframe = $("#download-report");
+                  var ProgressBarScope = angular.element("#progress-bar").scope();
+
+                    downloads = downloads+1;
+
+                    if(downloads>1){
+                       ProgressBarScope.stop({message:'Download Cancelled'});
+                       q.resolve(); // resolve previous promise
+                       q = $q.defer(); // create a new one
+                       ProgressBarScope.start({message:'Downloading Report ( ' + $scope.$parent.report.title+ " )"});
+                     } else
+                       ProgressBarScope.start({message:'Downloading Report ( ' +  $scope.$parent.report.title+ " )"});
+
+
+
+                    $http({
+                        url: '/reports/download/' + $scope.$parent.report.id,
+                        method: "GET",
+                        timeout:q.promise
+                    }).
+                    success(function(data, status, headers, config) {
+                        FlashMessage.setMessage(data);
+
+                        if(data.success){
+                          iframe.attr('src',data.file);
+                          downloads = 0;
+                          ProgressBarScope.complete({message:'Download Complete'});
+                        } else {
+                          ProgressBarScope.stop({message:'Download Cancelled'});
+                        }
+                    }).
+                    error(function(data, status, headers, config) {
+                      downloads = 0;
+                      FlashMessage.setMessage({message:'Download Cancelled',success:false});
+                    });
+
+
+              });
+
+              $(element).find('a.delete').click(function(){
+                  $scope.delete($scope.report.id);
+              });
+
+          },0);
+        }
+    }
+
+});
+
+
+JimmyDashboard.directive('reportButton',function($q,$timeout,$location,$http){
+
+ return {
+        restrict: 'EA',
+        replace:true,
+        templateUrl:'/src/app/report/button.html',
+        link: function($scope, element, attrs,ngModel){
+
+
+        }
+    }
+
+});
+
+
+JimmyDashboard.directive('widgetMenu',function($location,$timeout,$http,Report){
+ return {
+        restrict: 'E',
+        replace:true,
+        templateUrl:'/src/app/widget/menu.html',
+        link: function($scope, element, attrs,ngModel){
+
+
+
+          $scope.$watch('metricsoptions.date_ranges', function(oldval,newval) {
+           // console.log(oldval)
+            $timeout(function(){
+              //console.log($(element));
+             // console.log($(element).find("a.date_range_selector"));
+
+             $(element).find("a.date_range_selector").click(function(a,b){
+                    var date_range_id = $(a.target).attr("date_range_id");
+                    var widget_id     = $(a.target).attr("widget_id");
+                    var key           = $(a.target).attr("key");
+
+                    if(date_range_id==14){
+
+                      var date_selector_dialog =  $( "#custom_date_selector_dialog").dialog({
+                            modal: true,
+                            minWidth: 400,
+                            minHeight: 100,
+                            resizable:false,
+                            dialogClass: "modal-dialog",
+                            show: "fadeIn"
+                        });
+
+
+                        $('.ui-widget-overlay').addClass('bg-black opacity-60');
+
+                        $("#custom_date_selector_dialog").find("a#apply-custom").click(function(){
+
+                          if($("#date_picker").parsley('validate')){
+                            $scope.loadWidget(widget_id,key,{date_range:date_range_id,min:$scope.date_min,max:$scope.date_max});
+                            date_selector_dialog.dialog('destroy');
+                          }
+
+                        })
+
+                    } else {
+                        $scope.loadWidget(widget_id,key,{date_range:date_range_id});
+                    }
+                })
+            },10);
+          }) ;
+        /*
+                    $timeout(function(){
+                      $(element).find("a").tooltip({ container: 'body'});
+                    })
+        */
+        }
+    }
+
+});
+
+JimmyDashboard.directive('cloneReportDialog',function($location){
+ return {
+        restrict: 'E',
+        replace:true,
+        templateUrl:'/src/app/report/clone.html',
+        link: function($scope, element, attrs,ngModel){
+
+
+            $("."+attrs['bindTo']).click(function(data) {
+
+                $scope.$parent.report = $scope.report;
+
+                $( "#clone-report").dialog({
+                    modal: true,
+                    minWidth: 400,
+                    minHeight: 200,
+                    resizable:false,
+                    dialogClass: "modal-dialog",
+                    show: "fadeIn"
+                });
+
+                $('.ui-widget-overlay').addClass('bg-black opacity-60');
+
+
+            });
+
+
+        }
+    }
+
+});
+
+
+
+JimmyDashboard.directive('fileUpload', ['$location', function($location) {
+    return {
+        link: function($scope, element, attrs) {
+            var callback = attrs['finishCallback'];
+            var myDropzone = new Dropzone(element[0], { url: attrs['action']});
+
+                 myDropzone.on('complete',function(data){
+                    $scope[callback](data);
+                 })
+
+        }
+    }
+}]);
+
+JimmyDashboard.directive('clickLink', ['$location', function($location) {
+    return {
+        link: function(scope, element, attrs) {
+            element.on('click', function() {
+                scope.$apply(function() {
+                    $location.path(attrs.clickLink);
+                });
+            });
+        }
+    }
+}]);
+
+JimmyDashboard.filter('sprintf', function() {
+    function parse(str) {
+        var args = [].slice.call(arguments, 1);
+            i = 0;
+
+        return str.replace(/%s/g, function() {
+            return args[i++];
+        });
+    }
+
+    return function(str) {
+
+        return parse(str, arguments[1][0], arguments[1][1]);
+    };
+});
+
+
+JimmyDashboard.directive("compareCalc",function(){
+
+return {
+    link: function(scope, element, attrs) {
+        var v  = attrs['value'].replace(/[\,\%]/,"");
+        var v1 = attrs['compareValue'].replace(/[\,\%]/,"");
+
+         var val = Math.round(((v-v1)/v1)*100,2);// + '%';
+         if(isNaN(val)) {
+           val ='n/a <i class="glyph-icon icon-long-arrow-up font-gray-dark" style="visibility:hidden"></i>';
+         } else if(val=='Infinity'){
+           val ='n/a <i class="glyph-icon icon-long-arrow-up font-gray-dark" style="visibility:hidden"></i>';
+         } else if(val>=0){
+           val+='% <i class="glyph-icon icon-long-arrow-up font-gray-dark"></i>';
+         } else {
+           val =  val.toString().replace(/-/,"");
+
+           val+='% <i class="glyph-icon icon-long-arrow-down font-gray-dark"></i>';
+         }
+
+
+         element.addClass('font-gray-dark');
+
+         element.html(val);
+         // $(element).accordion();
+        }
+    }
+});
+
+JimmyDashboard.directive("accordion",function(){
+ return {
+    link: function(scope, element, attrs) {
+
+          $(element).accordion();
+        }
+    }
+});
+
+JimmyDashboard.directive("reauthLink",function($rootScope){
+ return {
+    link: function($scope, element, attrs) {
+          var client_account_id = attrs["reauthLink"]
+
+          if($scope.generalInfo.current_user.type=='agency'){
+             $(element).append(' Please click the re-authorization icon on the right <a href="javascript:;" class="btn medium reauth"><i class="glyph-icon icon-refresh font-red"></i></a> ');
+
+             $(element).find('.reauth').click(function(){;
+                    $scope.reauthorizeAccess(client_account_id,true);
+             })
+           }
+        }
+    }
+});
+
+
+
+JimmyDashboard.directive("customSort", function() {
+return {
+    restrict: 'A',
+    transclude: true,
+    scope: {
+      order: '=',
+      sort: '='
+    },
+    template :
+      ' <a ng-click="sort_by(order)" style="color: #555555;">'+
+      '    <span ng-transclude></span>'+
+      '    <i ng-class="selectedCls(order)"></i>'+
+      '</a>',
+    link: function(scope) {
+     //scope.sort = {sortingOrder : 'campaign',reverse : true };
+    // change sorting order
+    scope.sort_by = function(newSortingOrder) {
+        var sort = scope.sort;
+
+        if (sort.sortingOrder == newSortingOrder){
+            sort.reverse = !sort.reverse;
+        }
+
+        sort.sortingOrder = newSortingOrder;
+        scope.$parent.search();
+    };
+
+
+    scope.selectedCls = function(column) {
+        if(!angular.isDefined(scope.sort)) return;
+
+        if(column == scope.sort.sortingOrder){
+            return ('glyph-icon icon-chevron-' + ((scope.sort.reverse) ? 'down' : 'up'));
+        } else{
+            return 'glyph-icon  icon-sort'
+        }
+
+
+
+    };
+  }// end link
+}
+});
+
+
+
+
+JimmyDashboard.directive("paginate", function($filter) {
+return {
+    restrict: 'EA',
+    transclude: true,
+    scope:false,
+    template :
+      '  <div  class="col-md-12" style="height:30px" ng-show="pagedItems.length>1">'+
+      '        <div class="button-group mrg0A float-right">'+
+      '            <span class="label" >Showing Page {{currentPage+1}} of {{totalPages}}</span>'+
+      '            <a href="javascript:;" class="btn small ui-state-default" ng-class="{disabled: currentPage == 0}" ng-click="prevPage()">'+
+      '                <i class="glyph-icon icon-chevron-left"></i>'+
+      '            </a>'+
+      '            <a href="javascript:;" class="btn small ui-state-default" ng-repeat="n in range(pagedItems.length, currentPage, currentPage+gap ) "'+
+      '                ng-class="{active: n == currentPage}"'+
+      '                ng-click="setPage()" ng-bind="n + 1">'+
+      '            </a>'+
+      '            <a href="javascript:;" class="btn small ui-state-default" ng-class="{disabled: (currentPage) == pagedItems.length - 1}" ng-click="nextPage()">'+
+      '                <i class="glyph-icon icon-chevron-right"></i>'+
+      '            </a>'+
+      '        </div>'+
+      '    </div>',
+    link: function($scope,element,attrs) {
+        var source = attrs['source'];
+
+        $scope.filteredItems = [];
+        $scope.groupedItems  = [];
+
+        $scope.itemsPerPage  = 10;
+
+        if(attrs['perPage'])
+          $scope.itemsPerPage  = parseInt(attrs['perPage']);
+
+        $scope.pagedItems    = [];
+        $scope.currentPage   = 0;
+        $scope.gap           = 5;
+
+
+        $scope.sort = {sortingOrder : 'id',reverse : true };
+
+        if(attrs["sortingOrder"])
+          $scope.sort.sortingOrder  = attrs["sortingOrder"];
+
+        if(attrs["reverse"])
+          $scope.sort.reverse  = attrs["reverse"];
+
+
+        $scope.$watchCollection(source, function(oldval,newval) {
+
+           if(angular.isDefined(oldval) && oldval && oldval.length){
+            $scope.source = oldval;
+            $scope.search();
+           }
+
+        });
+
+
+        var searchMatch = function (haystack, needle) {
+            if (!needle) {
+                return true;
+            }
+
+            if(haystack!=null)
+              return haystack.toString().toLowerCase().indexOf(needle.toLowerCase()) !== -1;
+
+        };
+
+        // init the filtered items
+        $scope.search = function () {
+
+            $scope.filteredItems = $filter('filter')($scope.source, function (item) {
+                for(var attr in item) {
+                  //console.log(attr);
+                    if (searchMatch(item[attr], $scope.query))
+                        return true;
+                }
+                return false;
+            });
+
+            // take care of the sorting order
+            if ($scope.sort.sortingOrder !== '') {
+                  $scope.filteredItems = $filter('orderBy')($scope.filteredItems, $scope.sort.sortingOrder, $scope.sort.reverse);
+            }
+
+            $scope.currentPage = 0;
+            // now group by pages
+            groupToPages();
+        };
+
+        // calculate page in place
+        var groupToPages = function () {
+            $scope.pagedItems = [];
+            for (var i = 0; i < $scope.filteredItems.length; i++) {
+                if (i % $scope.itemsPerPage === 0) {
+                    $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [ $scope.filteredItems[i] ];
+                } else {
+                    $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
+                }
+            }
+        };
+
+        $scope.range = function (size,start, end) {
+            var ret = [];
+
+
+
+            if (size < end) {
+                end   = size;
+
+                if(size && $scope.gap >  size){
+                   $scope.gap =  size - 2;
+
+
+                }
+
+                start = size - $scope.gap;
+            }
+
+            $scope.totalPages = size;
+
+            for (var i = start; i < end; i++) {
+                ret.push(i);
+            }
+
+            return ret;
+        };
+
+        $scope.prevPage = function () {
+            if ($scope.currentPage > 0) {
+                $scope.currentPage--;
+            }
+        };
+
+        $scope.nextPage = function () {
+            if ($scope.currentPage < $scope.pagedItems.length - 1) {
+                $scope.currentPage++;
+            }
+        };
+
+        $scope.setPage = function () {
+            $scope.currentPage = this.n;
+        };
+
+
+    }// end link
+}
+});
+
+
+JimmyDashboard.directive("flashMessage", function(FlashMessage,$timeout) {
+    return {
+        restrict: 'E',
+        link: function($scope) {
+
+            $scope.$watch('flashMessage.message', function() {
+                if($scope.flashMessage.message.length > 0){
+                      var msg = '<i class="glyph-icon icon-bullhorn font-size-12"></i> ' + '<b>'+FlashMessage.getHeaderMessage()+ '</b> <br/>'+FlashMessage.getMessage();
+                      $.jGrowl( msg, {
+                         sticky: false,
+                         position: 'bottom-right',
+                         theme: FlashMessage.getBg()
+                       });
+                }
+
+            });
+      }
+    }
+});
+
+JimmyDashboard.directive("loadingSpinner",function(FlashMessage,$timeout){
+return {
+        restrict: 'EA',
+        scope:false,
+        template:'<i class="glyph-icon icon-spinner icon-spin icon-large font-gray ng-hide" ng-if="start"></i> <small class="font-gray">{{loadingText}}</small>',
+        link: function($scope,element,attrs) {
+          $scope.lading_start = true;
+          $scope.loadingText  = attrs["text"];
+          //$(document).loadingbar();
+
+        }
+      }
+})
+
+
+
+JimmyDashboard.directive("progressBar", function(FlashMessage,$timeout) {
+    return {
+        restrict: 'EA',
+        templateUrl:'/src/app/dashboard/progressbar.html',
+        link: function($scope,element) {
+            var prgBar = $(element).find('.progressbar');
+            var timeout,timeout1,timeout2,timeout3;
+
+            $scope.updateProgress = function(){
+             timeout1 =  $timeout($scope.updateProgress,200);
+                var perc    = Math.ceil(Math.random()*100);
+
+                if(perc > $scope.perc && perc < 90 )
+                   $scope.perc = Math.ceil(perc);
+                else if($scope.loadComplete)
+                   $scope.perc = 100;
+                else
+                   return;
+
+
+                var progressBarWidth = perc * element.width() / 100;
+                prgBar.find('.progressbar-value').animate({ width: progressBarWidth }, 1000);
+
+            }
+
+            $scope.start = function(data){
+              $scope.$apply(function(){
+                $(element).show();
+                $scope.message = '';
+                $scope.perc    = '';
+
+                prgBar.prop('data-value',0)
+                $scope.message = data.message;
+                $scope.perc = 0;
+
+                timeout =  $timeout(function(){
+                    $scope.updateProgress();
+                    $timeout.cancel(timeout);
+                },200);
+
+              })
+
+            }
+
+            $scope.complete = function(data){
+              $scope.perc    = 100;
+              $scope.message = data.message;
+              $timeout.cancel(timeout1);
+              prgBar.find('.progressbar-value').animate({ width: 98.5 * element.width() / 100 }, 1000);
+
+              timeout2 =  $timeout(function(){
+                      $scope.message = '';
+                      $scope.perc    = '';
+                      prgBar.prop('data-value',0)
+                      prgBar.find('.progressbar-value').animate({ width: 0 * element.width() / 100 }, 1000);
+                      $(element).hide();
+                      $timeout.cancel(timeout2);
+              },1000)
+
+            }
+
+
+            $scope.stop = function(data){
+              $scope.perc    = 0;
+              $scope.message = data.message;
+              prgBar.find('.progressbar-value').animate({ width: 0 * element.width() / 100 }, 1000);
+              $timeout.cancel(timeout1);
+              $(element).hide();
+            }
+
+        }
+    }
+});
+
+
+JimmyDashboard.directive("ckEditor", function(FlashMessage,$timeout) {
+    return {
+        require: '?ngModel',
+        link: function($scope,element,attrs,ngModel) {
+            //var ck  = $(element).ckeditor();
+            var ck = CKEDITOR.replace(element[0]);
+
+            if (!ngModel) return;
+
+            if(attrs["ckHeight"]){
+               ck.config.height = attrs["ckHeight"];
+            }
+
+            if(attrs["ckWidth"]){
+               ck.config.width = attrs["ckWidth"];
+            }
+
+            ck.on('instanceReady', function() {
+             if(ngModel.$viewValue)
+              ck.setData(ngModel.$viewValue);
+            });
+
+            function updateModel() {
+                $scope.$apply(function() {
+                    ngModel.$setViewValue(ck.getData());
+                });
+            }
+
+            function updateModelDataReady() {
+                $scope.$apply(function() {
+                  if(ck.getData())
+                    ngModel.$setViewValue(ck.getData());
+                });
+            }
+
+            ck.on('change', updateModel);
+            ck.on('key', updateModel);
+            ck.on('dataReady', updateModelDataReady);
+
+            ngModel.$render = function(value) {
+
+              //ck.setData(ngModel.$viewValue);
+            };
+        }
+    }
+});
+
+JimmyDashboard.directive("sortable", function(FlashMessage,$timeout) {
+    return {
+        link: function($scope,element,attrs,ngModel) {
+               var sortable =  $( element ).sortable();
+
+                sortable.on('sortupdate',function(){
+                  var idsInOrder = sortable.sortable("toArray");
+                   $scope.$parent.updateOrder(idsInOrder);
+                })
+
+        }
+    }
+});
+
+
+
+JimmyDashboard.filter('to_trusted', ['$sce', function($sce){
+        return function(text) {
+            return $sce.trustAsHtml(text);
+        };
+}]);
+
+
+JimmyDashboard.filter('naturalSort', ['$sce','naturalService',function($sce,naturalService){
+        return function(data,sort_by,sort_order) {
+          var sortedItems = [];
+          angular.forEach(data,function(value,key){
+            data[key][sort_by] =naturalService.naturalValue(value[sort_by]);
+          })
+          return data;
+        };
+}]);
+
+
+
+
+JimmyDashboard.directive("showCampaign",function(){
+
+  return{
+    link:function($scope,element,attrs,ngModel){
+        $scope.$parent.$watch('widget.data.args.show_campaign', function() {
+
+
+          if($scope.$parent.widget.show_campaign){
+           $(".data-campaign").show();
+         } else {
+           $(element).find(".data-campaign").hide();
+         }
+        });
+
+    }
+  }
+})
+
+
+JimmyDashboard.directive("saveAnimate",function($timeout){
+
+  return{
+    scope:false,
+    link:function($scope,element,attrs,ngModel){
+         $scope.saveDisabled  = false;
+
+         $(element).click(function(){
+           $scope.saveDisabled = true;
+            var text = null;
+          if($(element).closest("form").parsley().isValid()){
+            text = $(element).find(".button-content").text();
+            $(element).find(".button-content").text(attrs['loadingText'])
+
+            $timeout(function(){
+              $(element).find(".button-content").text(text);
+              $scope.saveDisabled = false;
+            },500);
+
+          } else {
+            $scope.saveDisabled = false;
+          }
+          return true;
+        })
+
+    }
+  }
+})
+
+
+
+
+JimmyDashboard.directive("filter",function($routeParams){
+
+  return{
+    scope:false,
+    link:function($scope,element,attrs,ngModel){
+      $(function() {
+          $(element).find('input')
+            .focus(function() {
+                $(this).stop().animate({width: 200}, 'slow');
+            })
+            .blur(function() {
+                $(this).stop().animate({width: 100}, 'slow');
+            })
+            .keyup(function(){
+              var val = $(this).val();
+                              console.log($ctrlScope);
+                              console.log(angular.element(attrs["filter"]));
+
+              if(attrs["filter"]){
+                var $ctrlScope = angular.element(attrs["filter"]).scope();
+                $ctrlScope.query = val;
+
+                $ctrlScope.$apply(function(){
+                   $ctrlScope.search();
+                })
+              } else {
+
+                $scope.query = val;
+
+                $scope.$apply(function(){
+                   $scope.search();
+
+                });
+              }
+            })
+
+      });
+
+    }
+  }
+})
+
+
+
+JimmyDashboard.directive("niceScroll",function($routeParams){
+
+  return{
+    link:function($scope,element,attrs,ngModel){
+      $(function() {
+
+          $(element).niceScroll({cursorcolor:"#ccc"});
+
+      });
+
+    }
+  }
+})
+
+
+
+
+JimmyDashboard.directive("customTitle",function($routeParams){
+
+  return{
+    link:function($scope,element,attrs,ngModel){
+        var len = attrs["length"];
+
+        if(!len)
+            len = 10;
+
+        if(attrs["customTitle"]){
+          if(attrs["customTitle"].length>len)
+            $(element).html(attrs["customTitle"].substr(0,len)+'...');
+          else
+            $(element).html(attrs["customTitle"]);
+        }
+    }
+  }
+})
+
+
+JimmyDashboard.directive("titleEdit",function($routeParams,FlashMessage){
+
+  return{
+    link:function($scope,element,attrs,ngModel){
+
+        $(element).click(function(){
+          $(element).after('<div class="form-input col-md-12 row" style="padding-left:10px"><input class="'+attrs["titleEdit"]+'_title_edit" placeholder="" class="" type="text" name="title" id="title" data-required="true"></div>');
+          $("#title").val( $(element).html());
+          $(element).hide();
+          $("#title").focus();
+
+          $("#title").blur(function(){
+            $(element).show();
+            $("#title").parent().remove();
+          })
+
+          $("#title").keyup(function(e){
+            if(e.keyCode==13) {
+              if($("#title").val().length<1)
+                return false;
+              var old_title =  $(element).html();
+              $scope.updateTitle($("#title").val()).$promise.then(function(data){
+                FlashMessage.setMessage(data);
+                if(!data.success)   $(element).html(old_title);
+              });
+              $(element).html($("#title").val());
+              $(element).show();
+              $("#title").parent().remove();
+            }
+          })
+
+        })
+
+        $(element).tooltip({ container: 'body'});
+
+    }
+  }
+})
+
+
+JimmyDashboard.directive("tabs",function(){
+
+  return {
+    scope:false,
+    link:function($scope,element){
+       $(function() {
+         $(element).tabs();
+       });
+    }
+  }
+})
+
+
+JimmyDashboard.directive("imageFallback",function(){
+
+  return {
+    link:function($scope,element){
+      $(element).error(function(e){
+          $(element).attr('src', '/images/noimage.jpeg');
+          e.preventDefault();
+          return false;
+      });
+
+    }
+  }
+})
+
+
+
+
+JimmyDashboard.directive('ngCsv', ['$parse', '$q', function ($parse, $q) {
+    return {
+      restrict: 'AC',
+      replace: false,
+      transclude: true,
+      scope: {
+        data:'&ngCsv',
+        filename:'@filename',
+        header: '&csvHeader',
+        txtDelim: '@textDelimiter',
+        fieldSep: '@fieldSeparator',
+        lazyLoad: '@lazyLoad',
+        ngClick: '&'
+      },
+      controller: [
+        '$scope',
+        '$element',
+        '$attrs',
+        '$transclude',
+        function ($scope, $element, $attrs, $transclude) {
+
+          var stringifyCell = function(data) {
+            if (typeof data === 'string') {
+              data = data.replace(/"/g, '"""'); // Escape double qoutes
+              data = data.replace(/\+/gi, '"+"'); // Escape double qoutes
+              data = data.replace(/,/g, ''); // Escape comma
+
+              if ($scope.txtDelim) data = $scope.txtDelim + data + $scope.txtDelim;
+
+              return data;
+            }
+
+            if (typeof data === 'boolean') {
+              return data ? 'TRUE' : 'FALSE';
+            }
+
+            return data;
+          };
+
+          $scope.csv = '';
+
+          if (!angular.isDefined($scope.lazyLoad) || $scope.lazyLoad != "true"){
+            if (angular.isArray($scope.data)){
+              $scope.$watch("data", function (newValue) {
+                $scope.buildCsv($scope.data(), function() { } );
+              }, true);
+            }
+          }
+
+          $scope.buildCsv = function (data, callback)   {
+            var csvContent = "data:text/csv;  charset=utf-8";
+
+            $q.when(data).then(function (responseData){
+
+              // Check if there's a provided header array
+              if (angular.isDefined($attrs.csvHeader))
+              {
+                var header = $scope.header;
+                var encodingArray, headerString;
+
+                if (angular.isArray(header)) {
+                  encodingArray = header;
+                } else  {
+                  encodingArray = [];
+                  angular.forEach(header, function(title, key){
+                    this.push(stringifyCell(title));
+                  }, encodingArray);
+                }
+
+                headerString = encodingArray.join($scope.fieldSep ? $scope.fieldSep : ",");
+
+                csvContent += "\n,"+headerString + "\n";
+              }
+
+              var arrData;
+
+              if (angular.isArray(responseData))
+                arrData = responseData;
+              else
+                arrData = responseData();
+
+
+              angular.forEach(arrData, function(row, index){
+                var dataString, infoArray;
+
+                if (angular.isArray(row)) {
+
+                  infoArray = [];
+
+                  angular.forEach(row, function(field, key){
+                    this.push(stringifyCell(field));
+                  }, infoArray);
+
+                }  else {
+                  infoArray = [];
+
+                  angular.forEach(row, function(field, key)
+                  {
+                    this.push(stringifyCell(field));
+                  }, infoArray);
+                }
+
+                dataString = infoArray.join($scope.fieldSep ? $scope.fieldSep : ",");
+                csvContent += index < arrData.length ? dataString + "\n" : dataString;
+
+
+              });
+
+              $scope.csv = encodeURI(csvContent);
+
+              }).then(function() {
+                callback();
+              });
+
+            };
+
+            $scope.getFilename = function ()
+            {
+              return $scope.filename+'.csv' || 'download.csv';
+            };
+        }
+      ],
+      template:'<div class="element" ng-transclude></div>' +
+        '<a class="hidden-link"  ng-hide="true" download="{{ getFilename() }}"></a>',
+      link: function (scope, element, attrs) {
+
+        var subject = angular.element(element.children()[0]),
+            link    = angular.element(element.children()[1]);
+
+        $(element).tooltip();
+
+        function doClick() {
+          link[0].href = "";
+          link[0].click();
+          link[0].href = scope.csv;
+          link[0].click();
+        }
+
+        subject.bind('click', function (e)
+        {
+          //console.log(scope.data().data);
+           var keys   =  [];
+           var data   =  [];
+           var total =  [];
+           var i = 0;
+
+           angular.forEach(scope.data().data.args.extra_fields, function(field, key){
+             keys[i]      = field[2];
+             total[i]     = ""; // padding
+             i++;
+           })
+
+
+          angular.forEach(scope.data().data.args.fields_raw_data, function(field, key){
+             keys[i]      = field[2];
+             i++;
+          })
+
+          scope.header = keys;
+
+          angular.forEach(scope.data().data.rawData, function(field, key){
+             delete field.$$hashKey;
+             delete field.__proto__;
+
+             data[key]      = field;
+          })
+
+          var len = total.length;
+          angular.forEach(scope.data().data.rawDataTotal, function(field, key){
+            total[len] = field.value;
+            len++;
+          });
+
+          data[data.length] =  total;
+
+          scope.buildCsv(data, function(){
+            doClick();
+          });
+
+          if (!!scope.ngClick) {
+            scope.ngClick();
+          }
+        });
+      }
+    };
+  }]);

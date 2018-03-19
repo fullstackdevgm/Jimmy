@@ -1,0 +1,92 @@
+<div class="hide" id="add-coworker" title="Add Co-worker">
+    <div class="pad10A">
+        <div class="col-md-12">
+            <form action="" id="coworker_form" class="col-md-12 center-margin">
+                <div class="form-row">
+                    <div class="form-label col-md-2">
+                        <label for="">
+                           Name:
+                        </label>
+                    </div>
+                    <div class="form-input col-md-10">
+                        <input data-required="true" placeholder="Co-worker Name" type="text" name="coworker_name" id="coworker_name" ng-model="coworker.name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label col-md-2">
+                        <label for="">
+                            Email:
+                        </label>
+                    </div>
+                    <div class="form-input col-md-10">
+                        <input data-type="email" data-required="true" placeholder="Co-worker Email" type="text" name="coworker_email" id="coworker_email"  ng-model="coworker.email">
+                        <div class="input-description" style="padding-left:0px"><small>( Should be  Gmail  or Google Apps Email )</small></div>
+                    </div>
+                </div>   
+                 <div class="form-row">
+
+                    <div class="form-input col-md-2 float-left">
+                         <button class="btn bg-gray medium"  id="done">
+                            <span class="button-content">Cancel</span>
+                        </button>
+                    </div>
+                    <div class="form-input col-md-2 float-right">
+                         <button class="btn primary-bg medium float-right" ng-click="save()">
+                            <span class="button-content">Save</span>
+                        </button>
+                    </div>
+                </div>       
+                </form>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-11 center-margin">
+    <div class="content-box round-box-details">
+        <h3 class="content-header-box no-margin">
+            <div class="content-header">
+                <div class="glyph-icon icon-separator">
+                    <i class="glyph-icon icon-smile-o font-gray"></i>
+                </div>&nbsp;Co-worker
+
+                <div class="button-group float-right">
+                        <a style="cursor:pointer"  add-coworker-dialog="add-coworker" dialog-width="500" dialog-height="200" class="btn small bg-red">
+                            <span class="button-content"><i class="glyph-icon icon-plus left mrg5R"></i>ADD COWORKER</span>
+                        </a>
+                </div>
+				
+				
+            </div>
+        </h3>
+        <div class="content-box-wrapper no-padding">
+            <table  class="table no-margin" id="clients" style="clear:both;" my-table="clients" style="float:left">
+                <!--<thead>
+                    <tr>
+                       <th>Name</th>
+                       <th>Email</th>
+                       <th>Added</th>
+                       <th>&nbsp;</th>
+                    </tr>
+                </thead> -->
+                <tbody>
+                    <tr ng-repeat="coworker in coworkers | orderBy:'id'">
+                        <td class="borderR"><span class="font-gray-dark">{{coworker.name}} ( <small>{{coworker.email}}</small> ) </span></td>
+                        <td class="borderR"><span class="font-gray-dark">{{coworker.created}}</span></td>
+                        <td class="text-right hidden-mobile">
+                             <a href="javascript:;" class="font-red" title="" ng-click="delete(coworker.user_id)">
+                                <i class="glyph-icon icon-remove mrg5R font-size-12"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr ng-if="coworkers.length<1">
+                        <td style="padding:10px 0px">
+                            <div class="infobox font-green">
+                                <p><i class="glyph-icon icon-bullhorn "></i> <b>No Coworkers !</b> Add coworker using the <b>Add Coworker</b> button.</p>
+                            </div>
+                        </td>
+                   </tr>
+                 </tbody>
+            </table> 
+        </div>
+    </div>
+</div>

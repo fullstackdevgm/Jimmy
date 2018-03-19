@@ -1,0 +1,34 @@
+<div class="dropdown">
+    <button ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"
+        id ="share-report-btn" title="" class="report-btn bg-red">
+                <i class="fa fa-share-alt"></i> 
+                Share Dashboard             
+    </button>
+    <button title=""  id = "report-download-btn" class="report-btn  bg-yellow">
+            
+                <i class="glyph-icon icon-download mrg5R"></i>
+                Download
+             
+    </button>
+    
+    <button class="report-btn bg-green" title="Add Widget" ng-click="newNote()" 
+            ng-if="generalInfo.current_user.type!='user' &&  report.shared_with_me!=true">
+            <i class="glyph-icon icon-plus left mrg5R"></i> Add Note
+    </button>
+<!--
+    <a class="btn small bg-graydark" title="Add Widget" ng-href="#/report/{{report.id}}/widget/new" ng-if="generalInfo.current_user.type!='user' &&  report.shared_with_me!=true">
+
+        <span class="button-content">
+            <i class="glyph-icon icon-plus left mrg5R"></i> Add Widget
+        </span>
+    </a>
+    
+    
+    <a class="btn small bg-red" title="Add Widget"    ng-href="#/report/new" ng-if="generalInfo.current_user.type!='user' &&  report.shared_with_me!=true">
+
+        <span class="button-content">
+            <i class="glyph-icon icon-plus left mrg5R"></i> New Report
+        </span>
+    </a>
+-->
+    </div>

@@ -1,0 +1,41 @@
+<div class="col-md-5">
+                <div class="content-box border-top border-blue mrg25B">
+                    <h3 class="content-header">
+                        <div class="glyph-icon icon-separator">
+                            <i class="glyph-icon icon-bar-chart-o font-blue"></i>
+                        </div>&nbsp; Latest Reports
+                    
+                    <div class="button-group float-right" >
+                        <a href="#/report/new-report" class="btn small bg-blue" title="Add Report">
+                            <span class="glyph-icon icon-separator">
+                                <i class="glyph-icon icon-edit"></i>
+                            </span>
+                            <span class="button-content">
+                                New Report
+                            </span>
+                        </a>
+
+                    </div></h3>
+                    <div class="content-box-wrapper"><p>&nbsp;</p>
+                        <div class="divider"></div>
+                        <p>
+
+                             <table  class="table" id="clients" style="clear:both;" my-table style="float:left">
+                                <tbody>
+                                    <tr ng-repeat="report in recentReports | filter:search | orderBy:'created'">
+                                        <td width="67%">
+                                            <span><a ng-href="#/report/{{report.id}}" class="font-blue"><b>{{report.title}}</b><small style="font-size:10px"><i>  on {{report.created_on}} by {{report.created_by.name}}</i></small></a></span>
+                                        </td>
+                                        <td><span class="font-gray-dark" style="font-size:11px"><a ng-href="#/clients/{{report.client.id}}/reports">{{report.client.name}}</span></a></td>
+                                        <td class="text-right hidden-mobile">
+                                        <report-menu></report-menu>
+
+                                    </td>
+                                    </tr>
+                                 </tbody>
+                                </table> 
+
+                        </p>
+                    </div>
+                </div>
+            </div>

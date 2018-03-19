@@ -1,0 +1,32 @@
+<div class="content-box bg-white">
+    <h3 class="content-box-header ui-state-default">
+        <div class="glyph-icon icon-separator remove-bg">
+            <i class="glyph-icon icon-comments"></i>
+        </div>
+        <span>Select the source</span>
+       
+    </h3>
+    <div class="content-box-wrapper">
+        <div class="scrollable-content scrollable-small" tabindex="5005" style="overflow: hidden; outline: none;">
+            <ul class="todo-box todo-sort" ng-repeat="source in clientSources | filter:search | orderBy:'id'">
+                <li class="border-red">
+                    <input type="radio"  class="{{source.channel}} source-account" value="{{source.id}}"  data-channel="{{source.channel}}"  name="client-accounts" > 
+                    <label for="sec-todo-1">{{source.name}}</label>
+                    <span class="label bg-gray" title="">{{source.account_id}}</span>
+                </li>
+                
+            </ul>
+            <br>
+                <a href="javascript:;" class="btn medium primary-bg" ng-click="loadForm()">
+                    <span class="button-content">
+                        Continue
+                    </span>
+                </a>
+
+                <a href="#" class="btn medium ui-state-default" title="">
+                    <span class="button-content">Cancel</span>
+                </a>
+        </div>
+    </div>
+</div>
+

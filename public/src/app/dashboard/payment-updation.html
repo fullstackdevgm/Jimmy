@@ -1,0 +1,93 @@
+<div ng-if="isAgency()">
+	<div ng-if="migrationRequired" class="row">
+	    <div class="alert alert-info" style="overflow: auto;">
+	    	<div class="col-md-1">
+	    		<i class="fa fa-5x fa-exclamation-triangle"></i>
+	    	</div>
+	    	<div class="col-md-11" ng-if="migrate">
+		        <p>We have migrated to Braintree Payments for handling secure credit card payments.</p>
+		        <p>Migrating to Braintree Payments will help us serve you better by bringing you many more points for making payments that too completely secure.</p>
+		        <p>You <b>will not be charged</b> for this migration process.</p>
+	    	</div>
+				<div class="col-md-11" ng-if="trialExpired">
+		        <p>Your trial expired.</p>
+		        <p>Please add a credit card to upgrade from your trial package.</p>
+                        <p>An upgrade costs just $5 per month per report. As cheap as a cup of coffee.</p>
+                        <p>You <b>will be charged ${{(billingReportsCount * generalInfo.unlimited_package.price)}}</b> for {{billingReportsCount}} report(s) you have already created.</p>
+	    	</div>
+				<div class="col-md-11" ng-if="inactiveSubscription">
+		        <p>We are not able to charge you on the card <b>{{creditCard.number}}</b> anymore.</p>
+		        <p>Please update your credit card info to continue using JimmyData.</p>
+		        <p>You <b>will be charged for all the pending cycles</b> after the update.</p>
+	    	</div>
+	    </div>
+	</div>
+    <!--
+   <div class="col-md-2" style="background: #e8e8e8;">
+    
+      <div class="card" style="margin-left:15px; height: 500px;">
+        <div class="price">
+          <div class="text">$</div>
+          <div class="amount">{{billingReportsCount * generalInfo.unlimited_package.price}}</div>
+          <div class="text">/month</div>
+        </div>
+        <div class="seperator">&nbsp;</div>
+        <div class="row">
+          <div class="col-md-9">Rate per report</div><div class="col-md-3 amount">${{toInt(generalInfo.unlimited_package.price)}}</div>
+        </div>
+        <div class="row">
+         <div class="col-md-9">Number of reports</div><div class="col-md-3 amount">{{billingReportsCount}}</div> 
+        </div>
+        <div class="seperator">&nbsp;</div>
+        <div class="row">
+          <div class="col-md-9">Sub total</div><div class="col-md-3 amount">${{billingReportsCount * generalInfo.unlimited_package.price}}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-9">Tax</div><div class="col-md-3 amount">&nbsp;&nbsp;$0.00</div>
+        </div>
+        <div class="seperator">&nbsp;</div>
+        <div class="row">
+          <div class="col-md-9">Total</div><div class="col-md-3 amount">${{(billingReportsCount * generalInfo.unlimited_package.price)}}</div>
+        </div>
+      </div>
+
+  </div>
+ -->
+	<div class="col-md-12" style="background: white; border-radius: 5px;">
+		<div class="col-md-6"><h3>Update your payment details</h3></div>
+		<div class="form-input col-md-5" style="text-align: right">
+		    <a href="https://www.braintreegateway.com/merchants/tff7jk8jfc5hb8gy/verified" target="_blank" style="margin-top:-2px;">
+		      <img src="https://s3.amazonaws.com/braintree-badges/braintree-badge-wide-light.png" style="outline: none !important;" width="280px" height ="44px" border="0"/>
+		    </a>
+
+		</div>
+		<div class="clearfix"></div>
+		<hr/>
+		<div class="clearfix" style="margin-bottom: 20px;"></div>
+		<ng-include src="'src/app/dashboard/cc-recurring.html'" ></ng-include>
+	</div>
+</div>
+<div ng-if="isCoworker()">
+	<div ng-if="migrationRequired" class="row">
+	    <div class="alert alert-info" style="overflow: auto;">
+	    	<div class="col-md-1">
+	    		<i class="fa fa-5x fa-exclamation-triangle"></i>
+	    	</div>
+				<div class="col-md-11" ng-if="migrate">
+		        <p>We have migrated to Braintree Payments for handling secure credit card payments.</p>
+		        <p>Migrating to Braintree Payments will help us serve you better by bringing you many more points for making payments that too completely secure.</p>
+		        <p>Please <b>ask your parent account</b> to <b>update credit card infromation</b> in order to continue using JimmyData.</p>
+	    	</div>
+				<div class="col-md-11" ng-if="trialExpired">
+		        <p>Your trial expired.</p>
+		        <p>Please add a credit card to upgrade from your trial package.</p>
+		        <p>Please <b>ask your parent account</b> to <b>update credit card infromation</b> in order to continue using JimmyData.</p>
+	    	</div>
+				<div class="col-md-11" ng-if="inactiveSubscription">
+		        <p>We are not able to charge you on the card <b>{{creditCard.number}}</b> anymore.</p>
+		        <p>Please update your credit card info to continue using JimmyData.</p>
+		        <p>Please <b>ask your parent account</b> to <b>update credit card infromation</b> in order to continue using JimmyData.</p>
+	    	</div>
+	    </div>
+	</div>
+</div>

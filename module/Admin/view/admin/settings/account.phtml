@@ -1,0 +1,14 @@
+
+<i class="icon-info-sign"></i><h3>Account Info</h3>  
+  
+<dl class="dl-horizontal">
+        <dt>Name</dt>
+        <dd> <?php echo $this->HasAdminUserIdentity()->getName();?></dd>
+        
+        <dt>Email</dt>
+        <dd> <?php echo $this->HasAdminUserIdentity()->getEmail();?></dd>
+</dl>
+<div class="btn-group">      
+ <button class="btn"  id="change">Edit Account</button>
+ <button class="btn"  id="changePwd">Change Password</button>
+</div>

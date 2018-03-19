@@ -1,0 +1,22 @@
+<div class="row-fluid">
+   
+   <p>
+   	<h4>Dear, <?php if(isset($rawUserData['firstname'])) echo $rawUserData['firstname'].' '.$rawUserData['lastname']; else echo $user->getName();?></h4></p>      
+    <p>
+     Your payment to Jimmydata has failed  on <?php echo date('d/m/Y'); ?>
+    </p>
+    <p>
+        Reasons for Failure: <?php echo $paymentResponse->comment; ?> 
+    </p>
+    <p>
+       <strong>Total</strong>: $<?php echo $paymentResponse->amount; ?> <?php echo $currency;?><br />
+    </p>
+    
+    <p>
+    	You may review your invoice history at any time by logging in to your account.
+    </p>
+    
+    <p>
+    	Note: Please contact the administrator or update your payment details by logging in to your account to avoid the account deactivation.
+	</p>
+</div>

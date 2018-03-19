@@ -1,0 +1,25 @@
+
+    <div id="custom_date_selector_dialog" class="hide" style="padding:10px" title="Select Date" custom-date-selector>
+
+        <form action="" id="date_picker" class="col-md-12 center-margin">
+            <div class="form-row">
+                    <div class="form-label col-md-2"><label>From</label></div>
+                    <div class="form-input col-md-4">
+                        <input type="text" id="min" name="min" date-picker  data-required="true" ng-model="date_min"/>
+                    </div> 
+                    <div class="form-label col-md-2"><label>To</label></div>
+                    <div class="form-input col-md-4">
+                        <input type="text" id="max" name="max" date-picker  data-required="true" ng-model="date_max"/>
+                    </div> 
+            </div>  
+            <div class="form-row"> 
+                <div class="form-input col-md-2"></div>
+                <div class="form-input col-md-6 float-right">
+                    <a class="btn medium primary-bg" title="" ng-click="applyCustom()">
+                        <span class="button-content">Apply</span>
+                    </a>
+                </div> 
+            </div>    
+        </form>
+
+    </div>

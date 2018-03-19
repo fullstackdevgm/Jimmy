@@ -1,0 +1,74 @@
+
+ <div class="hide" id="clientMigrate" 
+      title="Migrate Client"       
+      ng-controller="ClientMigrateCtrl">
+     <div class="loading-gif"><img src="/images/loading_orange.gif" height=100><br>Mapping Clients to the source...</div>
+            <div class="pad10A">
+               
+                <div id="sourceType">
+                  <form id="migrateForm" novalidate>
+                        <div class="row">                       
+                                <div class="form-label col-md-12">
+                                    <label for="migrateSourceName">Enter Source Name</label>
+                                </div>
+                                <div class="form-input col-md-12">
+                                    <input type="text" required id="migrateSourceName">
+                                </div>
+                        </div> 
+                        <div class="row">
+                        <div class="form-label col-md-12">
+                            <label>Select A Channel</label>
+                        </div>
+                        <div class="form-input col-md-4">
+                           <button type="submit" class="btn btn-success sourceItem col-md-4" data="googleadwords">  
+                               <img src="/images/googleadwords-icon.png">   Google Adwords
+                           </button>
+                        </div>
+                        <div class="form-input col-md-4">
+                           <button type="submit" class="btn btn-success sourceItem" data="googleanalytics">  
+                               <img src="/images/googleanalytics-icon.png">      Google Analytics
+                           </button>
+                        </div>
+                        <div class="form-input col-md-4">
+                           <button type="submit" class="btn btn-success sourceItem" data="bingngads">  
+                                  <img src="/images/bingads-icon.png">     Bing                               
+                           </button>
+                         </div>
+                        </div>
+                    </form>
+                 
+              
+                    <div class="row">
+                        <div class="messageBox danger" id="migrateError">
+                          <strong><i class="fa fa-exclamation-triangle"></i></strong>   {{errorMessage}}
+                        </div>
+                        <div class="messageBox warning " id="migrateMessage">
+                           <strong><i class="fa fa-exclamation-triangle"></i></strong> {{clientsAddMessage}}
+                        </div>
+                        <div class="messageBox success" id="migrateSuccessMessage">
+                            <strong><i class="fa fa-trophy"></i></strong> {{clientsSuccessMessage}}
+                        </div>
+                    </div>
+                    
+                    <div class="row sourceList scrollable">
+                        <div class="col-md-12"><h4>These client accounts need source migration</h4></div>
+                        
+                        <div ng-repeat="client in unmappedClientList" class="col-md-4">                   
+                                <img src="/images/{{client.channel}}-icon.png" width="15">
+                                    {{client.name}}                          
+                        </div>                    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-9"><a href="https://jimmydata.com/blog/authentication-migration/" target="_blank">Need Help <i class="fa fa-question-circle"></i> </a></div>
+                        <div class="col-md-3">
+                         <button id="migrationDone" class="bg-red pull-right btn-done-migrate ">Migration Done</button>
+                        </div>
+                    </div>
+                    </div> 
+                </div> 
+       
+               
+      
+
+               
+ </div>

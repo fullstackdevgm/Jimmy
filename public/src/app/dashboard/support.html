@@ -1,0 +1,58 @@
+<div class="hide clearfix" id="support" title="Please fill up the form below" ng-controller="SupportCtrl">
+	
+	<div class="col-md-12 pad20A">
+
+        <form action="" id="support_form" class="col-md-12 center-margin">
+
+            <div class="form-row">
+                <div class="form-label col-md-4">
+                    <label for="">
+                        Support Type:
+                    </label>
+                </div>
+                <div class="form-input col-md-12">
+                    <select data-required="true"  name="support_type" ng-model="support.type" ng-options="st.id as st.name for st in support_types" id="support_type" class="chosen-select"  chosen-select="support_types" >
+                        <option value="">Support Type</option>
+                    </select>
+    			</div>
+            </div>
+            
+
+            <div class="form-row">
+                <div class="form-label col-md-4">
+                    <label for="">
+                        Subject:
+                    </label>
+                </div>
+                <div class="form-input col-md-12">
+                    <input placeholder="Subject" data-required="true" type="text" name="client_name" id="client_name"  ng-model="support.subject">
+                </div>
+            </div>   
+           <div class="form-row">
+                <div class="form-label col-md-4">
+                    <label for="">
+                        Issue:
+                    </label>
+                </div>
+                <div class="form-input col-md-12">
+                    <textarea placeholder="Issue" data-required="true" type="text" name="issue" id="issue" ng-model="support.issue"  rows="7"></textarea>
+                </div>
+            </div>   
+           
+            <div class="form-row">
+                
+                <div class="form-input col-md-4">
+                     <button class="btn bg-gray medium"  id="done">
+                        <span class="button-content">Done</span>
+                    </button>
+                </div>
+				<div class="form-input col-md-3 float-right ">
+                     <button class="btn primary-bg medium float-right" ng-click="submit()">
+                        <span class="button-content">Submit</span>
+                    </button>
+                </div>
+
+            </div>       
+            </form>
+    </div>
+ </div>   

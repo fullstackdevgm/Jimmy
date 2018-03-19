@@ -1,0 +1,12 @@
+<div class="row-fluid">
+   
+   <p>Hi, <h3><?php echo $client->getName()?></h3></p>            
+   
+   <p>
+    <?php echo $agency->getName();?>  has  added  you as a client in <a href="http://app.jimmydata.com">JimmyData</a>    
+   </p>
+   <p>
+   		Your Login Details are:- <p style="padding:20px">User - <?php echo $client->getEmail();?><br /> Password - <?php echo $password_raw;?></p>
+   </p>
+
+</div>

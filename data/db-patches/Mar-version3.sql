@@ -1,0 +1,1 @@
+ ALTER TABLE `braintree_payment` CHANGE `created` `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 

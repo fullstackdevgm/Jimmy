@@ -1,0 +1,72 @@
+
+<!-- LATEST REPORTS -->
+<div class="col-md-11 center-margin">
+
+    <ng-if ng-show="error_msg">
+        <div class="col-md-5  center-margin">
+            <div class="infobox error-bg mrg0A center-margin" >
+                <p style="text-align:center">{{error_msg}}</p>
+            </div>
+        </div>
+    </ng-if>
+
+    <div class="col-md-11 center-margin" ng-show="!error_msg">
+		<div class="content-box round-box-details">
+			<h3 class="content-header-box no-margin">
+				<div class="content-header">
+					<div class="glyph-icon icon-separator">
+						<i class="glyph-icon icon-bar-chart-o font-gray"></i>
+					</div>&nbsp;Reports  {{client.name}}
+
+					<div class="button-group float-right">
+							<a href="#/report/new-report" class="btn small bg-red" title="Add Report">
+								<span class="button-content"><i class="glyph-icon icon-plus left mrg5R"></i>ADD REPORT</span>
+							</a>
+					</div>
+
+				</div>
+			</h3>
+
+			<div class="content-box-wrapper">
+
+						<table  class="table" id="reports" style="clear:both;"  style="float:left" ng-if="pagedItems.length">
+							<thead>
+								<tr>
+								   <th custom-sort order="'title'"        sort="sort">Name</th>
+								   <th ng-if="client.name==null" custom-sort order="'client.name'" sort="sort" style="text-align: left">Client</th>
+								   <th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="report in pagedItems[currentPage] | orderBy:sort.sortingOrder:sort.reverse">
+										<td>
+	          							 <a ng-href="#/report/{{report.id}}" title="{{report.title}}" ><span custom-title="{{report.title}}" length=50 ></span></a>
+	          						   	 <small style="font-size:10px" class="font-gray-dark"><i>on {{report.created_on}} </i></small>
+			                             <small class="font-gray">
+			                                  <i class="glyph-icon icon-calendar mrg5R" ng-if="report.scheduled" title="This report has been scheduled"></i>
+			                                  <i class="glyph-icon icon-share mrg5R"    ng-if="report.shared"    title="This report has been shared"></i>
+			                              </small>
+			                            </td>
+										<td ng-if="client.name==null"><span class="font-gray-dark" title="{{report.client.name}}"  custom-title="{{report.client.name}}" length=50></span></td>
+										<td class="text-right hidden-mobile" style="position:relative;" >
+	                                    	<report-dashboard-menu></report-dashboard-menu>
+										</td>
+								</tr>
+							 </tbody>
+						</table>
+						<div class="infobox font-blue" ng-if="reports.length<1">
+							<p><i class="glyph-icon icon-bullhorn"></i> <b>No Reports !</b> Create reports using the <b>New Report</b> button.</p>
+						</div>
+						<paginate source='reports'  per-page='5' filter-key='name,client.name' sorting-order="created" reverse="true"></paginate>
+
+			</div>
+		</div>
+    </div>
+</div>
+
+<!-- Clone Report Template -->
+<ng-include src="'src/app/report/clone.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/share.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/schedule.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/download.html'"   ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+

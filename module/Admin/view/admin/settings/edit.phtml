@@ -1,0 +1,40 @@
+
+        <form class="form-horizontal" method="post" name="admin_account_form" id="admin_account_form" >  
+        		 <input type='hidden'  name="id" value="<?php echo $this->HasAdminUserIdentity()->getId();?>"/>
+        		 <input type='hidden'    name="type" value="client"/>
+                 <fieldset>  
+				  <legend>Account</legend>  
+                  
+                  <div class="control-group">  
+                    <label class="control-label" for="name">Name</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="name" name="name" value="<?php echo $this->HasAdminUserIdentity()->getName();?>" > 
+                    </div>  
+                  </div>  
+                 
+               <!--  <div class="control-group">  
+                    <label class="control-label" for="name">Display Name</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="display_name" name="display_name" value="<?php echo $this->HasAdminUserIdentity()->getDisplayName();?>" > 
+                    </div>  
+                  </div>  
+                  -->
+                  
+                  <div class="control-group">  
+                    <label class="control-label" for="email" name='email'>Email</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" name="email" id="email"    value="<?php echo $this->HasAdminUserIdentity()->getEmail();?>"> 
+                    </div>  
+                  </div>  	
+                  
+                  
+                  
+                  <div class="form-actions">  
+                    <button type="button" class="btn btn-primary" id="save">Save changes</button>  
+                    <button  type="button" class="btn" id="cancel">Cancel</button>  
+                  </div>  
+         
+                </fieldset>  
+        </form>  
+                   
+ 

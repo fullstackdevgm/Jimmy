@@ -1,0 +1,186 @@
+<div class="col-md-8 center-margin" ng-include src="'/src/app/report/report-limit-warning.html'"></div>
+<div ng-if="can_create">
+    <div class="new-report-wrapper white-bg">
+        <div class="pad20A">
+          <h4 class="form-title">Create New Report</h4>
+          <hr/>
+        </div>
+        
+        <form action ='' class="form-vertical" id ="createNewReportForm" novalidate>
+          <div class="pad20A" style="padding-top: 0px !important;">
+            <div class="form-group">
+                    <label for="reportName" >Name<span class="required">*</span></label>
+                <div class=" form-input row">
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" name="reportName" required id="reportName" placeholder="Name your Report" ng-model="report.title" autofocus ng-blur="checkClientSelected()">
+                    </div>                
+                </div>               
+            </div>
+            <div class="form-group">
+                <label for="client-select">Client<span class="required">*</span></label>                
+                <div class="form-input row">
+                  <div class="form-input">
+                    <div class="col-md-10">
+                      
+                      <select                                     
+                              required
+                              name='client-select'
+                              ng-model="report.user_id" 
+                              ng-change="loadClientSources()"
+                              ng-options="c.id as c.name for c in clientsList" 
+                              id="client-select" chosen-select="clientsList" 
+                              watch-resource="clientsList.loaded">
+
+                          <option value="">Select a client</option>
+                      </select>
+
+                    </div>
+                    
+                  </div>                       
+
+                  <div class="col-md-1" ng-if="showClientSourceLoading">
+                    <img src="/images/loading_orange.gif" width="15" style="margin-top:10px;">
+                  </div>
+
+                </div>
+
+                <div class="form-input row pull-right">
+                  <div class="col-md-2 col-md-offset-8">  
+                      <div class="form-input ">
+                        <button add-client-dialog="add-client" id="new-client-btn" class="minimal rounded bg-grey pull-right no-border secondary">
+                          <i class="fa fa-plus"></i>&nbsp;&nbsp;New Client                                           
+                        </button>
+                      </div>                           
+                  </div>
+                </div>
+            </div>
+
+          </div>
+
+          <div class="light-grey-block pad20A" ng-show="showTemplateOptions" style="border-top: 1px solid #e3e5e6; border-bottom: 1px solid #e3e5e6;" ng-show="showTemplateOptions">
+              
+            <h5 class="form-title-2nd">Template Options</h5>
+            <div class="templateListBox row">
+              <div class="loading-gif pad20A" style=" max-width:70%; height: 190px; margin:0 auto; padding-top: 22px; display:block"><img src="/images/loading_orange.gif" height=70><br>Loading client list...</div> 
+              <div class="col-md-5" ng-repeat="template in templates" ng-if="template.type=='jimmy'">
+                <button class="minimal bg-grey rounded btn-block jimmy-template" ng-class="{active: template.isSelected}" ng-click="selectTemplate(template)">{{template.templateName}}</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-input row">
+                <div class="form-input">
+                  <div class="col-md-10">
+                    <select class="minimal bg-grey templateSelect user-template-select" ng-model="template.selected" ng-change="selectTemplate(template.selected)" ng-class="{active: template.selected.type=='user'}" ng-options=" template.templateName  for template in templates | filter:{type:'user'} track by template.id" style="width:100%">
+                      <option value="">Select from user templates</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="clear"></div>
+            <div class="widgets-available" ng-if="template.selected">
+              <h5 class="form-title-2nd">Widget Options</h5>
+              <div class="white-block" ng-repeat="widget in template.selected.widgets">
+                <div class="row mid-aligned">
+                  
+                  <div ng-if="widget.channel" class="col-md-1"><img src="/images/{{widget.channel}}-icon.png"></div>
+                  <div ng-if="!widget.channel" class="col-md-1"> <span class="glyphicon glyphicon-paste" ></span></div>
+                  <div class="col-md-4">{{widget.title}}</div> <div class="col-md-5">Source<span class="required">*</span></div>
+                </div>
+
+                <div class="row mid-aligned">
+                  <div class="col-md-5">Type: {{widget.type}}</div>
+                  <div class="col-md-5" ng-if ="widget.channel=='googleadwords' && adwordsChannel"> 
+                      
+                      <select class="minimal bg-white col-md-12" ng-model="widgetSource[widget.id]" ng-change="selectWidgetSource(t.id, widget.id)" required ng-options="t.name for t in adwordsChannel track by t.id">
+                          <option value="">Select a source</option>
+                      </select>
+                  
+                  </div>                               
+                  <div class="col-md-5 warning " ng-if ="widget.channel=='googleadwords' && adwordsChannel==''"> 
+                       <strong><i class="fa fa-exclamation-triangle"></i></strong>No google adwords source available for this report.                                 
+                  </div>
+                  <div class="col-md-5" ng-if ="widget.channel=='googleanalytics' && analyticsChannel"> 
+
+                      <select class="minimal bg-white col-md-12" ng-model="widgetSource[widget.id]" ng-change="selectWidgetSource(t.id, widget.id)" required ng-options=" t.name for t in analyticsChannel track by t.id">
+                          <option value="">Select a source</option>
+                      </select>
+                  </div>
+                   <div class="col-md-5 form-input warning " ng-if ="widget.channel=='googleanalytics' && analyticsChannel==''"> 
+                       <strong><i class="fa fa-exclamation-triangle"></i></strong>No Google analytics source available for this report.                                 
+                  </div>
+                  <div class="col-md-5 form-input" ng-if ="widget.channel=='bingads' && bingChannel"> 
+
+                      <select class="minimal bg-white col-md-12" ng-model="widgetSource[widget.id]" ng-change="selectWidgetSource(t.id, widget.id)" required ng-options=" t.name for t in bingChannel track by t.id">
+                          <option value="">Select a source</option>
+                      </select>
+                  </div>
+                  <div class="col-md-5 form-input warning " ng-if ="widget.channel=='bingads' && bingChannel==''"> 
+                       <strong><i class="fa fa-exclamation-triangle"></i></strong>No bing source available for this report.                                 
+                  </div>
+                </div>
+                <div class="form-group col-md-10 pad0A" ng-if="widget.channel=='googleadwords' && adwordsChannel && widgetSource[widget.id]">
+                      <label for="">Campaigns:</label>
+                      <div class="form-input">                                          
+                          <select  ng-model="campaign[widget.id]" ng-options="c.id as c.name for c in widgetSource[widget.id].campaign_list"
+                              multiple ng-multiple="true"  class="chosen-select" chosen-select ="{{widget.id}}"
+                              required watch-resource="widgetSource[widget.id]">
+                              <option value="">Select campaigns</option>
+                          </select>                                          
+                      </div>                      
+                </div>
+                   <div class="form-group col-md-10 pad0A" ng-if="widget.channel=='googleadwords' && adwordsChannel && widgetSource[widget.id]">
+                     <button ng-click="copy(widget.id, widget.channel)" class="minimal rounded bg-grey pull-right secondary">
+                            <i class="fa fa-clipboard"></i>&nbsp;&nbsp;Copy to all widgets                                          
+                      </button>
+                   </div>
+                <div class="form-group" ng-if="widget.channel=='googleanalytics' && analyticsChannel && widgetSource[widget.id]">
+                     <div class="">
+                         <label for="">
+                             Profile:
+                         </label>
+                     </div>
+                     <div class="form-input row">
+                      <div class="form-input">
+                         <div class="col-md-10">
+                             <select  ng-model="profile[widget.id]" ng-options="p.id as p.name for p in  widgetSource[widget.id].profile_list"
+                                  required class="chosen-select"  chosen-select="{{widget.id}}"
+                                  watch-resource="widgetSource[widget.id]" ng-selected="logIt()" >
+                                 <option value="">Select profile</option>
+                             </select>
+                         </div>
+                       </div>
+                       <div class="form-group col-md-10 pad0A">
+                        <button ng-click="copy(widget.id, widget.channel)" class="minimal rounded bg-grey pull-right secondary">
+                              <i class="fa fa-clipboard"></i>&nbsp;&nbsp;Copy to all widgets                                          
+                        </button>
+                    </div>
+                     </div>
+                </div>                                   
+              </div>
+            </div>
+          </div>
+          <div class="pad20A" ng-if="!!generalInfo.current_user.credit_card && generalInfo.package.id == 14">
+            <div class="row">
+              <div class="alert alert-info col-md-10">
+                <p>When you add or remove reports, your monthly fee will be recalculated accordingly.</p>
+              </div>
+            </div>
+          </div>
+          <div class="pad20A">
+            <div class="row">
+              <div class="col-md-3 pull-left">
+                <button class="minimal bg-orange" ng-disabled="!templateOptionsAvailability" ng-if="!showTemplateOptions" ng-click="toggleTemplateOptions()">Use a Template</button>
+                <button class="minimal bg-grey" ng-disabled="!templateOptionsAvailability" ng-if="showTemplateOptions" ng-click="toggleTemplateOptions()">Cancel Template</button>
+              </div>
+              <div class="col-md-4 col-md-offset-3">
+                <button type="button"  class="minimal bg-blue btn-block" ng-disabled="!templateOptionsAvailability" ng-click="generateReport()">Customise Report From Scratch</button>
+              </div>
+
+            </div>
+          </div>
+
+        </form>
+    </div>
+</div>
+<ng-include src="'/src/app/client/add.html'" ></ng-include>

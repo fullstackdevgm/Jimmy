@@ -1,0 +1,30 @@
+
+
+        <form class="form-horizontal" method="post" name="admin_change_pwd" id="admin_change_pwd" >  
+        		 <input type='hidden'  name="id" value="<?php echo $this->HasAdminUserIdentity()->getId();?>"/>
+                 <fieldset>  
+				  <legend>Change Password</legend>  
+                 
+                  <div class="control-group">  
+                    <label class="control-label" for="adwords_client_id">New Password</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="pwd" name="password" value="" > 
+                    </div>  
+                  </div> 
+                   
+                  <div class="control-group">  
+                    <label class="control-label" for="adwords_client_id">Re-enter Password</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="re-pwd" name="re-password" value="" > 
+                    </div>  
+                  </div>  
+                  
+                  <div class="form-actions">  
+                    <button  type="button" class="btn btn-primary" id="savePwd">Save</button>  
+                    <button  type="button" class="btn" id="cancelChangePwd">Cancel</button>  
+                  </div>  
+         
+                </fieldset>  
+        </form>  
+                   
+ 

@@ -1,0 +1,111 @@
+<div class="graph-pdf content-box widget-box unbreakable">
+  <div class="content-header-box  no-margin">
+            <div class="content-header">
+              <div class="f-left widget-header-main">
+                <img src="/images/<?php echo $widget->channel;?>-new.png" title="" width="80px"  class="icon-service" />
+                  <span class="widget-title"><?php echo ucfirst(strtolower($widget->getTitle()));?></span>
+              </div>
+              <div class="float-left hide-mobile widget-header-date" >
+                  
+                  <span class="date-content">
+                       <?php echo $args['date_range_formatted']['min']?> to <?php echo $args['date_range_formatted']['max']?>
+                  </span>
+                  <?php if($args['date_range_compare_formatted']):?>
+                    <span>-</span>
+                    <span class="date-content">
+                    <?php echo $args['date_range_compare_formatted']['min']?>-<?php echo $args['date_range_compare_formatted']['max']?>
+                    </span>
+                  <?php endif;?>
+              </div>
+            </div>
+      </div>
+      <div class="content-box-wrapper unbreakable" style="font-size: 12px">
+        <div class="center-margin" id="graph_caption_<?php echo $widget->getId();
+                     ?>"></div>
+                     <div class="graph-legend unbreakable" id="graphLegend_<?php echo $widget->getId();
+                     ?>"></div>
+                      <div class="unbreakable" style="width: 714px; height: 340px;" id="graph_<?php echo $widget->getId();
+                     ?>"></div>
+      </div>
+    <?php
+        if ($insights) {
+            ?>
+           <div class="comments-box unbreakable">
+                <div class="comments-title">Insights</div>
+                <div class="widget-comments" style="text-align:justify" ><?php echo $insights;?></div>
+            </div>
+        <?php
+
+        } ?>
+       <?php
+          if($comments = $widget->getComments()){
+          ?>
+             <div class="comments-box unbreakable">
+                      <div class="comments-title">Comments</div>
+                      <div class="widget-comments" style="text-align:justify" ><?php echo $comments;?></div>
+              </div>
+      <?php } ?>
+</div>
+
+<script type="text/javascript">
+<?php
+foreach ($totals as  $val) {
+  if($args['field_compare'])
+    $newTotal[]  = "{x:'".$val['x']."',y:'".$val['y']."',z:'".$val['z']."'}";
+  else
+    $newTotal[]  = "{x:'".$val['x']."',y:'".$val['y']."'}";
+}
+
+
+$script ="$('#graph_caption_".$widget->getId()."').html('".trim($caption)."');
+$(function() {
+        var yKeys = ['y'".($args['field_compare']?",'z'":null)."];
+        var labels = ['".$args['field'][0]."'".($args['field_compare']?",'".$args['field_compare'][0]."'":null)."];
+        var legendcolors=[
+                    '#e15258',
+                    '#fa7753'
+                  ];
+        var legendItem ='';
+        var legendtext = labels.forEach (function(labeled, i){ 
+           legendItem += '<span style=\"color:'+legendcolors[i]+';\">'+labeled+'</span>';
+        });
+         var chartData = {
+                   element: 'graph_".$widget->getId()."',
+                   data: [".implode(',',$newTotal)."],
+                   width:800,
+                   xkey: 'x',
+                   ykeys: yKeys,
+                   labels: labels,
+                   barColors: [
+                    '#e15258',
+                    '#fa7753'
+                  ],
+                  lineColors: [
+                    '#e15258',
+                    '#fa7753'
+                  ],
+                  yMax: 4,
+                  integerYLabels: true,
+                  parseTime: false,
+                  xLabelMargin: 10,
+                  integerYLabels: true,
+                  hideHover: true,
+                 }
+        ";
+
+        if(unserialize($widget->getFields())['graph_type']=='bar')
+           $script.="window.m = Morris.Bar(chartData)";
+        else if(unserialize($widget->getFields())['graph_type']=='area')
+           $script.="window.m = Morris.Area(chartData)";
+        else
+           $script.="window.m = Morris.Line(chartData)";
+
+$script .= "
+          $('#graphLegend_".$widget->getId()."').html (legendItem);
+";
+$script.= "});" ;
+
+echo $script;
+
+?>
+                </script>

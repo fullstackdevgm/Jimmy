@@ -1,0 +1,11 @@
+
+.dashboard-panel.content-box .content-box-wrapper {
+margin:0px;
+}
+
+.content-box-wrapper .table th{
+	font-size: 11px;
+}
+.content-box-wrapper .table td{
+	font-size: 11px;
+}

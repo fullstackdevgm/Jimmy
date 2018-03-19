@@ -1,0 +1,16 @@
+<div class="row-fluid">
+    <ul class="breadcrumb">
+      <li><a href="<?php echo $this->url('admin') ?>">Home</a> <span class="divider">/</span></li>
+      <li class="active">Clients</li>
+    </ul>
+    
+               
+    <div class="btn-group" style="margin-bottom:20px">      
+        <button class="btn" onclick="location.href='client/add'">Add New Client</button>
+    </div>
+    
+
+	<?php echo $this->partial('admin/client/list.phtml');?>
+
+
+</div>

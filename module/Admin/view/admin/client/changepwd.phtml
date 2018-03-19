@@ -1,0 +1,32 @@
+<?php 
+$form = $this->registerForm;
+$form->prepare();
+?>
+
+        <form class="form-horizontal" method="post" name="change_pwd" id="change_pwd_form" >  
+        		 <input type='hidden'  name="id" value="<?php echo $this->client->getId();?>"/>
+                 <fieldset>  
+				  <legend>Change Password</legend>  
+                  <div class="control-group">  
+                    <label class="control-label" for="adwords_client_id">New Password</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="pwd" name="password" value="" > <?php echo  $this->formElementErrors($form->get('adwords_client_id')) ?> 
+                    </div>  
+                  </div>  
+                  <div class="control-group">  
+                    <label class="control-label" for="adwords_client_id">Re-enter Password</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="pwd" name="password" value="" > <?php echo  $this->formElementErrors($form->get('adwords_client_id')) ?> 
+                    </div>  
+                  </div>  
+                  
+                  
+                  <div class="form-actions">  
+                    <button type="button" class="btn btn-primary" id="savePwd">Save changes</button>  
+                    <button  type="button" class="btn" id="cancelChangePwd">Cancel</button>  
+                  </div>  
+         
+                </fieldset>  
+        </form>  
+                   
+ 

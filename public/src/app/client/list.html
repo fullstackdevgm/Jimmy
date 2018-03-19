@@ -1,0 +1,75 @@
+<ng-include src="'/src/app/client/add.html'" ></ng-include>
+
+
+<div class="col-md-11 center-margin">
+    <div class="content-box round-box-details mrg25B">
+        <h3 class="content-header-box no-margin">
+            <div class="content-header">
+                <div class="glyph-icon icon-separator">
+                    <i class="glyph-icon icon-bar-chart-o font-gray"></i>
+                </div>&nbsp;Clients
+                <div class="button-group float-right">
+                    <a style="cursor:pointer"  add-client-dialog="add-client" class="btn small bg-red">
+                    <span class="glyph-icon icon-separator">
+                        <i class="glyph-icon icon-edit"></i>
+                    </span>
+                    <span class="button-content">
+                        New Client
+                    </span>
+                    </a>
+                </div>
+            </div>
+        </h3>
+        <div class="content-box-wrapper no-padding">
+             <table  class="table table-striped no-margin"  style="clear:both;">
+                <thead>
+                     <tr>
+                        <th custom-sort order="'name'"    sort="sort">Name</th>
+                        <th custom-sort order="'reports'" sort="sort">Reports</th>
+                        <th></th>
+                     </tr>
+                 </thead>
+                <tbody>
+                    <tr ng-repeat="client in pagedItems[currentPage] | orderBy:sort.sortingOrder:sort.reverse">
+                        <td style="width:65%" class="borderR"><a ng-href="#/clients/{{client.client_id}}/reports" class="blue-hover" title="{{client.name}}"><span class="font-gray-dark" custom-title="{{client.name}}" length=100></span></a></td>
+                        <td data-title="'Reports'" class="center borderR"><div class="label bg-orange" title="{{client.reports}}">{{client.reports}}</div></td>
+                        <td class="text-right hidden-mobile">
+                            <div class="dropdown">
+                                <a href="javascript:;" title="" class="btn medium bg-gray" data-toggle="dropdown">
+                                    <span class="button-content">
+                                        <i class="glyph-icon font-size-11 icon-cog"></i>
+                                        <i class="glyph-icon font-size-11 icon-chevron-down"></i>
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu float-right">
+
+                                    <li>
+                                        <a href="#/clients/{{client.client_id}}" title="">
+                                            <i class="glyph-icon icon-edit mrg5R"></i>
+                                            View
+                                        </a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a href="javascript:;" class="font-red" title="" ng-click="delete(client.client_id)">
+                                            <i class="glyph-icon icon-remove mrg5R"></i>
+                                            Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                     </tr>
+                     <tr ng-if="clients.length<1">
+                         <td style="padding:10px 0px" colspan="2">
+                             <div class="col-md-6 infobox font-red">
+                                 <p><i class="glyph-icon icon-bullhorn "></i> <b>No Clients !</b> Add clients using the <b>New Client</b> button.</p>
+                             </div>
+                         </td>
+                    </tr>
+                </tbody>
+            </table>
+        <paginate source='clients' per-page='10' sorting-order="created" reverse="true"></paginate>
+        </div>
+    </div>
+</div>

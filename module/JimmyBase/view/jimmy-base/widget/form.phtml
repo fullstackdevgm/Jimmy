@@ -1,0 +1,421 @@
+<div class="wrpr radius5">
+        <div class="title">
+            <div class="ico"><span><img src="/images/icons/full-report-ico.png" alt="" /></span></div>
+            <h5 class="editable" id="title_<?php echo $report->getId();?>">
+                <?php echo $this->report->getTitle();?> for <?php echo $client?$client->getName():null;?>
+            </h5>
+              <a href="#" class="cancel-report cancel-widget"><span>Cancel</span></a>
+        </div>
+
+<?php
+$form = $this->widgetForm;
+$form->prepare();
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal');
+$form->setAttribute('id', $this->widget_type.'-form');
+
+?>
+<?php echo $this->form()->openTag($form) ?>
+        	<div class="inpBox-left" style="width:auto">
+    <?php foreach ($form as $element):
+
+    		//var_dump($element->getMessages());
+     		if($element instanceof Zend\Form\Fieldset):
+     			foreach ($element as $key => $el) {
+        			echo $this->partial('jimmy-base/widget/fieldset.phtml',array('el' => $el,'form' => $form));
+     			}
+     		else:	
+     			echo $this->partial('jimmy-base/widget/fieldset.phtml',array('el'=>$element));
+     		endif;
+
+	 	endforeach;
+	 ?>
+
+		<a href="#" class="save" id="save-widget">Save</a>
+    	<a href="#" class="cancel cancel-widget">Cancel</a>
+    </div>
+<?php echo $this->form()->closeTag() ?>
+  		<div class="clr"></div> 
+  	</div><!--/Wrapper-->
+  </div>
+ <script>
+ $(document).ready(function() {		
+ 	<?php 
+					$metrics              		= 0;
+				    $metrics_type 	      		= 0;
+			        $compare_dates		  		= 0;
+					$metrics_compare      		= 0;
+					$metrics_type_compare 		= 0;
+					$compare_dates	      		= 0;
+					$compare_custom_date_show   = 0;
+					$datepicker_show   			= 0;
+					$compare			 		= 0;
+			 	
+				if($this->widget){
+					if($fields = unserialize($this->widget->getFields())){
+			   			$metrics_type    			= (int)$fields['metrics_type'];
+			   			$metrics         			= (int)$fields['metrics'];
+			   			$metrics_compare 			= (int)$fields['metrics_compare'];
+			   			$metrics_type_compare   	= (int)$fields['metrics_type_compare'];
+						$compare_dates          	= $fields['date_range_compare']?1:0;
+						$compare_custom_date_show   = $fields['date_range_compare']=='custom'?1:0;
+						$datepicker_show   		    = $fields['date_range']==14?1:0;
+						
+						if($metrics_compare && $metrics_type_compare)
+						   $compare = 1;
+			 		}
+				}
+	?>
+			 
+	 var compare_dates     			= <?php echo $compare_dates;?>;
+	 var compare_custom_date_show   = <?php echo $compare_custom_date_show;?>;
+	 var datepicker_show     		= <?php echo $datepicker_show;?>;
+	 
+	 /* WYSIWYG */
+	 var myCustomTemplates = {
+		  html : function(locale) {
+		    return "<li>" +
+		           "<div class='btn-group'>" +
+		           "<a class='btn' data-wysihtml5-action='change_view' title='" + locale.html.edit + "'>HTML</a>" +
+		           "</div>" +
+		           "</li>";
+		  }
+		}
+	jQuery("#notes").wysihtml5({
+	   customTemplates: myCustomTemplates
+	});
+	/* END WYSIWYG */
+			 var metrics_options = <?php echo $this->metrics_options; ?>;
+
+	<?php 
+		if($this->widget_type == 'graph'):
+	?> 
+
+			 
+			 var metrics 	= <?php echo $metrics; ?>;
+			 var compare 	= <?php echo $compare; ?>;
+			 
+			  $('#compare').iCheck({
+				checkboxClass: 'icheckbox_square-orange',
+				radioClass: 'iradio_minimal',
+				increaseArea: '20%' // optional
+			  });
+			  	
+			$('#compare').iCheck('uncheck');
+
+			 // Metrics Compare checkbox and dropdowns
+			if(compare){
+				$("#compare").iCheck('check');
+				$(".metricstype_compare").show();
+			}
+				
+			$.each(metrics_options[1], function(index, value) {
+				$("#metrics").append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+			});
+			 
+			$.each(metrics_options[1], function(index, value) {
+				$("#analytics_metrics").append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+			});
+		
+			$("#compare").on('ifChanged',function(){
+			 	$(".metricstype_compare").toggle();
+			 	jQuery("#analytics_metrics_compare").chosen();
+			}) 
+			
+			// Metrics  Dropdown for Google Adwords
+			$('select[name="channel[fields_metrics_type]"]').change(function() {
+		
+				var key = $(this).val();
+				
+				var metrics = $("#metrics");
+					metrics.empty();
+					
+				metrics.append("<option value='' selected>Select a Metric</option>");
+				
+				$.each(metrics_options[key], function(index, value) {
+					metrics.append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+				});
+		
+			}); 
+			
+			// Metrics Compare Dropdown for Google Adwords
+			$("#metrics_type_compare").change(function() {
+				var key = $(this).val();
+				
+				var metrics = $("#metrics_compare");
+					metrics.empty();
+				
+				$.each(metrics_options[key], function(index, value) {
+					metrics.append("<option value='" + parseInt(index)   +"'>" + value + "</option>");
+				});
+			  
+			});
+
+
+			
+			// Metrics  Dropdown for Google Analytics
+			$('input[name="channel[fields_metrics_type]"]').click(function() {
+
+				var key = $(this).val();
+
+				var metrics = $("#analytics_metrics");
+					metrics.empty();
+
+				$.each(metrics_options[key], function(index, value) {
+					metrics.append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+				});
+
+				metrics.trigger('chosen:updated');
+
+			}); 
+
+			// Metrics Compare Dropdown for Google Analytics
+			$('input[name="channel[fields_metrics_type_compare]"]').click(function() {
+
+				var key = $(this).val();
+
+				var metrics = $("#analytics_metrics_compare");
+					metrics.empty();
+				
+				$.each(metrics_options[key], function(index, value) {
+					metrics.append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+				});
+				
+
+				metrics.trigger('chosen:updated');
+
+			}); 
+
+
+			<?php if($metrics_type):?>
+				$('select[name="channel[fields_metrics_type]"]').val(<?php echo $metrics_type?>).change();
+
+				$($('input[name="channel[fields_metrics_type]"]')[<?php echo $metrics_type-1?>]).click(); // For analytics
+		    	$('select[name="channel[fields_metrics]"]').val(<?php echo $metrics;?>);
+			<?php endif;?>
+			
+			<?php if($metrics_type_compare):?>
+				$('select[name="channel[fields_metrics_type_compare]"]').val(<?php echo $metrics_type_compare;?>).change();  
+
+		    	$($('input[name="channel[fields_metrics_type_compare]"]')[<?php echo $metrics_type_compare-1?>]).click();// For analytics
+		    	$('select[name="channel[fields_metrics_compare]"]').val(<?php echo $metrics_compare;?>).change();
+		    	$('select[name="channel[fields_metrics_compare]"').chosen();
+
+		    <?php endif; ?>
+
+	<?php elseif($this->widget_type == 'table'):?>	    
+		
+		// Metrics Compare Dropdown for Google Adwords
+		$("#report_type").change(function() {
+			var key = $(this).val();
+
+			if(key == 6){
+				$('.network_type').hide();
+				$('.show_campaign').show();
+			} else if(key==3 || key == 5){
+				$('.show_campaign').show();
+			} else {
+				$('.network_type').show();
+				$('.show_campaign').hide();
+			}
+		});
+
+		$('.show_campaign').iCheck({
+			checkboxClass: 'icheckbox_square-orange',
+			radioClass: 'iradio_minimal',
+			increaseArea: '20%' // optional
+	    });
+		
+		$('input[name="channel[fields_metrics_type]"]').click(function() {
+
+			var key = $(this).val();
+			
+			var metrics = $("#raw_data");
+				metrics.empty();
+				
+			$.each(metrics_options[key], function(index, value) {
+				metrics.append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+			});
+
+			metrics.trigger('chosen:updated');
+		}); 
+
+		
+	<?php elseif($this->widget_type == 'kpi'):?>	    
+
+		jQuery("#kpi").change(function(){
+			var key = jQuery(this).val();
+
+			if(jQuery.inArray("8",key) >= 0 || jQuery.inArray("9",key) >= 0){
+				jQuery(".fields_goals").show();	
+ 				jQuery("#goals").chosen();
+			} else {
+				jQuery(".fields_goals").hide();	
+			}
+		})
+
+	<?php endif;?> 	
+    
+	$('.device_type').iCheck({
+		checkboxClass: 'icheckbox_square-orange',
+		radioClass: 'iradio_minimal',
+		increaseArea: '20%' // optional
+    });
+
+
+	$('#all').on('ifChecked', function(evt){
+		$('input.device_type:not(#all)').iCheck('uncheck');
+	});
+	
+	$('input.device_type:not(#all)').on('ifChecked', function(evt){
+		  $('#all').iCheck('uncheck');
+	});
+
+	
+    $('#compare_dates').iCheck({
+		checkboxClass: 'icheckbox_square-orange',
+		radioClass: 'iradio_minimal',
+		increaseArea: '20%' // optional
+    });
+ 
+    $('#compare_dates').iCheck('uncheck');
+  
+    if(compare_dates){
+	  $('#compare_dates').iCheck('check');
+	  $(".daterange_compare").show();
+    }
+  
+  	// Custom Date Range Compare 
+    if(compare_custom_date_show){
+	  $(".date_range_custom_compare").show();
+	  $( "#date_min_compare" ).datepicker({ maxDate: '0' });
+	  $( "#date_max_compare" ).datepicker({ maxDate: '0' });
+    }
+   
+	$('#compare_dates').on('ifChanged', function(evt){
+		 
+		 $(".daterange_compare").toggle();
+
+		 if(jQuery(this).attr('checked') && jQuery('select[name="channel[fields_date_range_compare]"]').val()=='custom')
+		  $(".date_range_custom_compare").show();
+		 else
+		  $(".date_range_custom_compare").hide();
+	
+	});
+
+	$('.select-all').click(function(){
+		
+		var ele_id = $(this).attr('data-id');
+  	  
+	  if($(this).text() =='Select All'){
+  		$('#'+ ele_id + ' option').prop('selected', true); // Selects all options
+		$(this).text('Deselect All') 
+		$(this).attr('title','Deselect All');
+	  } else {
+  		$('#'+ ele_id + ' option').prop('selected', false); // Selects all options
+    	$(this).text('Select All');
+		$(this).attr('title','Select All');
+	  }
+	  
+	  $('#'+ ele_id + ' option').trigger('chosen:updated');
+	});
+	
+	// Show Date Pickers 
+	if(datepicker_show){
+		$( "#date_min" ).datepicker({ maxDate: '0' });
+		$( "#date_max" ).datepicker({ maxDate: '0' });
+	}
+	 
+	  // Date Range and Custom Date Range
+	$('select[name="channel[fields_date_range]"]').change(function() {
+  			
+		var key = $(this).val();
+		
+		// if key = custom
+		if(key==14){
+		  $('.date_range_custom').show();
+		  $( "#date_min" ).datepicker({ maxDate: '0' });
+		  $( "#date_max" ).datepicker({ maxDate: '0' });
+		}
+		else
+		  $('.date_range_custom').hide();
+	  
+	}); 
+	  
+	  // Date Range and Custom Date Range for Previous
+	$('select[name="channel[fields_date_range_compare]"]').change(function() {
+	  			
+		var key = $(this).val();
+		
+		// if key = custom
+		if(key=='custom'){
+		  $('.date_range_custom_compare').show();
+		  $( "#date_min_compare" ).datepicker({ maxDate: '0' });
+		  $( "#date_max_compare" ).datepicker({ maxDate: '0' });
+		}
+		else{
+		  $('.date_range_custom_compare').hide();
+		}
+	  
+	})
+
+	jQuery("#campaigns").chosen();
+	jQuery("#kpi").chosen();
+	jQuery("#raw_data").chosen();
+	jQuery("#analytics_metrics").chosen();
+	jQuery("select[name='channel[fields_date_range]']").chosen();
+
+	 
+	 $('#campaigns-selector').on('click','.show-campaigns',function(){
+
+			var show =  $(this).attr('title');
+				
+			$("#campaigns").empty();
+			$("#campaigns").prop('disabled',true);
+			$('#campaigns').trigger('chosen:updated');
+
+			$('#campaigns-selector a.show-campaigns').each(function(a,item){
+				$(item).removeClass('active');
+			})
+				
+			$(this).addClass('active');
+			
+			var select_all_el= $(this).parent().children('strong').last();
+		
+	 })
+			
+	 
+	 //Submit
+	  jQuery('#<?php echo $this->widget_type ?>-form').on('click','#save-widget',function(){
+		  
+		   JimmyJS.saving('save-widget');
+		  <?php if(!$this->widget):?>
+		 	 JimmyJS.post('<?php echo $this->url('jimmy-widget/add') ?>','<?php echo $this->widget_type ?>-form','widgets-container','msg-container');
+	  	  <?php else:?>
+		    <?php if($this->edit_source=='inline'):?>
+		  	 JimmyJS.post('<?php echo $this->url('jimmy-widget/edit',array('widget_id'=>$this->widget->getId(),'source'=>'inline')); ?>','<?php echo $this->widget_type ?>-form','widget_<?php echo $this->widget->getId()?>','msg-container');
+			 <?php else:?>
+			 JimmyJS.post('<?php echo $this->url('jimmy-widget/edit',array('widget_id'=>$this->widget->getId())); ?>','<?php echo $this->widget_type ?>-form','widgets-container','msg-container');
+			 <?php endif; ?>
+		  <?php endif;?>
+
+		  
+	  })
+	  
+	  //Cancel Button
+	  jQuery('.cancel-widget').on('click',function(){
+		  
+		     jQuery(this).text('Cancelling...');
+		  	 jQuery(this).addClass('disabled');
+
+		    <?php if($this->edit_source=='inline'):?>
+		  	 JimmyJS.get('<?php echo $this->url('jimmy-widget/load',array('widget_id'=>$this->widget->getId(),'source'=>'inline')); ?>','widget_<?php echo $this->widget->getId()?>','msg-container');
+			 <?php else:?>
+			 JimmyJS.get('<?php echo $this->url('jimmy-widget/list',array('report_id'=>$this->report->getId())); ?>','widgets-container','msg-container');
+		  <?php endif;?>		  
+		  
+	  })
+
+})
+ 
+ </script>

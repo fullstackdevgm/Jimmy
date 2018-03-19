@@ -1,0 +1,24 @@
+<h3><i class="icon-info-sign"></i>Agency Account Info</h3>  
+  
+<dl   class="agency-account">
+        <dt>Agency Name</dt>
+        <dd id="agency-name"><?php echo $this->agency->getName();?></dd>
+        
+        <dt>Agency Email</dt>
+        <dd> <?php echo $this->agency->getEmail();?></dd>
+        <dt>Logo</dt>
+       
+        <dd> 				
+		 <?php if(is_file("data/logos/agencies/".$user_mapper->getMeta($this->agency->getId(),'logo'))):?>
+          <img width="50" src="/resources/logos/agencies/<?php echo $user_mapper->getMeta($this->agency->getId(),'logo');?>"  /></td>
+         <?php else:?>
+          <img width="50" src="/images/no-image.png"  /></td>
+         <?php endif;?>
+        </dd>
+        
+        <dt>Status</dt>
+        <dd><?php  if($this->agency->getState()) echo 'Enabled'; else echo 'Disabled'?></dd>
+</dl>
+<div class="btn-group">      
+ <button class="btn btn-large"  id="change"> <i class="icon-edit"></i> Edit</button>
+</div>

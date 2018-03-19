@@ -1,0 +1,7 @@
+<phpunit bootstrap="./Bootstrap.php" colors="true">
+  <testsuites>
+    <testsuite name="Chat Module Tests">
+      <directory>./ChatTest</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

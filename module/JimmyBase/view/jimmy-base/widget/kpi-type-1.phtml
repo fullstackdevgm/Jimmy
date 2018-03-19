@@ -1,0 +1,37 @@
+ <?php
+ $kpi = $this->kpi;
+ $kpiDataTotalCompare = $this->kpiDataTotalCompare;
+ $key = $this->key;
+ ?>
+ <div class="panel panel-danger" ng-show="widget.kpi_type[$index]==1 || widget.kpi_type==undefined">
+    <div class="panel-heading">
+        
+        <?php echo $kpi['caption'];?>
+        
+    </div>
+    <div class="panel-body">
+        <div  id="dslc-content" class="dslc-content"  zng-init="vipc = 2;" >
+            <div class="dslc-modules-area dslc-col dslc-3-col dslc-first-col" data-size="3"  >
+                <div id="dslc-module-15215" class="dslc-module-front dslc-module-DSLC_Info_Box dslc-in-viewport-check dslc-in-viewport-anim-none dslc-in-viewport"  style="-webkit-animation: forwards 0.65s ease none; -webkit-animation-play-state: initial;">
+                    <div class="dslc-info-box dslc-info-box-icon-pos-above">
+                        <div class="dslc-info-box-main-wrap dslc-clearfix">
+                            <div class="dslc-info-box-main">
+                                    <div class="dslc-info-box-title">
+                                        <h4><?php echo $kpi['value'];?></h4>
+                                        <div class="kpi-desc"><?php echo $kpi['caption'];?></div>
+                                    </div><!-- .dslc-info-box-title -->
+                                        <div class="kpi-dash-line">&nbsp;</div>
+                                    <div class="dslc-info-box-content">
+                                       <?php if(!is_null($kpiDataTotalCompare[$key]['value'])):?>
+                                            <p class="font-size-10 font-gray-dark font-roboto"><?php echo $this->metrics()->calcComparedMetricsCaption($kpi['value'],$kpiDataTotalCompare[$key]['value'],$kpi['caption'])?></p>
+                                        <?php endif;?>
+                                        <span class="font-size-12 font-roboto" style="font-gray-dark"><?php echo $kpi['sub_caption'];?></span>
+                                    </div><!-- .dslc-info-box-content -->
+                            </div><!-- .dslc-info-box-main -->
+                        </div><!-- .dslc-info-box-main-wrap -->
+                    </div><!-- .dslc-info-box -->
+                </div><!-- .dslc-module -->
+            </div>
+        </div>
+    </div>
+</div>

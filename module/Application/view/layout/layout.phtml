@@ -1,0 +1,277 @@
+
+<?php echo $this->doctype(); ?>
+<html lang="en">
+    <head>
+
+        <script type="text/javascript">var _kmq = _kmq || [];
+            var _kmk = _kmk || '172233cfcf072d396005fc64103139960b7eb1ab';
+            function _kms(u){
+              setTimeout(function(){
+                var d = document, f = d.getElementsByTagName('script')[0],
+                s = d.createElement('script');
+                s.type = 'text/javascript'; s.async = true; s.src = u;
+                f.parentNode.insertBefore(s, f);
+              }, 1);
+            }
+            _kms('//i.kissmetrics.com/i.js');
+            _kms('//scripts.kissmetrics.com/' + _kmk + '.2.js');
+</script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <?php echo $this->headTitle($this->translate($this->title?$this->title:'Jimmy'))->setSeparator(' - ')->setAutoEscape(false) ?>
+        <meta name="description" content="">
+        <?php
+echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no') ?>
+
+        <!-- Favicons -->
+
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/images/icons/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/images/icons/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72"   href="assets/images/icons/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="assets/images/icons/apple-touch-icon-57-precomposed.png">
+        <link rel="shortcut icon" href="/images/favicon.png">
+        <!--[if lt IE 9]>
+          <script src="assets/js/minified/core/html5shiv.min.js"></script>
+          <script src="assets/js/minified/core/respond.min.js"></script>
+        <![endif]-->
+    <?php
+
+     $fav_icon = $this->logo_config['favicon']?$this->logo_config['favicon']:'favicon.png';
+     echo  $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/images/'.$$fav_icon))
+            ->appendStylesheet($this->basePath()  . '/assets/ckeditor/contents.css')
+            ->appendStylesheet($this->basePath()  . '/assets/css/minified/aui-production.min.css')
+            // ->appendStylesheet($this->basePath()  . 'css/bootstrap.css')
+            ->appendStylesheet($this->basePath()  . '/assets/themes/minified/fides/color-schemes/dark-blue.min.css')
+            ->appendStylesheet($this->basePath()  . '/assets/themes/minified/fides/common.min.css')
+            ->appendStylesheet($this->basePath()  . '/assets/themes/minified/fides/animations.min.css')
+            ->appendStylesheet($this->basePath()  . '/assets/themes/minified/fides/responsive.min.css')
+            ->appendStylesheet($this->basePath()  . '/assets/font-awesome/css/font-awesome.css')
+            ->appendStylesheet($this->basePath()  . '/css/materialStyle.css')
+            ->appendStylesheet($this->basePath()  . '/css/enjoyhint.css')
+            ->appendStylesheet($this->basePath()  . '/css/dashboard.css')
+            ->appendStylesheet($this->basePath()  . '/bower_components/nvd3/build/nv.d3.css')
+    ?>
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+
+    <?php echo $this->headScript()->appendFile($this->basePath() . '/js/html5.js','text/javascript',array('conditional' => 'lt IE 9'))
+                  ->appendFile($this->basePath() . '/js/jQuery/jquery-1.9.1.min.js')
+
+                ->appendFile($this->basePath() . '/js/angular/1.2.16/angular.min.js')
+                //->appendFile($this->basePath() . '/bower_components/angular/angular.min.js')
+                //->appendFile($this->basePath() . '/bower_components/angular-route/angular-route.min.js')
+                //->appendFile($this->basePath() . '/bower_components/angular-resource/angular-resource.min.js')
+                ->appendFile($this->basePath() . '/js/angular/1.2.16/angular-route.js')
+                ->appendFile($this->basePath() . '/js/angular/1.2.16/angular-resource.js')
+
+                ->appendFile($this->basePath() . '/js/chosen.jquery.min.js')
+
+                ->appendFile($this->basePath() . '/assets/js/aui-production.js')
+                 ->appendFile($this->basePath() . '/js/enjoyhint.min.js')
+                ->appendFile($this->basePath() . '/assets/js/minified/core/raphael.min.js')
+                ->appendFile($this->basePath() . '/bower_components/ng-file-upload/ng-file-upload-all.min.js')
+                ->appendFile($this->basePath() . '/bower_components/angular-xeditable/dist/js/xeditable.js')
+                ->appendFile($this->basePath() . '/bower_components/d3/d3.min.js')
+                ->appendFile($this->basePath() . '/bower_components/nvd3/build/nv.d3.js')
+                ->appendFile($this->basePath() . '/bower_components/angular-nvd3/dist/angular-nvd3.js')
+
+
+                ->appendFile($this->basePath() . '/bower_components/braintree-web/dist/braintree.js')
+                  // ->appendFile($this->basePath() . '/js/includes/charts-justgage.min.js')
+                  // ->appendFile($this->basePath() . '/js/includes/charts-morris.min.js')
+
+                  // ->appendFile($this->basePath() . '/js/includes/bootstrap-tooltip.min.js')
+                  // ->appendFile($this->basePath() . '/js/includes/bootstrap-timepicker.min.js')
+                  ->appendFile($this->basePath() . '/js/includes/jqueryui-datepicker.min.js')
+                  // ->appendFile($this->basePath() . '/js/includes/jquery.flot.min.js')
+                  // ->appendFile($this->basePath() . '/js/includes/jquery.flot.resize.min.js')
+                  // ->appendFile($this->basePath() . '/js/includes/jquery.flot.pie.min.js')
+                  // ->appendFile($this->basePath() . '/js/includes/jquery.flot.categories.min.js')
+                  // ->appendFile($this->basePath() . '/js/includes/raphael-min.js')
+
+                   ->appendFile($this->basePath() . '/assets/js/minified/widgets/morris.min.js')
+
+                  // ->appendFile($this->basePath() . '/js/includes/easypiechart.js')
+                  // ->appendFile($this->basePath() . '/js/includes/jquery.sparkline.min.js')
+                  // ->appendFile($this->basePath() . '/js/includes/dropzone.js')
+
+
+
+                  ->appendFile($this->basePath() . '/assets/ckeditor/ckeditor.js')
+                  ->appendFile($this->basePath() . '/assets/ckeditor/config.js')
+                  ->appendFile($this->basePath() . '/assets/ckeditor/styles.js')
+                  ->appendFile($this->basePath() . '/assets/ckeditor/adapters/jquery.js')
+                 // ->appendFile($this->basePath() . '/assets/js/aui-interactions.js')
+                // ->appendFile($this->basePath() . '/assets/js/jquery.knob.js')
+                  // ->appendFile($this->basePath() . '/assets/js/angular-knob.js')
+                  ->appendFile($this->basePath() . '/js/dirPagination.js')
+                  ->appendFile($this->basePath() . '/src/app/loading.js')
+                  ->appendFile($this->basePath() . '/src/app/dashboard.js')
+
+
+
+    ?>
+    <script>
+
+      //<![CDATA[
+      (function() {var s=document.createElement('script');
+      s.type='text/javascript';s.async=true;
+      s.src=('https:'==document.location.protocol?'https':'http') +
+      '://jimmydata.groovehq.com/widgets/38fc4209-7a4f-4c87-b503-078b5e56321a/ticket.js'; var q = document.getElementsByTagName('script')[0];q.parentNode.insertBefore(s, q);})();
+      //]]>
+
+
+</script>
+
+
+
+    </head>
+
+    <body ng-app="Jimmy.dashboard" >
+    <div id="page-wrapper"  ng-controller="MainCtrl" >
+
+      <div id="page-header"  class="clearfix">
+        <div id="header-logo" >
+        <span  ng-if="!generalInfo.current_user.logo"><?php      echo  $this->SidebarLogo();   ?>
+        </span>
+
+            <img  ng-if="generalInfo.current_user.logo"
+                  src="/resources/logos/agencies/{{generalInfo.current_user.logo}}"
+                  style="width:210px;height:75px; background-color:#FFFFFF; padding:2px 5px 2px 5px; ">
+            <a href="javascript:;" class="tooltip-button" data-placement="bottom"
+               title="" id="close-sidebar" data-original-title="Close sidebar">
+                <i class="glyph-icon icon-caret-left"></i>
+            </a>
+            <a href="javascript:;" class="tooltip-button hidden" data-placement="bottom"
+               title="" id="rm-close-sidebar" data-original-title="Open sidebar">
+                <i class="glyph-icon icon-caret-right"></i>
+            </a>
+            <a href="javascript:;" class="tooltip-button hidden" title=""
+               id="responsive-open-menu" data-original-title="Navigation Menu"
+               style="width:150px;text-align:center">
+                <i class="glyph-icon icon-align-justify"></i>
+            </a>
+
+        </div>
+
+
+        <div class="search">
+            <!--input type="search" class="search-input" placeholder="SEARCH HERE"-->
+        </div>
+
+        <button class="create-report-btn"  ng-if ="generalInfo.current_user.type != 'user'" ng-click="createReport()" >
+            <i class="fa fa-pencil-square-o"></i> CREATE NEW REPORT
+        </button>
+
+        <!-- Breadcrumbs -->
+        <?php // @TODO: Exposes a lot of logic. Must make it better. ?>
+
+
+        <div id="breadcrumb" ng-if ="generalInfo.current_user.type != 'user'">
+            <ol class="breadcrumb">
+                <li ng-repeat="crumb in crumbs"><a ng-href="{{crumb.class!=='active'?'#'+crumb.url: ''}}" class="{{crumb.class}}">{{crumb.title}}</a><span ng-if="crumb.class!='active'" class="crumb-divider"><i class="fa fa-angle-double-right"></i></span></li>
+            </ol>
+
+        </div>
+
+        <div class="user-profile dropdown" ng-controller="UserCtrl">
+            <a href="javascript:;" title="" class="user-ico" data-toggle="dropdown">
+                <div>
+                    <span ng-if="generalInfo.current_user.name!=null">{{generalInfo.current_user.name}}</span>
+                    <span ng-if="generalInfo.current_user.name=='' && generalInfo.current_user.email!=null">{{generalInfo.current_user.email}}</span>
+                    <i class="fa fa-bars mrg10R"></i>
+                </div>
+            </a>
+            <div class="header-user-details">
+                <img image-fallback ng-src="/resources/logos/agencies/{{generalInfo.current_user.thumb}}" class="user-image">
+
+                <!--div class="user-notification">3</div-->
+            </div>
+                <!--<img image-fallback ng-src="/resources/logos/agencies/{{generalInfo.current_user.logo}}">-->
+            <ul class="dropdown-menu float-right">
+                <li>
+                    <a href="#/user" title="">
+                        <i class="glyph-icon icon-user mrg5R"></i>
+                        Account Details
+                    </a>
+                </li>
+                <li ng-if ="generalInfo.current_user.type == 'agency'">
+                    <a href="#"  id ="migrateBtn" class="btn"
+                       migrate-clients-dialog="clientMigrate"
+                       dialog-width="700" dialog-height="400">
+                      <span>Migrate Clients</span>
+                    </a>
+                </li>
+
+                <li class="divider"></li>
+                <li>
+                    <a href="/user/logout" title="">
+                        <i class="glyph-icon icon-signout font-size-13 mrg5R"></i>
+                        <span class="font-bold">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="dropdown dash-menu" style="opacity:1;height:100%;">
+
+<!--             <a ng-if="generalInfo.current_user.type!='user' "  add-client-dialog="support" href="javascript:;"  data-placement="left" class="medium  popover-button-header hidden-mobile mrg15R pad15L tooltip-button menu-icon" title="" data-original-title="Help & Support">
+                <img src="../images/menu-help-icon.png">
+            </a>
+ -->            <a ng-if="generalInfo.current_user.type!='user' " href="https://www.jimmydata.com/documentation" target="_blank"  data-placement="left" class="medium popover-button-header hidden-mobile mrg15R pad15L pad15R tooltip-button menu-icon" title="" data-original-title="Training & Resources">
+                    <img src="../images/menu-documentation-icon.png">
+                <!--<i class="glyph-icon icon-book"></i>-->
+                </a>
+            <!--a ng-if="generalInfo.current_user.type!='user' " href="https://www.jimmydata.com/documentation" target="_blank"  data-placement="left" class="medium popover-button-header hidden-mobile mrg15R pad15L tooltip-button menu-icon" title="" data-original-title="Navigation">
+                <img src="../images/menu-options-icon.png">
+                <!--<i class="glyph-icon icon-book"></i>-->
+            <!--/a-->
+        </div>
+
+      </div>
+
+      <div ng-if="migrationRequired" class="blocker" style="width: 80%; height:75px;">
+      &nbsp;
+      </div>
+      <div id="page-sidebar" class="scrollable-content" tabindex="5003" style="overflow: hidden; outline: none; height: 100%; ">
+        <sidebar-menu></sidebar-menu>
+      </div>
+
+      <div ng-if="migrationRequired" class="blocker" style="width: 230px; height:100%;">&nbsp;</div>
+
+      <div id="page-content-wrapper">
+        <?php echo $this->content; ?>
+        <?php echo $this->inlineScript() ?>
+      </div>
+    </div>
+        <ng-include src="'src/app/dashboard/migrate.html'" ng-if="generalInfo.current_user.type =='agency'" ></ng-include>
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MKF6R5" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-MKF6R5');
+
+//      $(document).ready(function() {
+//          // var    logo = "/images/"+generalInfo.logo_config.logo_url;
+//
+//        //  if(settings && settings.replace_app_logo){
+//         var    logo = "/resources/logos/agencies/" + generalInfo.current_user;
+//       //   }
+//        console.log(logo);
+//           $("#header-logo").css("background","url(" +logo+ ")  no-repeat -30px");
+//           $("#header-logo").css("background-size","100%");
+//           $("#header-logo img").remove();
+//      })
+
+    </script>
+    <div upgrade-dialog></div>
+
+    </body>
+</html>

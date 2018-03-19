@@ -1,0 +1,18 @@
+
+<iframe id="download-invoice" title="Download Invoice" style="display:none;"></iframe>
+<div class="col-md-12 invoice-panel">
+	<div ng-repeat="invoice in invoices" class="invoice-details" ng-if="invoices.length > 0">
+		<div class="col-md-8">
+			<div class="invoice-date">Billed on {{invoice.date.date | dateFormat: "dd.MM.yyyy" }}</div>
+			<div ng-if="invoice.status=='settled'" class="invoice-download"><a ng-click="downloadInvoice(invoice.transaction_id)"><i class="fa fa-download"></i> Download</a></div>
+			<div class="clearfix"></div>
+			<div class="invoice-id">Transaction ID: {{invoice.transaction_id}}</div>
+			<div class="invoice-status">Status: {{invoice.status}}</div>
+		</div>
+		<div class="col-md-4">
+			<div class="invoice-amount"><span class="currency">$ </span>{{invoice.amount}}</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<span ng-if="invoices.length==0">No invoices to display.</span>
+</div>

@@ -1,0 +1,63 @@
+<?php
+$title  = "<div class='dash-table-header'><h1>".$widget->getTitle()."<br/><span>".date('M d, Y',$args["date_range"]["min"]).' - '.date('M d, Y',$args["date_range"]["max"])."</span></h1><div class='header-logo'><img src='images/".$args['channel'].".jpg' /></div></div><div  style='height:250px' id='graph-container-".$widget->getId()."'></div><div class='pad10L'><span><i class='icon-comment-alt'></i> Comments</b></span><div class='wysiwyg' id='graph_comments_".$widget->getId()."'></div></div></div><div class='clr'></div>";
+
+$script = "
+			$('#widget_".$widget->getId()."').html(\"<strong>".trim($title)."</strong>\");
+			$('#graph_comments_".$widget->getId()."').html(\"".trim($widget->getComments())."\");
+
+					$(function () {
+						$('#graph-container-".$widget->getId()."').highcharts({
+							chart: {
+								type: 'line',
+								//marginRight: 100,
+								//marginBottom: 25
+							},
+							title: {
+								text: '',
+								x: 20
+							},
+							xAxis: [{
+								categories: ['".implode("','",$new_date)."'],
+								type: 'datetime',
+							}],
+							yAxis: {
+								title: {
+									text: ''
+								},
+								plotLines: [{
+									value: 0,
+									width: 1,
+									color: '#808080'
+								}]
+							},
+							tooltip: {
+								//valueSuffix: ' ". ucfirst($field)."'
+							},
+							legend: {
+								//layout: 'vertical',
+								//align: 'right',
+								//verticalAlign: 'top',
+								borderWidth: 0,
+								margin:30
+							},
+							series: [{
+								name: '". ucfirst($field)."',
+								data: [".implode(',',$totals[$field])."]
+							}
+							";
+					if($field_comp){
+						$script.=	"
+									,{
+										name: '". ucfirst($field_comp)."',
+										data: [".implode(',',$totals[$field_comp])."]
+									}";
+					}
+
+
+		$script.=		"]
+						});
+					});
+			";
+echo $script;
+
+?>

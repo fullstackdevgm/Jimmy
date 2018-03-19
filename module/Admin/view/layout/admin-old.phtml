@@ -1,0 +1,91 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <?php echo $this->headTitle('Admin - Zend Framework 2 Admin Interface')->setSeparator(' - ')->setAutoEscape(false) ?>
+
+    <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
+
+    <!-- Le styles -->
+    <?php echo $this->headLink()->prependStylesheet($this->basePath() . '/css/bootstrap.css')
+	                       	    ->appendStylesheet($this->basePath() . '/css/bootstrap-responsive.css')
+	                       	    ->appendStylesheet($this->basePath() . '/css/style.css')
+								->appendStylesheet($this->basePath()  . '/css/DT_bootstrap.css')
+								?>
+	<script>
+       var baseUrl  = '<?php echo  $this->url('home');?>';
+       var adminUrl = '<?php echo  $this->url('admin');?>';
+    </script>	
+    <!-- Scripts -->
+    <?php echo $this->headScript()->appendFile($this->basePath() . '/js/html5.js','text/javascript',array('conditional' => 'lt IE 9')) 
+								  ->appendFile($this->basePath() . '/js/jQuery/jquery-1.9.1.min.js') 
+								  ->appendFile($this->basePath() . '/js/bootstrap.min.js') 
+								  ->appendFile($this->basePath() . '/js/application.js') 
+   ?>
+   
+  	<style>
+	.table tr{cursor:pointer}
+	</style>
+
+	</head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+         <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="<?php echo $this->url('admin') ?>"><?php echo $this->translate('Pay Per Click Reporting') ?></a>
+                    <div class="nav-collapse collapse">
+                        
+                         <?php 
+						    $adminUserIdentity = $this->HasAdminUserIdentity();
+
+						   if($adminUserIdentity):
+								echo $this->navigation('adminnavigation')->menu()->setUlClass('nav'); 
+						   endif;
+					     ?>
+                                                 
+                        <ul class="nav pull-right">
+							<?php 	  		
+                                if($adminUserIdentity):
+                            ?>
+                                <li style="padding:10px">
+                                        <?php echo $this->gravatar($adminUserIdentity->getEmail(),array('img_size'=>20)) ?>
+                                        <strong> Hello, <?php echo $this->UserDisplayName() ?>!</strong>
+                                        <a href="<?php echo $this->url('admin/logout') ?>" data-toggle="modal" style="display:inline;padding-left:5px">Logout</a>
+                                 </li>
+                                 <li>
+                                    <a href="<?php echo $this->url('admin/settings') ?>" >Settings</a>
+                                 </li>  
+                            <?php else: ?>                       
+                                <li>
+                                    <a href="<?php echo $this->url('admin') ?>" ><i class="icon-facebook-sign"></i> Login</a>
+                                </li>    
+                            <?php endif;?>
+                               
+				   			<li><a href="/help"><i class="icon-book"></i> Help</a></li>
+						</ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+      </div>
+    </div>
+
+    <div class="container-fluid"> 
+      <?php $this->flashMessages()->display();?>  
+
+      <?php echo $this->content; ?>
+      <hr>
+      <footer>
+        <p>&copy; 2013 Webmarketers Crew. All rights reserved.</p>
+      </footer>
+    </div> <!-- /container -->
+
+  <?php echo $this->inlineScript() ?>
+  </body>
+</html>

@@ -1,0 +1,158 @@
+<div class="wrpr radius5">
+       <div class="title">
+        	<div class="ico"><span><img src="/images/icons/full-report-ico.png" alt="" /></span></div>
+        	<h5>Add New Agency</h5>
+       </div>
+       	<?php 
+		if($this->success):
+		?>
+		<div class="alert alert-success">
+			<a class="close" data-dismiss="alert">×</a>
+			<strong><?php echo $this->success;?></strong>
+		</div>
+		<?php elseif($this->error):?>
+		<div class="alert alert-error">
+			<a class="close" data-dismiss="alert">×</a>
+			<strong><?php echo $this->error;?></strong>
+		</div>
+		<?php endif;?>
+
+		<?php
+        $form = $this->registerForm;
+        $form->prepare();
+        $form->setAttribute('action', $this->url('agency/add'));
+        $form->setAttribute('method', 'post');
+        $form->setAttribute('class', 'form-horizontal');
+        $form->setAttribute('id', 'client_form');
+        $form->setAttribute('enctype','multipart/form-data');
+        
+        $email  = $form->get('email');
+        $name   = $form->get('name');
+        $logo   = $form->get('logo');
+        
+        ?>
+        
+
+	<?php echo $this->form()->openTag($form) ?>
+           
+              
+
+        	<div class="inpBox-left">
+                <div class="smBx">
+                    <span class="lab">Agency Name:</span>
+                    <div class="inpField radius5">
+                        <div class="ico">
+                            <span><img src="/images/icons/add-client-ico01.png" alt="" /></span>
+                        </div>
+			 			<?php echo $this->formText($name) . $this->formElementErrors($name) ?>                   
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                
+                <div class="smBx">
+                    <span class="lab">Email:</span>
+                    <div class="inpField radius5">
+                        <div class="ico">
+                            <span><img src="/images/icons/add-client-ico01.png" alt="" /></span>
+                        </div>
+			 			<?php echo $this->formText($email) . $this->formElementErrors($email) ?>                   
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                
+                <div  style="height:100px"></div>
+                
+                <a href="#" class="save">Save Changes</a>
+                <a href="#" class="cancel" >Cancel</a>
+                
+               
+                <div class="clr"></div>
+            </div><!--Add Client Form Left-->
+            <div class="logoUpload">
+            	<div class="radius5"  >
+
+                </div>
+                <span id="path"></span><br />
+                <a href="#" class="upload">Browse</a>
+
+               <div  style="display:none"> <?php echo $this->formFile($logo) ?> </div><?php $this->formElementErrors($logo) ?>                   
+
+            </div><!--Logo Upload-->
+<?php echo $this->form()->closeTag() ?>
+        <div class="clr"></div>
+</div>
+                   
+<script>
+	 //Cancel Button
+	  jQuery('#client_form').on('click','.cancel',function(){
+			 jQuery(this).text('Cancelling...');
+			 jQuery(this).addClass('disabled');
+			 location.href='<?php echo $this->url($this->isAdmin()?'admin/client':'client');?>';
+	  })
+	  
+	  jQuery('#client_form').on('click','.save',function(){
+			 jQuery('#client_form').submit();
+	  })
+	  
+	  jQuery('#client_form').on('click','.upload',function(){
+			 jQuery('[name="logo"]').click();
+	  })
+	  
+	 
+	  jQuery('#client_form').on('change','[name="logo"]',function(evt){
+		     var path = $(this).val().split('\\');
+			 
+			 jQuery('#path').text(path[(path.length-1)]);
+			 JimmyJS.handleFileSelect(evt,'img');
+	  })
+	  
+	  
+	  
+	 
+
+</script>         
+
+
+
+ <!--<form class="form-horizontal" method="post" id="agency_form" enctype="multipart/form-data" name="client_form" action="<?php echo $this->url('admin/agency/add');?>">  
+                 <fieldset>  
+				  <legend>Add New Agency</legend>  
+                  <div class="control-group">  
+                    <label class="control-label" for="name">Agency Name</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="name" name="name">    <?php echo  $this->formElementErrors($form->get('name')) ?>
+                    </div>  
+                  </div>  
+                  <div class="control-group">  
+                    <label class="control-label" for="email" name='email'>Agency Email</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" name="email" id="email">  <?php echo  $this->formElementErrors($form->get('email')) ?>
+                    </div>  
+                  </div>  
+                  
+                  <div class="control-group">  
+                    <label class="control-label" for="logo">Logo</label>  
+                    <div class="controls">  
+                      <input type="file" class="input-xlarge" id="logo" name="logo"> <?php echo  $this->formElementErrors($form->get('logo')) ?> 
+                      <p class="help-block">(supported types are jpeg,gif,png)</p>  
+                    </div>  
+                  </div>  
+                  
+                  <div class="form-actions">  
+                    <button type="submit" class="btn btn-primary">Save changes</button>  
+                    <button class="btn" type="button" name="cancel">Cancel</button>  
+                  </div>  
+                    <?php if ($this->redirect): ?>
+                        <input type="hidden" name="redirect" value="<?php echo $this->redirect ?>" />
+                    <?php endif ?>
+                </fieldset>  
+        </form>  
+                   -->
+ <script>
+	 //Cancel Button
+	  jQuery('#agency_form').on('click','[name="cancel"]',function(){
+			 jQuery(this).text('Cancelling...');
+			 jQuery(this).addClass('disabled');
+			 location.href='<?php echo $this->url('admin/agency');?>';
+	  })
+</script>         

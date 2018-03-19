@@ -1,0 +1,2 @@
+UPDATE `jimmy`.`package` SET `templates_allowed`='5' WHERE `id`='5';
+INSERT INTO `jimmy`.`package` (`title`, `is_free_trial`, `type`, `templates_allowed`, `price`, `description`, `status`, `created`) VALUES ('Trial', '1', 'standard', '1', '5', 'Trial packages for post Braintree Payments users.', '1', '');

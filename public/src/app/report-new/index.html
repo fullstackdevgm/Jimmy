@@ -1,0 +1,341 @@
+<h3 class="content-header-new" id="report_header">
+
+    <!--<div style="float:left;padding-right:10px">
+        <div  id="report_title"  data-placement="bottom" data-original-title="Click to Edit" title-edit="report" style="height:20px">{{report.title}}</div>
+    </div>
+
+    <ng-if ng-show="report.message">
+        <div class="col-md-5  center-margin">
+            <div class="infobox error-bg mrg0A center-margin" >
+                <p style="text-align:center">{{report.message}}</p>
+            </div>
+        </div>
+    </ng-if>
+
+    <report-menu   ng-if="report.show"></report-menu>
+
+    <report-button ng-if="generalInfo.current_user.type!='user' &&  report.show==true && !report.shared_with_me"></report-button>-->
+
+</h3>
+<div class="col-md-12">
+    <div class="content-box mrg25B">
+        <h3 class="content-header-box no-margin">
+            <div class="content-header">
+                <div class="f-left">
+                    <span class="font-gray-dark">JIMMY DATA KPI</span>
+                    <span class="font-gray font-normal"> - OUTDOOR CLEANING SPECIALISTS</span>
+                </div>
+                <div class="f-right">
+                    <div class="edit-buttons">
+                        <small><i class="glyph-icon icon-calendar-o font-gray left mrg10R"></i></small>
+                        <small><i class="glyph-icon icon-chevron-down font-gray left mrg10R"></i></small>
+                        <small><i class="glyph-icon icon-cog font-gray left mrg10R"></i></small>
+                        <small><i class="glyph-icon icon-remove font-gray left mrg10R"></i></small>
+                    </div>
+                    <div class="button-group f-right" >
+                        <a href="#/report/new" class="btn small bg-red" title="Add Report">
+                            <span class="button-content"><i class="glyph-icon icon-plus left mrg5R"></i>ADD REPORTS</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </h3>
+    </div>
+</div>
+<!--<span class="button-content bg-green" onclick="showFlotCharts();">
+    Flot
+</span>
+<span class="button-content bg-green" onclick="showMorrisCharts();">
+    Morris
+</span>-->
+<div class="col-md-12 content-box-wrapper mrg25T" id="moris">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- BAR CHART -->
+            <div class="content-box mrg25B">
+                <h3 class="content-header-box no-margin">
+                    <div class="content-header">
+                        <span class="f-left">CLICKS</span>
+                        <i class="glyph-icon icon-bar-chart-o font-gray f-right"></i>
+                    </div>
+                </h3>
+                <div class="box-body chart-responsive no-padding" style="overflow:hidden;">
+                    <div class="col-md-8">
+                        <div id="ClicksChartLegend"></div>
+                        <div class="chart" id="clicks-chart" style="height: 150px;"></div>
+                    </div>
+                    <div class="col-md-4 no-padding">
+                        <div class="mrg10T">
+                            <span class="font-gray" style="font-size:10px;">HOURLY | DAY | MONTH | MONTH</span> <small><i class="glyph-icon icon-calendar"></i></small>
+                        </div>
+                        <div class="mrg10T">
+                            <span class="font-gray font-normal" style="font-size:14px;display:block;">NEW CLICKS</span>
+                            <span class="font-gray-dark font-bold" style="font-size:20px;">1767</span>
+                        </div>
+                        <div class="mrg10T">
+                            <span class="font-gray font-normal" style="font-size:14px;display:block;">TOTAL CLICKS</span>
+                            <span class="font-gray-dark font-bold" style="font-size:20px;">212786</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <!-- BAR CHART -->
+            <div class="content-box mrg25B">
+                <h3 class="content-header-box no-margin">
+                    <div class="content-header">
+                        <span class="f-left">CTR</span>
+                        <i class="glyph-icon icon-bar-chart-o font-gray f-right"></i>
+                    </div>
+                </h3>
+                <div class="box-body chart-responsive no-padding">
+                    <div class="chart" id="ctr-chart" style="height: 150px;"></div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+
+        </div><!-- /.col (RIGHT) -->
+        <div class="col-md-3">
+            <!-- DONUT CHART -->
+            <div class="content-box mrg25B">
+                <h3 class="content-header-box no-margin">
+                    <div class="content-header">
+                        <span class="f-left">CONVERSION</span>
+                        <i class="glyph-icon icon-indent font-gray f-right"></i>
+                    </div>
+                </h3>
+                <div class="box-body chart-responsive no-padding">
+                    <div class="chart" id="conversion-chart" style="height: 150px; position: relative;"></div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col (LEFT) -->
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <!-- BAR CHART -->
+            <div class="content-box mrg25B">
+                <h3 class="content-header-box no-margin">
+                    <div class="content-header">
+                        <span class="f-left">CPA</span>
+                        <i class="glyph-icon icon-bar-chart-o font-gray f-right"></i>
+                    </div>
+                </h3>
+                <div class="box-body chart-responsive no-padding">
+                    <div id="CPAChartLegend"></div>
+                    <div class="chart" id="bar-chart" style="height: 150px;"></div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+
+        </div><!-- /.col (RIGHT) -->
+        <div class="col-md-3">
+            <!-- AREA CHART -->
+            <div class="content-box mrg25B">
+                <h3 class="content-header-box no-margin">
+                    <div class="content-header">
+                        <span class="f-left">IMPRESSIONS</span>
+                        <i class="glyph-icon icon-cloud font-gray f-right"></i>
+                    </div>
+                </h3>
+                <div class="box-body chart-responsive no-padding">
+                    <div id="impressionsChartLegend"></div>
+                    <div class="chart" id="impressions-chart" style="height: 150px;"></div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+        <div class="col-md-3">
+            <!-- DONUT CHART -->
+            <div class="content-box mrg25B">
+                <h3 class="content-header-box no-margin">
+                    <div class="content-header">
+                        <span class="f-left">IMPRESSIONS SHARE</span>
+                        <i class="glyph-icon icon-eye font-gray f-right"></i>
+                    </div>
+                </h3>
+                <div class="box-body chart-responsive no-padding">
+                    <div class="chart" id="impressions-share-chart" style="height: 150px; position: relative;"></div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col (LEFT) -->
+        <div class="col-md-3">
+            <!-- LINE CHART -->
+            <div class="content-box mrg25B">
+                <h3 class="content-header-box no-margin">
+                    <div class="content-header">
+                        <span class="f-left">AVERAGE POSITION</span>
+                        <i class="glyph-icon icon-arrow-up font-gray f-right"></i>
+                    </div>
+                </h3>
+                <div class="box-body chart-responsive no-padding">
+                    <div class="chart" id="average-position-chart" style="height: 150px;"></div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+    </div><!-- /.row -->
+</div>
+<!--<div class="col-md-12 content-box-wrapper mrg25T" id="" ng-include src="template"  ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"> </div>
+<!-- Clone Report Template -->
+<!--<ng-include src="'src/app/report/clone.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/share.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/schedule.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/download.html'"></ng-include>
+<ng-include src="'src/app/report/chat.html'"       ng-if="generalInfo.current_user.type!='user'"></ng-include>-->
+<script type="text/javascript">
+
+$(function() {
+    
+    function showFlotCharts(){
+        $('#flot').show();
+        $('#morris').hide();
+    }
+    
+    function showMorrisCharts(){
+        $('#flot').hide();
+        $('#morris').show();
+    }
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    // CLICKS CHART
+    var CLICKS_area = new Morris.Area({
+        element: 'clicks-chart',
+        resize: true,
+        data: [
+            {y: '2014-01', Clicks: 100},
+            {y: '2014-02', Clicks: 250},
+            {y: '2014-03', Clicks: 200},
+            {y: '2014-04', Clicks: 90},
+            {y: '2014-05', Clicks: 30},
+            {y: '2014-06', Clicks: 240}
+        ],
+        xkey: 'y',
+        xLabelFormat: function (x) { return months[x.getMonth()]; },
+        ykeys: ['Clicks'],
+        labels: ['Clicks'],
+        lineColors: ['#A59E94'],
+        hideHover: 'auto'
+    });
+    /*CLICKS_area.options.labels.forEach(function(label, i){
+        var legendItem = $('<div class="col-md-6 impressionsChartLegendText"></div>').text(label).css('color', CLICKS_area.options.lineColors[i]);
+        $('#clicksChartLegend').append(legendItem);
+    });*/
+    
+    // AREA CHART
+    var IMPRESSIONS_area = new Morris.Area({
+        element: 'impressions-chart',
+        resize: true,
+        data: [
+            {y: '1', Impressions: 10, UniqueImpressions: 20},
+            {y: '2', Impressions: 7, UniqueImpressions: 3},
+            {y: '3', Impressions: 20, UniqueImpressions: 12},
+            {y: '4', Impressions: 4, UniqueImpressions: 8},
+            {y: '5', Impressions: 15, UniqueImpressions: 3},
+            {y: '6', Impressions: 20, UniqueImpressions: 18}
+        ],
+        xkey: 'y',
+        ykeys: ['Impressions', 'UniqueImpressions'],
+        labels: ['Impressions', 'Unique impressions'],
+        lineColors: ['#E66F75', '#F19D54'],
+        hideHover: 'auto'
+    });
+    IMPRESSIONS_area.options.labels.forEach(function(label, i){
+        var legendItem = $('<div class="col-md-6 impressionsChartLegendText"></div>').text(label).css('color', IMPRESSIONS_area.options.lineColors[i]);
+        $('#impressionsChartLegend').append(legendItem);
+    });
+
+    // LINE CHART
+    var CPA_line = new Morris.Line({
+        element: 'average-position-chart',
+        resize: true,
+        data: [
+            {y: '2014-01', item: 25000},
+            {y: '2014-02', item: 14500},
+            {y: '2014-03', item: 35000},
+            {y: '2014-04', item: 60000}
+        ],
+        xkey: 'y',
+        xLabelFormat: function (x) { return months[x.getMonth()]; },
+        ykeys: ['item'],
+        labels: ['Average Position'],
+        lineColors: ['#3c8dbc'],
+        hideHover: 'auto'
+    });
+
+    //DONUT CHART
+    var IMPRESSIONS_SHARE_donut = new Morris.Donut({
+        element: 'impressions-share-chart',
+        resize: true,
+        colors: ["#3c8dbc", "#f56954", "#00a65a"],
+        data: [
+            {label: "Download Sales", value: 12},
+            {label: "In-Store Sales", value: 30},
+            {label: "Mail-Order Sales", value: 20}
+        ],
+        hideHover: 'auto'
+    });
+    //BAR CHART
+    
+    var CTR_donut = new Morris.Donut({
+        element: 'conversion-chart',
+        resize: true,
+        colors: ["#FFCC33", "#727272"],
+        data: [
+            {label: "New", value: 369},
+            {label: "Total", value: 623}
+        ],
+        hideHover: 'auto'
+    });
+    //BAR CHART
+    
+    var bar = new Morris.Bar({
+        element: 'bar-chart',
+        resize: true,
+        data: [
+            {y: '' , a: 5, b: 10,c: 15, d: 30},
+            {y: '', a: 18, b: 12, c:9, d:14},
+            {y: '', a: 3, b: 5, c: 12, d: 30},
+            {y: '', a: 25, b: 12, c:15, d:20},
+            {y: '', a: 5, b: 23, c: 10, d: 30},
+            {y: '', a: 3, b: 20, c: 13, d: 28},
+            {y: '', a: 18, b: 12, c:2, d: 30},
+            {y: '', a: 20, b: 10, c:29, d: 10}
+        ],
+        barColors: ['#FFCC33', '#717171','#E15258','#ECEDF1'],
+        xkey: 'y',
+        ykeys: ['a', 'b','c','d'],
+        labels: ['Oraganic Search', 'Facebook Advertising','Paid Search','Email Marketing'],
+        hideHover: 'auto'
+    });
+    bar.options.labels.forEach(function(label, i){
+        var legendItem = $('<div class="col-md-6 CPAChartLegendText"></div>').text(label).css('color', bar.options.barColors[i]);
+        $('#CPAChartLegend').append(legendItem);
+    });
+    var CTR_bar = new Morris.Bar({
+        element: 'ctr-chart',
+        resize: true,
+        data: [
+            {y: '' , a: 5, b: 10,c: 15, d: 30},
+            {y: '', a: 18, b: 12, c:9, d:14},
+            {y: '', a: 3, b: 5, c: 12, d: 30},
+            {y: '', a: 25, b: 12, c:15, d:20},
+            {y: '', a: 5, b: 23, c: 10, d: 30},
+            {y: '', a: 3, b: 20, c: 13, d: 28},
+            {y: '', a: 18, b: 12, c:2, d: 30},
+            {y: '', a: 20, b: 10, c:29, d: 10}
+        ],
+        barColors: ['#FFCC33', '#717171','#E15258','#ECEDF1'],
+        xkey: 'y',
+        ykeys: ['a', 'b','c','d'],
+        labels: ['Oraganic Search', 'Facebook Advertising','Paid Search','Email Marketing'],
+        hideHover: 'auto'
+    });
+});
+
+/*
+ * Custom Label formatter
+ * ----------------------
+ */
+function labelFormatter(label, series) {
+    return "<div style='font-size:13px; text-align:center; padding:2px; color: #fff; font-weight: 600;'>"
+            + label
+            + "<br/>"
+            + Math.round(series.percent) + "%</div>";
+}
+</script>

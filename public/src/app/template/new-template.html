@@ -1,0 +1,46 @@
+  <div class="hide" id="new-template" title="Save as Template" ng-controller="NewTemplateCtrl">
+            <div class="pad10A">
+                
+                <div class="col-md-12">
+                    <div class="row" style="padding-left:20px">
+                       Save <strong>{{report.title}}</strong> as Template
+                    </div>
+                </div>
+
+                <div class="col-md-12 mrg25T">
+                    <form action="" id="saveTemplate" class="col-md-12 center-margin form-vertical">
+
+                        <div class="form-row">
+                            <div class="form-label col-md-4">
+                                <label for="">
+                                    Template Name
+                                </label>
+                            </div>
+                            <div class="form-input col-md-12">
+                                <input data-required="true" required placeholder="Template Name" type="text" name="templateName" id="templateName"  ng-model="template.name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-label col-md-4">
+                                <label for=""></label>
+                            </div>
+                           
+                            <div class="form-input col-md-2  float-right">
+                                 <button type="button" class="btn bg-gray medium" id="add-template-close">
+                                    <span class="button-content">cancel</span>
+                                </button>
+                                 <button class="btn primary-bg medium" ng-click="save(template.name)">
+                                    <span class="button-content">Save Template</span>
+                                </button>
+                            </div>
+                        </div>       
+                     </form>
+                </div>
+
+
+
+
+          </div>
+
+</div>

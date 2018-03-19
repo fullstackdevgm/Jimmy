@@ -1,0 +1,270 @@
+<div id="msg-container"></div>
+<a href="#" class="cancel-report" id="cancel"  data-id="<?php echo $report->getUserId();?>"><span>Back</span></a><br />
+<div class="head01">
+   	
+   		    <div class="editable report-title" id="title_<?php echo $report->getId();?>"><?php echo $report->getTitle();?></div>	
+				
+			<?php if ($this->isAllowed('report', 'manage')):?>
+						<div class="actions-bar"  style="clear:both" data-id="<?php echo $report->getId();?>">
+			            	<a title="Edit Report"   		 class="editBtn">edit</a>
+			                <a title="Delete Report" 		 class="delBtn">delete</a>
+			                <a title="Clone Report" 		 class="cloneBtn">clone</a>
+			                <a title="Share Report" 		 class="shareBtn">share</a>
+			                <a title="Download Report" 		 class="downloadBtn" target="new" href="<?php echo $this->url('jimmy-report/download',array('report_id'=>$report->getId())) ?>" data-id="<?php echo $report->getId();?>">download</a>
+			            </div>	
+
+			            <div class="message-reportview" id="alert-<?php echo $report->getId();?>"></div>
+
+			            <!-- Clone Reports //-->
+			            <div class="cloneReports"  id="clone-reports-<?php echo $report->getId();?>">
+	                           <?php echo $this->partial('jimmy-base/partials/clone.phtml');?>
+	                    </div>
+			            <!-- Share Reports //-->
+			            <div class="shareReports" id="share-reports-<?php echo $report->getId();?>">	            
+ 							<?php $reportshare_list = $reportshare_mapper->findByReportId($report->getId());
+									echo $this->partial('jimmy-base/partials/share-inline.phtml',
+	                                                         array('report'			  => $report,
+	                                                               'reportshare_list' => $reportshare_list,
+	                                                               'user_mapper'      => $user_mapper));?>	                
+		                </div>
+
+		                <!-- Scheduled Reports //-->
+		                <div class="scheduleReport"  id="schedule-reports-<?php echo $report->getId();?>">	            
+		                		<?php echo $this->partial('jimmy-base/partials/schedule-reports.phtml');?>
+		                </div>
+		    <?php elseif($this->isAllowed('report','download')):?> 
+              <div class="actions-bar"  style="clear:both" data-id="<?php echo $report->getId();?>">
+					<a title="Download Report" target="new" href="<?php echo $this->url('jimmy-report/download',array('report_id'=>$report->getId())) ?>" 
+            class="downloadBtn" data-id="<?php echo $report->getId();?>">Download</a>
+              </div>
+
+	        <?php endif;?>
+		
+</div>
+<div class="clr"></div>
+<?php 
+ if($widgets->count()):
+ 
+   $class['kpi']	= 'moreStuff radius5 t1';
+   $class['graph']	= 'graph';
+   $class['table']	= 'performTbl radius5';
+   $class['notes']	= 'note';
+ ?>
+       
+    <div class="wrpr radius5">
+		<div class="reportContent">
+        <ul  class="widgets-list"  <?php if($this->zfcUserIdentity()->getType()=='agency') echo 'id="sortable"';?>>
+    <?php
+        foreach($widgets as $key => $widget):
+		       $fields = unserialize($widget->getFields()); 
+    ?>
+        <li id="<?php echo $widget->getId();?>">  
+           
+           <div class="row13 action" style="margin-left:5px;margin-top:5px;float:right;width:5px">
+           <?php if ($this->isAllowed('report', 'manage')):?>
+                <a title="Change" href="#" class="change-widget a1" data-id="<?php echo $widget->getId();?>">Change</a> 
+                <a title="Delete" href="#" class="delete-widget a3" data-id="<?php echo $widget->getId();?>">Delete</a>
+                <?php echo $this->partial('jimmy-base/partials/filter.phtml',array('widget'=>$widget,'metrics_service'=>$metrics_service,'fields' => $fields));?>
+           <?php elseif($this->isAllowed('report','filter')):?>     
+				<?php echo $this->partial('jimmy-base/partials/filter.phtml',array('widget'=>$widget,'metrics_service'=>$metrics_service,'fields' => $fields));?>
+           <?php endif;?>
+           </div>
+
+       	   <div id="widget_<?php echo $widget->getId();?>" class="widgets-holder widget-<?php echo $widget->getType();?> report-type<?php echo $fields['report_type']?>"></div>       
+       </li>  
+    <?php 
+        endforeach;
+     ?>
+     </ul>
+   </div>
+</div>
+  
+ <?php else: ?>
+	<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a> No widgets to show. Start by adding one</div>
+ <?php endif; ?>
+
+<script>
+jQuery(document).ready(function(){
+
+ JimmyJS.loadWidgets();
+ simple_toolTip(jQuery(".head01 .actions-bar a"), "tooltip");
+
+<?php if ($this->isAllowed('report', 'manage')):?>
+	
+	//Edit Widget
+	jQuery('.actions-bar a.editBtn').on('click',function(){
+		  var report_id = jQuery(this).parent().attr('data-id'); 
+		  var url       = '<?php echo $this->url('jimmy-report/edit');?>/' + report_id;
+		  JimmyJS.get(url,'report-container');
+	})
+	  
+  	//Delete Widget
+	jQuery('.actions-bar  a.delBtn').on('click',function(){
+	   var report_id     = jQuery(this).parent().attr('data-id'); 
+	  
+	   JimmyJS.alert('alert-'+report_id,'Are you sure you want to delete this report? <a href="#" data-id="'+report_id+'" id="confirmDelete">Delete</a>','block',true)
+
+	   $('#confirmDelete').on('click',function(){
+				var url = '<?php echo $this->url('jimmy-report/delete');?>/' + report_id;
+				JimmyJS.get(url,'report-list',null,'msg-container');
+				var curr_url    = location.href.replace('#','');
+				jQuery(this).addClass('disabled');
+				location.href = curr_url;
+	  })
+	})
+
+
+	//Clone
+	jQuery('.actions-bar').on('click','a.cloneBtn',function(){
+
+	  var report_id  = jQuery(this).parent().attr('data-id'); 
+		$("#clone-reports-" + report_id).toggle();
+	})
+	//Share
+	jQuery('.actions-bar').on('click','a.shareBtn',function(){
+
+	  var report_id  = jQuery(this).parent().attr('data-id'); 
+		$("#share-reports-" + report_id).toggle()
+
+	})
+	//Schedule
+	jQuery('.actions-bar').on('click',' a.timeBtn',function(){
+	    var report_id  = jQuery(this).parent().attr('data-id'); 
+		$("#schedule-reports-" + report_id).toggle()
+	})
+
+    //Edit Widget
+	jQuery('#report-container').on('click','div.reportContent a.change-widget',function(){
+		  var widget_id = jQuery(this).attr('data-id');
+		  var url       = '<?php echo $this->url('jimmy-widget/edit') ?>' + '/' + widget_id+'/inline';
+		  JimmyJS.working('widget_'+widget_id);
+		  JimmyJS.get(url,'widget_'+widget_id);
+	})
+	//Delete Widget
+	jQuery('#report-container').on('click','div.reportContent a.delete-widget',function(){
+		   var widget_id  =  jQuery(this).attr('data-id'); 
+
+		   JimmyJS.alertOption('Are you sure you want to delete this widget? <a href="#" data-id="'+widget_id+'" id="confirmDelete">Delete</a>')
+
+		  jQuery('#confirmDelete').on('click',function(){
+					var url = '<?php echo $this->url('jimmy-widget/delete');?>/' + widget_id;		
+					JimmyJS.get(url,'report-container',null,'msg-container');
+		  })
+	});
+
+	//Editable
+	jQuery('.editable').editable('<?php echo $this->url('jimmy-report/save');?>', {
+		 indicator : 'Saving...',
+		 tooltip   : 'Click to edit...',
+	 });
+
+	// Share Report Action
+	jQuery('#report-container').on('click','button[name="share-button"]',function(e){
+		  var report_id     = jQuery(this).attr('data-id'); 
+		  var url = '<?php echo $this->url('jimmy-report/share');?>/' + report_id;
+		  JimmyJS.shareReport(url,'share_with_form-'+report_id,'share-reports-'+report_id,'alert-'+ report_id);
+		  return false;
+  	})
+	 
+	// Remove Share Action
+	jQuery('#report-container').on('click','span.remove-sharing',function(){
+		  var report_id     = jQuery(this).attr('report-id'); 
+		  var user_id       = jQuery(this).attr('user-id'); 
+		  var url = '<?php echo $this->url('jimmy-report/removeshare');?>/' + report_id + '/' + user_id;
+		  JimmyJS.removeSharing(url,'share-reports-'+report_id,'alert-'+ report_id);
+		  return false;
+  	})
+
+		// Clone Report Action
+  	jQuery('#report-container').on('click','button[name="clone-button"]',function(e){
+		  var report_id     = jQuery(this).attr('data-id'); 
+		  var url = '<?php echo $this->url('jimmy-report/clone');?>/' + report_id;
+		  JimmyJS.cloneReport(url,'clone_form-'+report_id,'report-list','msg-container');
+		 return false;
+  	})
+	 
+ <?php endif;?>
+
+	// Cancel 
+	jQuery('#report-container').on('click','#cancel',function(){
+	      var curr_url    = location.href.replace('#','');
+		  var client_id  = jQuery(this).attr('data-id'); 
+		  <?php 
+		  	 if($this->isAdmin())
+		  	 	$url = 'admin/client/view';
+		  	 else if($this->isAllowed('report', 'manage'))
+		  	 	$url = 'client/view';
+		  	 else {
+		  	 	$url = '/dashboard';
+		  	 	?>
+		  	 	location.href = '<?php echo $url?>';
+		  	 	return false;
+		  	 	<?php
+		   	}
+		   ?>
+		   var url = "<?php echo $url?>/" + client_id;
+		   JimmyJS.working('client-list');
+		   JimmyJS.get(url,'client-list');
+	})
+
+	//Sort 
+	jQuery(function() {
+		jQuery( "#sortable" ).sortable({ cursor: "move" });
+		jQuery( "#sortable" ).disableSelection();
+		jQuery( "#sortable" ).on( "sortupdate", function( event, ui ) {
+			var idsInOrder = $('#sortable').sortable("toArray");
+			var report_id  = '<?php echo $this->report->getId();?>';
+			JimmyJS.sortUpdate('<?php echo $this->url('jimmy-widget/sortupdate') ?>',{'widget_ids':idsInOrder,'report_id':report_id},'msg-container');
+		});
+	});
+
+ 
+ jQuery('.action a.reload').on('click',function(){
+	JimmyJS.loadWidgets();
+ })
+  
+	/*  Report Filter Section */
+	jQuery('.filter').bind('click',function(){
+		 JimmyJS.filterData(jQuery(this).attr('id'),this.form)
+		 //Close the dropdown
+		 jQuery(this).parents('.dropdown').removeClass('open');
+	})
+	 
+	jQuery('.dropdown').on('click','button[name="share-button"]',function(e){
+		  var report_id     = jQuery(this).attr('data-id'); 
+		  var url = '<?php echo $this->url('jimmy-report/share');?>/' + report_id;
+		  JimmyJS.post(url,'share_with_form-'+report_id,'dd-'+report_id,'msg-container');
+		   e.stopPropagation();
+  	})
+	
+	jQuery('.dropdown').on('click','span.remove-sharing',function(){
+		  var report_id     = jQuery(this).attr('report-id'); 
+		  var user_id       = jQuery(this).attr('user-id'); 
+		  var url = '<?php echo $this->url('jimmy-report/removeshare');?>/' + report_id + '/' + user_id;
+		  JimmyJS.get(url,'dd-'+report_id,'msg-container');
+		  return false;
+  	})
+
+	jQuery('input[name="custom_date_range[min]"]').datepicker({ maxDate: '0' });
+	jQuery('input[name="custom_date_range[max]"]').datepicker({ maxDate: '0' });
+
+	jQuery('select[name="date_range"]').change(function(e){
+
+		var key = jQuery(this).val();
+		
+			if(key==14)
+		  	 	jQuery(this).next().show();
+		 	else
+		   		jQuery(this).next().hide();
+
+			// Stop drop down  from closing  when  any element on  date picker is clicked
+			jQuery('#ui-datepicker-div').click(function(e){
+					e.stopPropagation();
+			})
+	    
+	})
+
+})
+
+</script>
+ 

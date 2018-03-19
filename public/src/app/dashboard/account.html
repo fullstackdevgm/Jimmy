@@ -1,0 +1,288 @@
+<div class="hide" id="update-logo" title="User Logo Uploader">
+        <div class="pad10A">
+            <div class="col-md-12 form-vertical center-margin pad10A">
+                 <div class="form-row">
+                        <div class="form-label col-md-12">
+                            <label for="">
+                                User  Logo
+                            </label>
+                        </div>
+                        <div class="form-input col-md-12" id="dropzone-example">
+                            <div ngf-drop ngf-select ng-model="file" class="drop-box col-md-12" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err'}" accept="image/*" ngf-pattern="'image/*,.gif'">Drop image here or click here to upload.</div>
+                            <div ngf-no-file-drop class="col-md-12">File Drag/Drop is not supported for this browser.</div>
+                            <div class="col-md-12" align="center">Best fit image dimension width 210px and height 50px</div>
+                        </div>
+
+                        <div class="form-input col-md-5 pad10A">
+                             <button class="btn primary-bg medium float-right"  id="done">
+                                <span class="button-content">Done</span>
+                            </button>
+                        </div>
+                </div>
+            </div>
+
+        </div>
+</div>
+
+<div class="hide" id="update-company-logo" title="Company Logo Uploader">
+        <div class="pad10A">
+            <div class="col-md-12 form-vertical center-margin pad10A">
+                 <div class="form-row">company
+                        <div class="form-label col-md-12">
+                            <label for="">
+                                User  Logo
+                            </label>
+                        </div>
+                        <div class="form-input col-md-12" id="dropzone-example">
+                            <div ngf-drop ngf-select ng-model="companyLogo" class="drop-box col-md-12" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err'}" accept="image/*" ngf-pattern="'image/*,.gif'">Drop image here or click here to upload.</div>
+                            <div ngf-no-file-drop class="col-md-12">File Drag/Drop is not supported for this browser.</div>
+                            <div class="col-md-12" align="center">Best fit image dimension width 210px and height 50px</div>
+                        </div>
+
+                        <div class="form-input col-md-5 pad10A">
+                             <button class="btn primary-bg medium float-right"  id="done">
+                                <span class="button-content">Done</span>
+                            </button>
+                        </div>
+                </div>
+            </div>
+
+        </div>
+</div>
+
+<div class="hide" id="cancel-confirm" title="Cancel Account" style="height:100px">
+            <div class="col-md-12 form-vertical center-margin pad10A">
+                 <span class="font-gray-dark" style="text-align:center"> Cancelling your account will cancel your subscription too. Are you sure you want to proceed?</span>
+                 <div class="form-row">
+                        <div class="form-input col-md-5 ">
+                             <button class="btn primary-bg medium float-right" >
+                                <span class="button-content" ng-click="cancelAccount()">Proceed</span>
+                            </button>
+                        </div>
+                </div>
+            </div>
+
+</div>
+
+
+<div class="col-md-12 center-margin">
+
+                <div class="profile-box bg-white content-box ">
+                    <div class="content-box-header clearfix bg-white-alt">
+                        <div class="col-md-1">
+                            <img image-fallback ng-src="/resources/logos/agencies/{{generalInfo.current_user.thumb}}"  style="cursor:pointer; clear:both;" width="50" add-client-dialog="update-logo" >
+                            <div class="remLogoBtn" ng-if="isLogoSet"><a href="javascript:;" ng-click="removeThumb()"><i class="fa fa-times"></i></a></div>
+                        </div>
+                        <div style="float:left;">
+                            <div  class="row client-name" id="client_name"  data-placement="bottom" data-original-title="Click to Edit" title-edit="user_account">{{generalInfo.current_user.name}}</div>
+                            <div class="row">{{generalInfo.current_user.email}}</div>
+                            <div class="row"><a  href="javascript:;" dialog-height='100'  add-client-dialog="cancel-confirm"><span class="delete-account" >Cancel Account</span></a> </div>
+
+                        </div>
+
+                    </div>
+</div>
+
+<div class="col-md-12 center-margin" ng-if="generalInfo.current_user.type=='agency'">
+
+                    <div  class="mrg20T">
+                            <div id="tab1" class="nav-list-horizontal clearfix nav-list-horizontal-alt" >
+                                <ul class="row">
+                                    <li class="col-md-4">
+                                        <div ng-if="generalInfo.package!=null">
+
+                                            <div class="info-box icon-wrapper">
+                                                <div class="icon-wrapper-round bg-light-red">
+                                                    <i class="glyph-icon icon-round icon-ticket"></i>
+                                                </div>
+
+                                                <b>Package</b>
+                                                <span ng-hide="generalInfo.package.id==14" class="stats float-left" style="">{{generalInfo.package.title}} </span>
+                                                <span ng-show="generalInfo.package.id==14" class="stats float-left" style="">Next payment ${{generalInfo.templates_used * generalInfo.package.price}}</span>
+                                                <a ng-show="generalInfo.package.id==5 || generalInfo.package.id==15" class="action" ng-click="showUpgrade()">Upgrade Package</a>
+                                                <a ng-show="generalInfo.package.id==16" class="action" ng-click="showUpgrade()">
+                                                    Expires on {{getTrialExpiryDate(generalInfo.current_user.created) | date:"d MMM yyyy"}}
+                                                </a>
+                                                <a ng-hide="generalInfo.package.id==5 || generalInfo.package.id==15 || generalInfo.package.id==16" class="action">You will be charged on {{generalInfo.current_user.next_payment_date | date:"d MMM yyyy"}}</a>
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                    <li class="col-md-4">
+                                        <div>
+
+                                            <div class="info-box icon-wrapper">
+                                                <div class="icon-wrapper-round bg-light-yellow">
+                                                    <i class="glyph-icon icon-round icon-bar-chart-o"></i>
+                                                </div>
+
+                                                <b>Total Reports</b>
+                                                <span ng-hide="generalInfo.package.id==14 || generalInfo.package.id == 16" class="stats">
+                                                  {{generalInfo.templates_used}}/{{generalInfo.package.templates_allowed?generalInfo.package.templates_allowed:"Unlimited"}}
+                                                </span>
+                                                <span ng-show="generalInfo.package.id==14 || generalInfo.package.id == 16" class="stats">
+                                                  {{generalInfo.templates_used}}
+                                                </span>
+                                                <a class="action" href="#/reports">View Reports</a>
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                    <li class="col-md-4">
+                                    <div>
+                                        <div class="info-box icon-wrapper">
+                                            <div class="icon-wrapper-round bg-light-grey">
+                                                <i class="glyph-icon icon-round icon-users"></i>
+                                            </div>
+                                            <b>Total Clients</b>
+                                            <span class="stats">
+                                                {{generalInfo.total_clients}}
+                                            </span>
+                                            <a class="action" href="#/clients">View Clients</a>
+                                        </div>
+                                    </div>
+
+                                    </li>
+
+                                </ul>
+                        </div>
+                    </div>
+
+                
+
+                </div>
+    </div>
+
+</div>
+<div class="col-md-12 center-margin">
+                <div class="accordion-panel">
+
+                    <!-- settings for user -->
+                    <div id="settings-user" ng-if="generalInfo.current_user.type=='user'">
+                        <h3><i class="fa fa-user"></i><span class="mrg10L">Change password</span></h3>
+                        <div>
+                            <div class="clearfix">
+
+                                <div class="col-md-8" >
+                                    <h4 class="font-gray-dark">Change Password</h4>
+                                    <div class="divider col-md-10"></div>
+                                        <form action="#"  id="password_form">
+                                            <div class="form-row">
+                                                <div class="form-label col-md-3 font-gray-dark">
+                                                    <label for="">
+                                                        New Password:
+                                                    </label>
+                                                </div>
+                                                <div class="form-input col-md-6">
+                                                    <input data-required-message="Please type your password"  ng-model="changepass.password" placeholder="New Password" type="password" name="password" id="password" data-required="true">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-label col-md-3 font-gray-dark">
+                                                    <label for="">
+                                                       Confirm New Password:
+                                                    </label>
+                                                </div>
+                                                <div class="form-input col-md-6">
+                                                    <input data-required-message="Please confirm your password"  data-equalto="#password" ng-model="changepass.c_password" placeholder="Confirm Password" type="password" name="c_passowrd" id="c_password" data-required="true">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-label col-md-3 font-gray-dark">
+                                                    <label for="">
+                                                    </label>
+                                                </div>
+                                                <div class="form-input col-md-6">
+                                                    <a href="javascript:;" class="btn medium primary-bg" title="" ng-click="changePassword()">
+                                                        <span class="button-content">Change</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <h3><i class="fa fa-times"></i><span class="mrg10L">Cancel your account</span></h3>
+                        <div>
+                            <a  href="javascript:;" dialog-height='100'  add-client-dialog="cancel-confirm"><span class="delete-account" >Cancel Account</span></a>
+                        </div>
+                    </div>
+                    
+                    <!-- settings for agency -->
+                    <div id="settings-agency" ng-if="generalInfo.current_user.type=='agency'">
+                        
+                        <h3><i class="fa fa-picture-o"></i><span class="mrg10L">Change your company logo</span></h3>
+                      <div>
+                        <div class="col-md-12">
+                            <div class="form-row">
+                                <div class="form-label col-md-2">
+                                    <label for="">
+                                       Logo Settings:
+                                    </label>
+                                </div>  
+                                <div class="form-label col-md-2 mrg5T" ng-show="isCompanyLogoSet"> 
+                                    <a href="javascript:;" class="btn small bg-blue" ng-click="removeLogo()">
+                                        <span class="button-content">
+                                            <i class="glyph-icon icon-cloud-upload float-left"></i>
+                                            Remove Logo
+                                        </span>
+                                    </a>
+                                </div>
+                                <div class="form-label col-md-2 mrg5T"> 
+                                    <a href="javascript:;" class="btn small bg-blue" id="upload-logo-btn"  add-client-dialog="update-company-logo">
+                                        <span class="button-content">
+                                            <i class="glyph-icon icon-cloud-upload float-left"></i>
+                                            Change Logo
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                      <h3><i class="fa fa-envelope-o"></i><span class="mrg10L">Change email settings (Email Body, From Name, From Email)</span></h3>
+                      <div>
+                        <ng-include src="'src/app/dashboard/settings.html'"  ></ng-include>
+                      </div>
+                      <h3><i class="fa fa-bar-chart"></i><span class="mrg10L">Change your report footer</span></h3>
+                      <div>
+                        <ng-include src="'src/app/dashboard/pdf-settings.html'"  ></ng-include>
+                      </div>
+                      <h3 class="paymentInfoSettings"><i class="fa fa-credit-card"></i><span class="mrg10L">Update payment details</span></h3>
+                      <div>
+                        <ng-include src="'src/app/dashboard/cc-recurring.html'" ></ng-include>
+                      </div>
+                      <h3 ng-click="toggleInvoiceDisplay()"><i class="fa fa-list-alt"></i><span class="mrg10L">View invoices</span></h3>
+                      <div>
+                        <ng-include src="'src/app/dashboard/invoices.html'" ></ng-include>
+                      </div>
+                      <h3><i class="fa fa-times"></i><span class="mrg10L">Cancel your account</span></h3>
+                      <div>
+                        <a  href="javascript:;" dialog-height='100'  add-client-dialog="cancel-confirm"><span class="delete-account" >Cancel Account</span></a>
+                      </div>
+                    </div>    
+                </div>
+</div>
+<script ng-if="generalInfo.current_user.type=='agency'">
+$(function() {
+    $( "#settings-agency" ).accordion({
+        collapsible: true,
+        heightStyle: 'content',
+        active: false,
+        icons: false
+    });
+});
+</script>
+
+<script ng-if="generalInfo.current_user.type=='user'">
+$(function() {
+    $( "#settings-user" ).accordion({
+        collapsible: true,
+        heightStyle: 'content',
+        active: false,
+        icons: false
+    });
+});
+</script>

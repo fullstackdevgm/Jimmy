@@ -1,0 +1,7 @@
+<?php if ($this->logo == '/images/logo-jimmy.png'): ?>
+    <img  src="images/logo.png" 
+                 style="margin-top:8px;margin-left:20px;">
+<?php else : ?>
+    <?php $logourl = ltrim($this->logo,'/') ?>
+    <img src="<?php echo  $logourl;?>" alt="<?php echo  $this->logo_title;?>" style="width:215px;height:50px;background-color: #FEFEFE ; padding:2px 5px 2px 0px; ">
+<?php endif; ?>

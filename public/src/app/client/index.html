@@ -1,0 +1,105 @@
+<ng-include src="'/src/app/client/add-source.html'" ></ng-include>
+
+
+<div class="hide" id="update-logo" title="Client Logo Uploader">
+        <div class="pad10A">
+            <div class="col-md-12 form-vertical center-margin pad10A">
+                 <div class="form-row">
+                        <div class="form-label col-md-12">
+                            <label for="">
+                                Client  Logo
+                            </label>
+                        </div>
+                        <div class="form-input col-md-12" id="dropzone-example">
+                        <form action="/clients/upload-logo" class="dropzone bg-gray col-md-12 center-margin dz-clickable" id="demo-upload" file-upload finish-callback="uploadFinish">
+                                <div class="dz-default dz-message"><span>Drop logo here to upload</span></div>
+                                <input type="text" style="display:none" name="client_id" ng-model="client.client_id">
+                        </form>
+                        </div>
+                         <div class="form-input col-md-5 pad10A">
+                             <button class="btn primary-bg medium float-right"  id="done">
+                                <span class="button-content">Done</span>
+                            </button>
+                        </div>
+                </div>
+            </div>
+
+        </div>
+</div>
+
+<ng-if ng-if="error_msg">
+        <div class="col-md-5  center-margin">
+            <div class="infobox error-bg mrg0A center-margin" >
+                <p style="text-align:center">{{error_msg}}</p>
+            </div>
+        </div>
+</ng-if>
+
+
+
+<div ng-if="!error_msg" class="col-md-12" >
+        <div class="profile-box content-box">
+
+
+             <div class="content-box-header clearfix bg-blue-alt">
+                <div class="col-md-1">
+                 <img image-fallback width="50" ng-src="/resources/logos/clients/{{client.logo}}" add-client-dialog="update-logo" style="cursor:pointer" /></td>
+                </div>
+                <div style="float:left;width:20%">
+                    <div  class="row" id="client_name"  data-placement="bottom" data-original-title="Click to Edit" title-edit="client" style="height:20px;opacity:1;font-size:21px">{{client.name}}</div>
+                    <div class="row">{{client.email}}</div>
+                </div>
+
+            </div>
+
+            <table class="table col-md-12">
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+
+                            <h4>Source Accounts</h4>
+
+                        </td>
+                    </tr>
+                    <tr ng-repeat="source in clientSources | filter:search | orderBy:'id'">
+                        <td class="font-bold text-left">
+                            <div class="badge badge-small bg-azure"></div>
+                            {{source.name}} <span class="label bg-gray" title="">{{source.account_id}}</span> {{source.email}}
+                          <!--  <small class="font-red" ng-if="source.api_auth_info.length=='' || source.api_auth_info.length==null" >
+                                <i class="glyph-icon icon-exclamation-triangle" title="Top tooltip" ></i>
+                                Please authorise this source account.
+                            </small> -->
+                            <img  class="float-right"  ng-src="/images/{{source.channel}}.png" title="Add  Account" height="15px"  />
+
+                        </td>
+                        <td class="text-center">
+                            <div class="button-group float-right">
+
+                                <a href="javascript:;" class="btn small hover-red bg-blue tooltip-button" data-placement="top" title="Reauthorise Access" data-original-title="Flag"  ng-click="reauthorizeAccess(source.id)">
+                                        <i class="glyph-icon icon-refresh"></i>
+                                </a>
+
+                                <a href="javascript:;" class="btn small hover-red bg-blue tooltip-button" data-placement="top" title="" data-original-title="Remove"  ng-click="deleteSource(source.id)">
+                                        <i class="glyph-icon icon-remove"></i>
+                                </a>
+                                </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <div class="form-label col-md-12 clearfix pad10A" >
+                <a href="javascript:;" class="btn small bg-blue-alt hover-blue" add-client-dialog="add-source">
+                    <span class="glyph-icon icon-separator">
+                        <i class="glyph-icon icon-plus"></i>
+                    </span>
+                    <span class="button-content">
+                        Add Source
+                    </span>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+

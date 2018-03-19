@@ -1,0 +1,113 @@
+  <div class="hide" id="send-report" title="Send Report"  ng-controller="ScheduleReportCtrl">
+            <div class="pad10A">
+
+                <div class="col-md-12">
+                    <div class="row" style="padding-left:20px">
+                        <strong>{{report.title}}</strong>
+                    </div>
+                </div>
+
+                <div class="col-md-12 mrg10T">
+                    <form action="" id="send_form" class="col-md-12 center-margin form-vertical">
+
+                        <div class="row mrg5T" style="margin-left:-20px">
+
+                            <div class="col-md-6">
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        Send To
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-11">
+                                    <input data-required="true" 
+                                           placeholder="Email Address" type="text"
+                                           name="email" id="email"  type="email" 
+                                           ng-model="schedule_report.email">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        From Email
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-11">
+                                    <input  placeholder="From Email" type="text" 
+                                            name="from_email" id="from_email"  
+                                            type="email" ng-model="schedule_report.from_email">
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mrg5T" style="margin-left:-20px">
+                             <div class="col-md-6"  >
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        From Name
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-11">
+                                    <input placeholder="From Name" type="text" 
+                                           name="from_name" id="from_name"  ng-model="schedule_report.from_name">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6"  >
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        Subject of the Email
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-11">
+                                    <input type="text" name="subject"  value="" ng-model="schedule_report.subject" >
+                                </div>
+                            </div>
+
+
+                        </div>
+                       <div class="row mrg5T" style="margin-left:-20px">
+
+                            <div class="col-md-12">
+                                    <div class="form-label col-md-1">
+                                        <label for="">
+                                            Body of the Email
+                                        </label>
+                                    </div>
+                                    <div class="form-input col-md-11">
+                                          
+                                        <textarea  class="ckeditor" id="editor3" name="editor2" ng-model="schedule_report.body" cols="20"  rows="4" ></textarea>
+                                    </div>
+                            </div>
+                        </div>
+                      
+
+                         <div class="form-row mrg5T">
+                           <div class="form-label col-md-4">
+                                <label for="">
+                                 <input type="checkbox" class="radio" name="frequency"  value="1" ng-model="schedule_report.ccme" ng-checked="schedule_report.ccme" >Send a copy to me
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label col-md-4">
+                                <label for=""></label>
+                            </div>
+
+                            <div class="form-input col-md-2  float-right">
+                                 <button class="btn bg-gray medium" id="done-share">
+                                    <span class="button-content">Cancel</span>
+                                </button>
+                                 <button class="btn primary-bg medium" ng-click="save()" ng-disabled="saveDisabled">
+                                    <span class="button-content">{{schedule_label}}</span>
+                                </button>
+                            </div>
+                        </div>
+                     </form>
+                </div>
+
+
+          </div>
+
+        </div>

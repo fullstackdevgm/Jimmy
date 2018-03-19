@@ -1,0 +1,36 @@
+
+<form class="form-horizontal" method="post" name="change_pwd" id="change_pwd_form" >  
+         <input type='hidden'  name="id" value="<?php echo $this->agency->getId();?>"/>
+                         <div class="inpBox-left">
+       
+        <div class="smBx">
+            <span class="lab">Password:</span>
+            <div class="inpField radius5">
+                <div class="ico">
+                    <span><img src="/images/icons/add-client-ico01.png" alt="" /></span>
+                </div>
+              <input type="password" class="input-xlarge" id="pwd" name="password" value="" >  
+            </div>
+            <div class="clr"></div>
+        </div>
+        
+        <div class="smBx">
+            <span class="lab">Confirm Password:</span>
+            <div class="inpField radius5">
+                <div class="ico">
+                    <span><img src="/images/icons/add-client-ico03.png" alt="" /></span>
+                </div>
+              <input type="password" class="input-xlarge" id="cpwd" name="confirm_password" value="" >  
+            </div>
+            <div class="clr"></div>
+        </div>
+          
+		<a   href="#"  class="save"  id="save-agency-pwd">Save</a>
+		<a   href="#" class="cancel" id="cancel-agency-pwd">Cancel</a>
+
+        <div class="clr"></div>
+    </div><!--Add Client Form Left-->
+    
+</form>
+<div class="clr"></div>        
+

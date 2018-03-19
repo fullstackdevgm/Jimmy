@@ -1,0 +1,179 @@
+<div class="report-menu">
+        <ul>
+            <li ng-click="addWidgetSideBar()">
+                <div class="sidebar-btn" id="add-widget-sidebar-btn">
+                    <div class="wrapper"></div>
+                    <img src="images/add-widget.png" ng-style="style()" resize-btn>
+                    
+                </div>
+            </li>
+            <li ng-click="reportOptionSideBar()">
+                <div class="sidebar-btn"  id="reoprt-options-sidebar-btn">        
+                    <div class="wrapper"></div>
+                    <img src="images/report-options.png" ng-style="style()" resize-btn>
+                   
+                </div>
+            </li>
+            <li ng-click="shareSendSidebar()">
+                <div class="sidebar-btn" id ="share-send-sidebar-btn" >   
+                  <div class="wrapper"></div>
+                  <img src="images/share.png" ng-style="style()" resize-btn>
+                </div>
+            </li>
+        </ul>
+    
+</div>
+<ng-include src="'/src/app/client/add-source.html'" ></ng-include>
+    <div id="add-widget-sidebar" class="sidebar">  
+        <div class="row">
+            <div class="col-md-1 tour-widget" id ="info-addWidget">
+                <i class="fa fa-info-circle"></i>
+            </div>
+            <div class=" col-md-4 closeBtn pull-right" ng-click="closeWidget()">CLOSE X </div>                
+        </div>
+        <div class="row" id ="sourceBar"> 
+            <div class="row wrapper">
+                <div class="acc-icon" ng-if="adwords.isAvailable == true" ng-click="loadSources('googleadwords')" id="googleadwordsBtn">
+                    <img src="images/adwords2.png">
+                   
+                </div>
+                <div class="acc-icon" ng-if="analytics.isAvailable == true"  ng-click="loadSources('googleanalytics')" id="googleanalyticsBtn"><img src="images/analytics.png"></div>
+                <div class="acc-icon" ng-if="bing.isAvailable == true" ng-click="loadSources('bingads')" id="bingadsBtn">Bing</div> 
+                
+                <div  class="acc-icon error-box" style="font-size: 20px" ng-if = "!adwords.isAvailable  && !analytics.isAvailable && !bing.isAvailable && !noSource">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+                <div class="error-box" ng-if="noSource == true">
+                                     No sources Available! Add  A Source <i class="fa fa-arrow-right"></i> 
+                </div>
+                <div class="acc-icon" add-client-dialog="add-source" >
+                    <img src="images/new-source.png">
+                </div> 
+            </div>
+            <div class="row">
+                 <div class="arrow-up"></div>
+            </div>
+        </div>
+        <div class="row error-box" ng-if="sourceError == true"><i class="fa fa-arrow-up"></i> Please Select A Source</div>
+        
+        <div class="row">
+             
+            <select ng-model ="widget.selectedSource" ng-options=" c.name for c in clientList track by c.id"
+                    ng-change="clientSelected(widget.selectedSource)"
+                    class="sourceSelect" ng-click="checkSource()">     
+                <option value="">Select a client</option>
+               <!--<option ng-repeat="c in clientList" value ="{{c.id}}">{{c.name}} {{c.account_id}}</option> -->
+            </select>
+        </div>
+        
+       <div class="row error-box" ng-if="clientErr == true"><i class="fa fa-arrow-up"></i> Please Select A Client</div>
+       <div class="row" ng-if="insightBtn">
+           <div class="col-md-7">
+               <div class="insight-label">
+                   Need Insights? 
+                   <span data-toggle="tooltip" title='Activate insights for Jimmy to automatically build commentary around your data. Insights currently in Beta'>
+                       <i class="fa fa-info-circle"></i>
+                   </span>
+               </div>
+           </div>
+                <div class="col-md-5">
+                        <label class="switch switch-left-right pull-right">
+                             <input class="switch-input" type="checkbox" ng-model='curReport.insight' />
+                             <span class="switch-label" data-on="YES" data-off="NO"></span> 
+                             <span class="switch-handle"></span> 
+                         </label>
+                </div>
+       </div>  
+       <div class="row darker-bg">
+            <div class="types">
+                <div class="typeItem">
+                    <div class="type-header" id ='kpi' ng-click='loadWidgetType("kpi")'>
+                        <i class="fa fa-tags"></i> KPIs</div>
+                </div>
+                <div class="typeItem">
+                    <div class="type-header" id='table' ng-click='loadWidgetType("table")'>
+                        <i class="fa fa-table"></i> TABLES</div>
+                    <div class=" row type-submenu" >
+                        <div class="col-xs-12">Metric Type:</div>
+                      <div class="row submenu-item" ng-repeat="t in table">
+                          <div class="col-xs-1"></div>
+                          <div class="col-xs-8"><label for="{{t.title}}">{{t.title}}</label></div>
+                          <div class="col-xs-2">
+                              <input id="{{t.title}}" type="radio" name="table" value="{{t.id}}"> 
+                          </div>                     
+                      </div>
+                    </div>
+                     <div class="row error-box" ng-if="tableError == true">
+                         <i class="fa fa-arrow-up"></i> Select a Metric Type</div>
+                </div>
+                <div class="typeItem">
+                    <div class="type-header" id='graph' ng-click='loadWidgetType("graph")'>
+                        <i class="fa fa-bar-chart"></i> GRAPHS</div>
+                     <div class=" row type-submenu" >
+                        <div class="col-xs-12">Metric Type:</div>
+                        <div class="row submenu-item" ng-repeat="t in graph">
+                          <div class="col-xs-1"></div>
+                          <div class="col-xs-8"><label for="{{t.title}}">{{t.title}}</label></div>
+                          <div class="col-xs-2">
+                              <input id="{{t.title}}" type="radio" name="graph" value="{{t.id}}"> 
+                          </div>                     
+                        </div>
+                        <div class="row error-box" ng-if="graphError == true">
+                            <i class="fa fa-arrow-up"></i> Select a Metric Type
+                        </div>
+                     </div>
+                </div>
+                <div class="typeItem">
+                    <div class="type-header" id='piechart' ng-click='loadWidgetType("piechart")'>
+                        <i class="fa fa-pie-chart"></i> PIE CHART</div>
+                    <div class=" row type-submenu" >
+                        <div class="col-xs-12">Metric Type:</div>
+                      <div class="row submenu-item" ng-repeat="p in piechart">
+                          <div class="col-xs-1"></div>
+                          <div class="col-xs-8"><label for="{{p.title}}">{{p.title}}</label></div>
+                          <div class="col-xs-2">
+                              <input id="{{p.title}}" type="radio" name="piechart" value="{{p.id}}"> 
+                          </div>                     
+                      </div>
+                    </div>
+                     <div class="row error-box" ng-if="piechartError == true">
+                         <i class="fa fa-arrow-up"></i> Select a Metric Type
+                     </div>
+                </div>
+                
+            </div>
+            
+              <div class="row error-box" ng-if="widgetTypeError == true"><i class="fa fa-arrow-up"></i> Select a widget Type</div>
+              <button type="button" class="addWidgetBtn pull-right" ng-click="addWidget()"><span>
+                      <i class="fa fa-plus"></i> Continue</span>
+              </button>
+        </div>
+    </div>
+<div id ="reoprt-options-sidebar" class="sidebar">
+    <div class="row"><div class=" col-md-4 closeBtn pull-right" ng-click="closeWidget()">CLOSE X </div></div>
+    <div class="darker-bg row">      
+        <div id="download-pdf" class="menu-largeBtn"><i class="fa fa-file-pdf-o"></i> DOWNLOAD AS PDF</div>
+        <div id="clone-reportBtn" class="menu-largeBtn" ng-if="current_user_type != 'user'  &&  shared_with_me != true" >
+                <i class="fa fa-files-o"></i> CLONE REPORT</div>
+        <div id="delete-reportBtn" class="menu-largeBtn" ng-if="current_user_type != 'user'  &&  shared_with_me != true" >
+            <i class="fa fa-trash-o"></i> DELETE REPORT
+        </div>
+        <div id="add-template" class="menu-largeBtn" ng-if="current_user_type != 'user'  &&  shared_with_me != true" >
+            <i class="fa fa-plus"></i> ADD AS TEMPLATE
+        </div>
+        <div  class="menu-largeBtn" use-template report-id ="{{report.id}}"   ng-if="current_user_type != 'user'  &&  shared_with_me != true" >
+            <i class="fa fa-th-list"></i> USE TEMPLATE
+        </div>
+        <ng-include src="'/src/app/template/new-template.html'" ></ng-include>
+        <ng-include src="'/src/app/template/list-template.html'" ></ng-include>
+          <ng-include src="'/src/app/report/send-report.html'" ></ng-include>
+    </div>
+</div>
+<div id ="share-send-sidebar" class="sidebar">
+    <div class="row"><div class=" col-md-4 closeBtn pull-right" ng-click="closeWidget()">CLOSE X </div></div>
+    <div class="darker-bg row">
+        <div id="share-dashboard" class="menu-largeBtn" ng-if="current_user_type != 'user'  &&  shared_with_me != true"  ><i class="fa fa-desktop"></i> SHARE DASHBOARD</div>
+        <div id="schedule-reportBtn" class="menu-largeBtn" ng-if="current_user_type != 'user'  &&  shared_with_me != true" ><i class="fa fa-calendar"></i> SCHEDULE REPORT</div>
+        <div id="send-reportBtn" class="menu-largeBtn" ng-if="current_user_type != 'user'  &&  shared_with_me != true" ><i class="fa fa-envelope-o"></i> EMAIL REPORT</div>
+    </div>
+</div>

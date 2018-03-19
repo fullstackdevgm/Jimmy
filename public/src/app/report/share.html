@@ -1,0 +1,79 @@
+  <div class="hide" id="share-report" title="Share Report" ng-controller="ShareReportCtrl">
+            <div class="pad10A">
+                
+                <div class="col-md-12">
+                    <div class="row" style="padding-left:20px">
+                        <strong>{{report.title}}</strong>
+                    </div>
+                </div>
+
+                <div class="col-md-12 mrg25T">
+                    <form action="" id="share_form" class="col-md-12 center-margin form-vertical">
+
+                        <div class="form-row">
+                            <div class="form-label col-md-4">
+                                <label for="">
+                                    Email
+                                </label>
+                            </div>
+                            <div class="form-input col-md-12">
+                                <input data-required="true" placeholder="Email Address" type="text" name="email" id="email"  ng-model="share_report.email">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-label col-md-4">
+                                <label for=""></label>
+                            </div>
+                           
+                            <div class="form-input col-md-2  float-right">
+                                 <button class="btn bg-gray medium" id="done-share">
+                                    <span class="button-content">Done</span>
+                                </button>
+                                 <button class="btn primary-bg medium" ng-click="save()">
+                                    <span class="button-content">Share</span>
+                                </button>
+                            </div>
+                        </div>       
+                     </form>
+                </div>
+
+
+
+                <div class="col-md-12" ng-if="sharing_list.length>0">
+
+
+                			<div class="content-box bg-white mrg25T">
+					            <h3 class="content-box-header ui-state-default">
+					                <div class="glyph-icon icon-separator remove-bg">
+					                    <i class="glyph-icon icon-comments"></i>
+					                </div>
+					                <span>Currently Shared With </span>
+					            </h3>
+					            <div class="content-box-wrapper">
+					                <div class="scrollable-content" tabindex="5005" style="overflow: hidden; outline: none;">
+
+					                    <ul class="todo-box todo-sort ui-sortable">
+					                        <li class="border-red" ng-repeat="sharing in sharing_list">
+					                            <label for="sec-todo-1">{{sharing.name}} -  {{sharing.email}}</label>
+					                            <a class="btn small bg-red float-right" title="" ng-click="removeSharing(sharing.id)">
+					                                <i class="glyph-icon icon-remove"></i>
+					                            </a>
+					                        </li>
+					                        
+					                    </ul>
+
+					                </div>
+					            </div>
+					        </div>
+                </div>
+
+
+
+
+
+
+
+          </div>
+
+        </div>

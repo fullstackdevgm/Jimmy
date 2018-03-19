@@ -1,0 +1,21 @@
+<div class="loginContainer">
+     <?php      echo $this->LogoWidget();        ?>
+	 <div class="loginBox radius5">
+            <?php if($this->client_login): ?>
+   		 	<?php      echo $this->zfcUserLoginWidget();        ?>
+            <?php else:?>
+                <div class="sign_in_using">
+                    <h3> Sign in with</h3>
+                </div>
+
+                <div class="googleSign">
+                    <a href="<?php   echo $this->url('scn-social-auth-user/login/provider', array('provider' => 'google'));?>" class="gbtn">Sign in with Google</a>
+                </div>
+                <div class="liveSign">
+                    <a href="<?php   echo $this->url('scn-social-auth-user/login/provider', array('provider' => 'live'));?>" class="gbtn">Sign in with Live</a>
+                </div>
+            <?php endif;?>
+
+    </div><!--Login Box-->
+
+</div>

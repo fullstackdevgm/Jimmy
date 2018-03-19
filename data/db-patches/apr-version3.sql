@@ -1,0 +1,1 @@
+INSERT INTO `jimmy`.`package` (`title`, `is_free_trial`, `type`, `templates_allowed`, `price`, `description`, `status`, `created`, `updated`) VALUES ('14 Day Trial', '1', 'standard', NULL, '15.00', 'A trial pack that expires in 14 days.', '1', '', '');

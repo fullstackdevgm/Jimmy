@@ -1,0 +1,53 @@
+<!-- Clone Report Template -->
+<!-- LATEST REPORTS -->
+<div class="col-md-12" >
+    <div class="content-box border-top border-orange mrg25B">
+        <h3 class="content-header">
+            <div class="glyph-icon icon-separator">
+                <i class="glyph-icon icon-bar-chart-o font-orange"></i>
+            </div>&nbsp;Reports 
+        </h3>
+       
+        <div class="content-box-wrapper"><p>&nbsp;</p>
+            <div class="divider"></div>
+            <p>
+
+                 <table  class="table" id="clients" style="clear:both;" my-table style="float:left">
+                    <thead>
+                        <tr>
+                            <th custom-sort order="'title'"        sort="sort">Name</th>
+                            <th ng-if="client.name==null" custom-sort order="'client.name'" sort="sort">Client</th>
+                           <th></th>
+                        </tr>
+                    </thead>         
+                    <tbody>
+                        <tr ng-repeat="report in pagedItems[currentPage] | orderBy:sort.sortingOrder:sort.reverse">
+                            <td>
+                               <a ng-href="#/report/{{report.id}}"><span class="font-blue"><b>{{report.title}}</b> 
+                                 <small><i>by {{report.created_by.name}} on {{report.created_on}}</i></small></span>
+                               </a>
+                            </td>
+
+                            <td ng-if="client.name==null" style="padding-left:10px"><span class="font-gray-dark">{{report.client.name}}</span></td>
+
+                            <td class="text-right hidden-mobile">
+                                <report-menu></report-menu>
+                            </td>
+                        </tr>
+                        <tr ng-if="reports.length<1">
+                                <td style="padding:10px 0px">
+                                    <div class="infobox font-blue">
+                                        <p><i class="glyph-icon icon-bullhorn"></i> <b>No Reports Shared!</b></p>
+                                    </div>
+                                </td>
+                        </tr>
+                     </tbody>
+                    </table> 
+                    <paginate source='reports'  per-page='5' filter-key='name,client.name' sorting-order="created" reverse="true"></paginate>
+
+            </p>
+        </div>
+    </div>
+</div>
+
+<ng-include src="'src/app/report/download.html'"></ng-include>

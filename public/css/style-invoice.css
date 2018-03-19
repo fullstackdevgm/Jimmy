@@ -1,0 +1,178 @@
+/*Font Family*/
+@font-face {
+    font-family: 'Segoe UI';
+    src: url('../fonts/segoeui.eot');
+    src: local("Segoe UI"),
+         local("Segoe"),
+         local("Segoe WP"),
+         url('../fonts/segoeui.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/segoeui.woff') format('woff'),
+         url('../fonts/segoeui.svg#SegoeUI') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Segoe UI Bold';
+    src: url('../fonts/seguib.eot');
+    src: local("Segoe Bol"),
+         local("Segoe WP Bol"),
+         url('../fonts/seguisb.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/seguisb.woff') format('woff'),
+         url('../fonts/seguisb.svg#SegoeUIBol') format('svg');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Segoe UI Italic';
+    src: url('../fonts/segoeuii.eot');
+    src: local("Segoe Bold"),
+         local("Segoe WP Bold"),
+         url('../fonts/segoeuib.eot?#iefix') format('eot'), /* Wrong format will tell IE9+ to ignore and use WOFF instead. MSHAR-2822 */
+         url('../fonts/segoeuib.woff') format('woff'),
+         url('../fonts/segoeuib.svg#SegoeUIBold') format('svg');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Segoe UI Light';
+    src: url('../fonts/segoeuil.eot');
+    src: local("Segoe UI Light"),
+         local("Segoe WP Light"),
+         url('../fonts/segoeuil.eot?#iefix') format('embedded-opentype'),
+         url('./fonts/segoeuil.woff') format('woff'),
+         url('../fonts/segoeuil.svg#SegoeUILight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+* { margin: 0; padding: 0; -webkit-text-size-adjust: none; font-size: 12px; }
+
+html, body { font-family: sans-serif; font-weight: normal; line-height: 1.4; margin-left: 30px; }
+a,p,li {font-family: "Segoe UI", Arial, sans-serif !important;}
+h1,h2,h3,h4,h5,h6 {font-family: "Segoe UI Bold", Arial, sans-serif !important;}
+@page {
+    size: 21cm 29.7cm;
+    margin: 10mm 0mm 10mm 0mm;
+    orphans:4;
+    widows:2;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin:0;
+    zoom:.75;
+}
+
+.left {
+	float: left;
+}
+.right {
+	float: right;
+}
+
+.brdrSB { border-bottom: 2px solid black !important;}
+.brdrST { border-top: 2px solid black !important;}
+.strong { font-weight: 700; }
+
+#page-wrapper {
+    transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform: scale(.90);
+   -webkit-transform: scale(.90);
+}
+
+#page-wrapper{
+  position:relative;
+    border: 0px;
+    width:794px;
+   /* height:842px; */
+    padding:0;
+    margin:0 auto;
+}
+
+#page-wrapper .content-box {
+  border: none !important;
+  background: transparent !important;
+  margin: 0 auto;
+}
+#page-wrapper .grey-box, #page-wrapper .white-box {
+  padding: 40px !important;
+}
+#page-wrapper #page-header-box {margin-bottom: 40px !important; padding-bottom: 0px !important;}
+#page-wrapper #page-header-box #mainTitle .pdf-report-title {color:#686868;}
+#page-wrapper .graph-pdf, #page-wrapper .piechart-pdf, #page-wrapper .table-pdf {width: 714px;}
+
+#page-header{
+    background: url('../images/header_bg.png')  repeat-x!important;
+}
+
+#page-header-box .content-text {
+  text-align: center;
+  margin: 0 auto;
+  font-size: 1.8em;
+}
+
+.content-header-box .widget-header-main {width: 100%;}
+.content-header-box .widget-header-date {width: 100%; color: #517cc5;}
+
+.content-header-box{
+  padding-bottom: 30px;
+  width: 714px;
+  height: 90px;
+}
+.content-header{
+  padding:  20px 0px 10px 0px !important;
+}
+.content-box {
+    page-break-inside: avoid !important;
+}
+.content-header .header-logo {height: 65px; float: left;}
+.content-header .header-address {text-align: right;}
+
+#title-box {
+	width: 100%;
+	height: 12px;
+	text-align: center;
+	border-bottom: 3px solid black !important;
+	page-break-inside: avoid !important;
+}
+#title-box-content {
+	font-size: 20px;
+	font-style: italic;
+	font-weight: 700;
+	background-color: #fff;
+	padding: 0 15px;
+}
+#invoice-number {
+	margin: 20px 0 !important;
+	width: 100%;
+	text-align: right;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+
+.invoice-table { border-spacing: 0; border-collapse: collapse; margin: 20px 0;}
+.invoice-table th { background-color: #f3f3f3; font-weight: 400; text-align: left; padding: 3px 5px; vertical-align: middle;}
+.invoice-table td { background-color: white; margin-top: 10px; padding: 10px 5px;}
+
+.invoice-table.billing-address td { height: 110px; overflow: hidden; vertical-align: top; text-transform: uppercase;}
+
+.details-table { border-spacing: 0;  border-collapse: collapse; text-align: center; margin: 50px 0px 20px 0; width: 100%}
+.details-table th { background-color: #c3c3c3; font-weight: 400; text-transform: uppercase; padding: 5px 0 0 0; width: 25%;}
+.details-table td { background-color: white; vertical-align: middle; height: 30px; overflow: hidden; }
+
+.invoice-items table { margin-bottom: 10px; }
+.invoice-items th { font-weight: 700; text-align: left; padding: 8px 5px 3px 5px; }
+.invoice-items .right-align { text-align: right; }
+#invoice-itemlist { height: 290px; vertical-align: top;}
+
+.invoice-additional {border: none; border-spacing: 0px; text-align: right; margin-left: 60%; width: 40%}
+.invoice-additional tr {height: 25px;}
+.invoice-additional td .cost {width: 15%; text-align: right; }

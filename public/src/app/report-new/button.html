@@ -1,0 +1,26 @@
+<div class="dropdown">
+    <a class="btn small bg-orange" title="Add Widget"    ng-href="#/report/{{report.id}}/widget/new" ng-if="generalInfo.current_user.type!='user' &&  report.shared_with_me!=true">
+        <span class="glyph-icon icon-separator">
+            <i class="glyph-icon icon-plus"></i>
+        </span>
+        <span class="button-content">
+            Add Widget
+        </span>
+    </a>
+    <a  href="javascript:;" class="btn small bg-green" title="Add Widget" ng-click="newNote()"   ng-if="generalInfo.current_user.type!='user' &&  report.shared_with_me!=true">
+        <span class="glyph-icon icon-separator">
+            <i class="glyph-icon icon-plus"></i>
+        </span>
+        <span class="button-content">
+            Add Note
+        </span>
+    </a>
+    <a class="btn small bg-blue" title="Add Widget"    ng-href="#/report/new" ng-if="generalInfo.current_user.type!='user' &&  report.shared_with_me!=true">
+        <span class="glyph-icon icon-separator">
+            <i class="glyph-icon icon-edit"></i>
+        </span>
+        <span class="button-content">
+            New Report
+        </span>
+    </a>
+    </div>

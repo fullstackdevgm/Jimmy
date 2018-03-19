@@ -1,0 +1,18 @@
+<div class="hide applyFilter" id="applyFilter" title="Filter"  ng-controller="FilterCtrl">
+    <div class="pad10A">
+        <div class="col-md-12" style="padding-bottom: 10px;"><h5>*Apply filters to the corresponding fields</h5></div>
+        <form class="col-md-12 center-margin">     
+                <div ng-repeat="item in widget.data.args.extra_fields" class="form-row">
+                    <div class="form-label col-md-5">
+                        <label>{{item[0]}}</label>
+                    </div>
+                    <div class="form-input col-md-7">
+                        <input type ="text" ng-focus='nullSafe(item[1])' ng-model="filter[item[1]]">
+                    </div>                
+                </div>
+                <div class='form-row'>
+                    <button class='report-btn bg-yellow pull-right' ng-click='save()'>Apply Filters</button>
+                </div>
+        </form>
+    </div>
+</div>

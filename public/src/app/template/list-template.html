@@ -1,0 +1,116 @@
+<div class="hide" id="list-templates" title="Use Templates" ng-controller="NewTemplateCtrl">
+            <div class="pad10A">  
+                <div class="col-md-12 mrg25T">
+                     <div class="loading-gif" style="width:100%; height: 100px; padding-bottom:70px; padding-top: 0px; display:block"><img src="/images/loading_orange.gif" height=70><br>Loading client list...</div>
+                    <form action="" id="use-template-form" class="col-md-12 center-margin form-horizontal" novalidate>
+
+                        <div class="form-row">
+                            <div class="form-label col-md-3">
+                                <label for="">
+                                    Template Name
+                                </label>
+                            </div>
+                            <div class="form-input col-md-9">
+                                <select class='template-list' ng-model="template.selected" required ng-options=" t.templateName  for t in templates track by t.id" >
+                                                           
+                                </select>
+                                   
+                            </div>
+                        </div>
+                            <h3>Template options</h3>
+                            <div class="widgets-available" ng-if="template.selected">
+                                <div ng-repeat="widget in template.selected.widgets">
+                                  <div class="form-row">
+                                    
+                                    <div ng-if="widget.channel" class="col-md-1 form-label">
+                                        <img src="/images/{{widget.channel}}-icon.png">
+                                    </div>
+                                    <div ng-if="!widget.channel" class="col-md-1 form-label"> 
+                                        <span class="glyphicon glyphicon-paste" ></span>
+                                    </div>
+                                    <div class="col-md-4 form-label"><label>Title: {{widget.title}}</label></div>
+                                    <div class="col-md-3 form-label"><label>Widget Type: {{widget.type}}</label></div>
+                                    <div class="col-md-4 form-input " ng-if ="widget.channel=='googleadwords' && adwordsChannel"> 
+                                        
+                                        <select ng-model="widgetSource[widget.id]" required ng-options="t.name for t in adwordsChannel track by t.id">
+                                            <option value="">Select a source</option>
+                                        </select>
+                                    
+                                    </div>                               
+                                    <div class="col-md-4 form-input warning " ng-if ="widget.channel=='googleadwords' && adwordsChannel==''"> 
+                                         <strong><i class="fa fa-exclamation-triangle"></i></strong>No google adwords source available for this report.                                 
+                                    </div>
+                                    <div class="col-md-4 form-input" ng-if ="widget.channel=='googleanalytics' && analyticsChannel"> 
+
+                                        <select ng-model="widgetSource[widget.id]" required ng-options=" t.name for t in analyticsChannel track by t.id">
+                                            <option value="">Select a source</option>
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4 form-input warning " ng-if ="widget.channel=='googleanalytics' && analyticsChannel==''"> 
+                                         <strong><i class="fa fa-exclamation-triangle"></i></strong>No Google analytics source available for this report.                                 
+                                    </div>
+                                    <div class="col-md-4 form-input" ng-if ="widget.channel=='bingads' && bingChannel"> 
+
+                                        <select ng-model="widgetSource[widget.id]" required ng-options=" t.name for t in bingChannel track by t.id">
+                                            <option value="">Select a source</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 form-input warning " ng-if ="widget.channel=='bingads' && bingChannel==''"> 
+                                         <strong><i class="fa fa-exclamation-triangle"></i></strong>No bing source available for this report.                                 
+                                    </div>
+                                  </div>
+                                  <div class="form-row" ng-if="widget.channel=='googleadwords' && adwordsChannel && widgetSource[widget.id]">
+                                        <div class="form-label col-md-2">
+                                            <label for="">
+                                                Campaigns:
+                                            </label>
+                                        </div>
+                                        <div class="form-input col-md-8">                                          
+                                            <select  ng-model="campaign[widget.id]" ng-options="c.id as c.name for c in widgetSource[widget.id].campaign_list"
+                                                                                multiple ng-multiple="true"  class="chosen-select" chosen-select ="{{widget.id}}"
+                                                                                required watch-resource="widgetSource[widget.id]">
+                                                <option value="">Select campaigns</option>
+                                            </select>   
+                                           <span ng-click="copy(widget.id, widget.channel)">copy to all</span>
+                                            
+                                        </div>
+                                     
+                                  </div>
+                                    
+                                  <div class="form-row" ng-if="widget.channel=='googleanalytics' && analyticsChannel && widgetSource[widget.id]">
+                                       <div class="form-label col-md-2">
+                                           <label for="">
+                                               Profile:
+                                           </label>
+                                       </div>
+                                       <div class=" form-input col-md-8">
+                                           <select  ng-model="profile[widget.id]" ng-options="p.id as p.name for p in  widgetSource[widget.id].profile_list"
+                                                                                    required class="chosen-select"  chosen-select="{{widget.id}}"
+                                                                                    watch-resource="widgetSource[widget.id]" >
+                                               <option value="">Select profile</option>
+                                           </select>
+                                            <span ng-click="copy(widget.id, widget.channel)">copy to all</span> 
+                                       </div>
+                                  </div>                                   
+                                </div>
+                            </div>
+
+                         <div class="form-row">
+                            <div class="form-label col-md-6 delete-template">
+                                 <span  class="" ng-click="deleteTemplate(template.selected)">Delete this template</span>
+                            </div>
+                           
+                            <div class="form-input col-md-6">  
+                               
+                                 <button  type =submit class="btn primary-bg medium float-right" ng-click="useTemplate(template.selected)">
+                                    <span class="button-content">Use Template</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                </div>
+
+          </div>
+
+</div>

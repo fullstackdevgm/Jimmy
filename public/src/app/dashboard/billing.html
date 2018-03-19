@@ -1,0 +1,55 @@
+<form id="billing-form" action="" class="center-margin" method="">
+            <div class="form-row">
+                <div class="form-label col-md-2">
+                    <label for="">
+                        Billing Email:
+                        <span class="required">*</span>
+                    </label>
+                </div>
+                <div class="form-input col-md-6">
+                    <input ng-model="checkout.email" type="text" id="email" name="email" data-type="email" data-trigger="change" data-required="true" >
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label col-md-2">
+                    <label for="">
+                        Street Address:
+                        <span class="required">*</span>
+                    </label>
+                </div>
+                <div class="form-input col-md-6">
+                     <input ng-model="checkout.address" name="address" data-trigger="change" data-required="true"  id="address"  data-parsley-maxlength="255">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-label col-md-2">
+                    <label for="">
+                        Country:<span class="required">*</span>
+                    </label>
+                </div>
+                <div class="form-input col-md-4">
+                    <select  ng-model="checkout.country" data-required="true" ng-options="c.id for c in countries"  id="country-select" class="chosen-select"  chosen-select="countries" watch-resource="countries">
+                     <option value="">Select Country</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="divider"></div>
+            <div class="form-row">
+                <input type="hidden" name="superhidden" id="superhidden">
+                <div class="form-input col-md-6 col-md-offset-2">
+                    <a href="javascript:;" class="btn medium primary-bg radius-all-4" id="demo-form-2-valid"  ng-click="doContinue()" title="Continue">
+                        <span class="button-content">
+                            Continue
+                        </span>
+                    </a>
+                    <a href="javascript:;" class="btn medium bg-gray radius-all-4" id="demo-form-2-valid" ng-click="doCancel()" title="Cancel">
+                        <span class="button-content">
+                            Cancel
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </form>

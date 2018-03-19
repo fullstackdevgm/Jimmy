@@ -1,0 +1,41 @@
+<div class="font-gray table-edit-buttons">
+    <i class="glyph-icon icon-cog mrg5R" title="Edit" data-toggle="dropdown"></i>
+    <ul class="dropdown-menu" style="position:absolute;">
+        <li>
+            <a ng-href="#/reports/{{report.id}}" title="">
+                <i class="glyph-icon icon-edit mrg5R"></i>
+                View
+            </a>
+        </li>
+        <li ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+            <a title="" class="clone" title="Clone">
+                <i class="glyph-icon icon-edit mrg5R"></i>
+                Clone
+            </a>
+        </li>
+        <li ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+            <a href="javascript:;" title="" class="share">
+                <i class="glyph-icon icon-share mrg5R"></i>
+                Share
+            </a>
+        </li>
+        <li ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+            <a href="javascript:;" title="" class="schedule">
+                <i class="glyph-icon icon-calendar mrg5R"></i>
+                Schedule
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="javascript:;" title="" class="delete">
+                <i class="glyph-icon icon-trash-o font-size-13 mrg5R"></i>
+                <span class="font-bold">Delete</span>
+            </a>
+        </li>
+    </ul>
+    <a href="javascript:;" title="" class="download">
+        <i class="glyph-icon icon-download mrg5R"></i>
+    </a>
+    <ng-include src="'/src/app/report/delete-report.html'" ></ng-include>
+</div>
+

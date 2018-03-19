@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8">
+        <?php echo $this->headTitle($this->translate('Jimmy'))->setSeparator(' - ')->setAutoEscape(false) ?>
+        <meta name="description" content="">
+
+          <?php
+    echo  $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' =>  '/images/favicon.png'))
+            ->appendStylesheet('/assets/css/minified/aui-production.min.css', "all")
+            ->appendStylesheet('/assets/themes/minified/fides/color-schemes/dark-blue.min.css', "all")
+            ->appendStylesheet('/assets/themes/minified/fides/common.min.css', "all")
+            ->appendStylesheet('/css/dashboard-pdf.css', "all")
+            ->appendStylesheet('/bower_components/nvd3/build/nv.d3.css', "all")
+    ?>
+  <style>
+  .xchart .errorLine path {
+    stroke: #C6080D;
+    stroke-width: 3px;
+  }
+  </style>
+    <?php echo $this->headScript()->appendFile('/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9'))
+                                  ->appendFile('/assets/js/aui-production.js')
+                                  ->appendFile('/assets/js/minified/core/raphael.min.js')
+                                  ->appendFile('/assets/js/minified/widgets/charts-morris.min.js')
+                                  ->appendFile('/bower_components/d3/d3.min.js')
+                                  ->appendFile('/bower_components/nvd3/build/nv.d3.js')
+
+    ?>
+    </head>
+<body>
+<div id="page-wrapper">
+      <div class="content-box" id="page-header-box" style="border:none;">
+            <div class="content-header">
+                <?php if (is_file("data/logos/agencies/".$agency_logo)):?>
+                  <img src="/resources/logos/agencies/<?php echo $agency_logo;?>" alt="<?php echo $agency->getName() ?>" class="header-logo" style="margin-left: 40px;" />
+                <?php else : ?>
+                  <img src="/images/logo-jimmy-print.png" alt="Jimmy Data" class="header-logo"  style="margin-left: 40px;" />
+                <?php endif;?>
+                <?php if (is_file("data/logos/clients/".$client->getLogo())):?>
+                    <img class="header-logo" src="/resources/logos/clients/<?php echo $client->getLogo();?>"  style="float:right !important; margin-right:40px;"   />
+                <?php endif;?>
+            </div>
+
+            <div style="clear: both"></div>
+
+            <h3 class="content-text no-margin" id="mainTitle">
+              <span class="pdf-report-title" style="vertical-align: middle;"><?php echo $report->getTitle();?></span>      
+            </h3>
+      </div>
+      <div class="dashboard-panel bg-white content-box">
+        <?php
+         if ($widgets_output) {
+            $changecolor='grey-box';
+             foreach ($widgets_output as $output) {
+                 $op ='';
+                 echo ('<div class='.$changecolor.'>');
+                 echo $output['output'];
+                 $changecolor = ($changecolor=='grey-box')?'white-box':'grey-box';
+                 echo '</div>';
+              } //endforeach
+          } //endif
+          ?>
+            </div>
+        <footer class="unbreakable">
+        <?php if ($this->footer) {
+    echo $this->footer;
+} else {
+    ?>
+          <p>Created by <strong><?php echo $agency->getName();
+    ?></strong>. &copy; <?php echo date('Y');
+    ?> <?php echo $agency->getName();
+    ?>. <?php echo $this->translate('All rights reserved.') ?></p>
+        <?php
+
+} ?>
+        </footer>
+</div> <!-- /container -->
+</body>
+</html>

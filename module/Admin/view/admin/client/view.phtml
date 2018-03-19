@@ -1,0 +1,114 @@
+<div class="row-fluid">
+
+    <ul class="breadcrumb">
+      <li><a href="<?php echo $this->url('admin') ?>">Home</a> <span class="divider">/</span></li>
+      <li><a href="<?php echo $this->url('admin/client').$this->client_id ?>">Clients</a> <span class="divider">/</span></li>
+      <li class="active"><?php echo $this->client->getName();?></li>
+    </ul>
+
+<div id="message">  
+</div> 
+
+<div class="btn-group" style="margin-bottom:20px">      
+ <button class="btn"  id="create_report">Create Report</button>
+ <button class="btn"  id="delete_client" >Delete This Client</button>
+
+</div>
+
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab1" data-toggle="tab">Reports</a></li>
+        <li><a href="#tab2" data-toggle="tab">Account</a></li>
+    </ul>
+     
+    <div class="tab-content">
+      <div class="tab-pane active" id="tab1">
+          <?php echo $this->partial('reports');?>
+      </div>
+      
+      <div class="tab-pane" id="tab2">
+
+		<div class="" id="account">   
+			<?php echo $this->partial('account');?>
+        </div>
+        <div class="" id="edit" style="display:none">   
+			<?php echo $this->partial('edit');?>
+		</div>
+        <div class="" id="changePwdForm" style="display:none">   
+			<?php echo $this->partial('changepwd');?>
+		</div>
+
+      </div>
+    
+    </div>
+ </div>   
+</div>    
+
+<script>
+
+jQuery(document).ready(function(){
+  
+  jQuery('#create_report').on('click',function(){
+  	location.href='<?php echo $this->url('admin/client/createreport').'/'.$this->client->getId(); ?>';
+  })
+  
+
+  jQuery('#delete_client').on('click',function(){
+
+	    var href = '<?php echo $this->url('admin/client/delete').'/'.$this->client->getId(); ?>';
+		var msg  = 'Are you sure you want to delete this client and its reports?'; 
+		
+        if (!$('#dataConfirmModal').length) {
+            $('body').append('<div id="dataConfirmModal" class="modal" role="dialog" aria-labelledby="dataConfirmLabel" aria-hidden="true"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3 id="dataConfirmLabel">Please Confirm</h3></div><div class="modal-body"></div><div class="modal-footer"><button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button><a class="btn btn-primary" id="dataConfirmOK">OK</a></div></div>');
+        } 
+		
+        $('#dataConfirmModal').find('.modal-body').text(msg);
+        $('#dataConfirmOK').attr('href', href);
+        $('#dataConfirmModal').modal({show:true});
+        return false;
+  })
+  
+  
+  
+  // Toggle for Change Button
+  jQuery('#account').on('click','#change',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#edit').toggle(); 
+  })
+  
+  // Toggle for Cancel Button
+  jQuery('#edit').on('click','#cancel',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#edit').toggle(); 
+  })
+  
+  // Save Client Function
+  jQuery('#edit').on('click','#save',function(){
+	JimmyJS.saveClient();
+  })
+  
+  
+  // Password Change Form 
+
+  // Toggle for Change Password Button
+  jQuery('#account').on('click','#changePwd',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#changePwdForm').toggle(); 
+  })
+  
+  
+  // Toggle for Cancel Change Password Button
+  jQuery('#changePwdForm').on('click','#cancelChangePwd',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#changePwdForm').toggle(); 
+  })
+  
+  // Toggle for Cancel Change Password Button
+  jQuery('#changePwdForm').on('click','#savePwd',function(){
+  	JimmyJS.changePwd();
+ })
+
+
+})
+
+</script>

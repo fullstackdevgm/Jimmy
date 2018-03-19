@@ -1,0 +1,103 @@
+ <ul class="breadcrumb">
+      <li><a href="<?php echo $this->url('admin') ?>">Home</a> <span class="divider">/</span></li>
+      <li><a href="<?php echo $this->url('admin/client') ?>">Clients</a> <span class="divider">/</span></li>
+      <li class="active">Add New Client</li>
+ </ul>
+
+<!--<?php
+/*if (!$this->enableRegistration) {
+    print "Registration is disabled";
+    return;
+}
+
+*/
+$form = $this->registerForm;
+$form->prepare();
+$form->setAttribute('action', $this->url('admin/client/add'));
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal');
+?>
+
+<?php echo $this->form()->openTag($form) ?>
+   <fieldset>  		
+   		  <legend>Add New Client</legend>  
+    <?php foreach ($form as $element):	 ?>
+        
+		<?php if (!$element instanceof Zend\Form\Element\Button): ?>
+             <div class="control-group">  
+			<?php echo $this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))) ?>
+       <?php else:?>
+        <?php endif ?>
+        
+        <?php if ($element instanceof Zend\Form\Element\Button): ?>
+            <div class="form-actions"><?php echo $this->formButton($element->setLabelAttributes(array('class'=>'btn btn-primary'))) ?></div>
+        <?php else: ?>
+           <div class="controls">  
+			 	<?php echo $this->formInput($element) . $this->formElementErrors($element) ?>                   
+            	<p class="help-block">Customer's Full Name.</p>  
+            </div>
+            </div>
+        <?php endif ?>
+
+    <?php endforeach ?>
+
+
+  
+    </fieldset>
+<?php echo $this->form()->closeTag() ?>-->
+ 
+        <form class="form-horizontal" method="post" enctype="multipart/form-data" name="client_form" action="<?php echo $this->url('admin/client/add');?>">  
+                 <input type="hidden" name="parent" value="<?php echo $this->agency->getId();?>" />
+                
+                 <fieldset>  
+				  <legend>Add New Client</legend>  
+                  <div class="control-group">  
+                    <label class="control-label" for="name">Client Name</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="name" name="name">    <?php echo  $this->formElementErrors($form->get('name')) ?>
+                      <p class="help-block">Customer's Full Name.</p>  
+                    </div>  
+                  </div>  
+                  <div class="control-group">  
+                    <label class="control-label" for="email" name='email'>Client Email</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" name="email" id="email">  <?php echo  $this->formElementErrors($form->get('email')) ?>
+                      <p class="help-block">Customer's email registered in Adwords.</p>  
+                    </div>  
+                  </div>  
+                  <div class="control-group">  
+                    <label class="control-label" for="adwords_client_id">Adwords Client Id</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="adwords_client_id" name="adwords_client_id"> <?php echo  $this->formElementErrors($form->get('adwords_client_id')) ?> 
+                      <p class="help-block">Customer's Id as shown in Adwords</p>  
+                    </div>  
+                  </div>  
+                  
+                    <div class="control-group">  
+                    <label class="control-label" for="logo">Logo</label>  
+                    <div class="controls">  
+                      <input type="file" class="input-xlarge" id="logo" name="logo"> <?php echo  $this->formElementErrors($form->get('logo')) ?> 
+                      <p class="help-block">(supported types are jpeg,gif,png)</p>  
+                    </div>  
+                  </div>  
+                  
+                  <div class="form-actions">  
+                    <button type="submit" class="btn btn-primary">Save changes</button>  
+                    <button class="btn">Cancel</button>  
+                  </div>  
+    
+				 <?php if ($this->redirect): ?>
+        			<input type="hidden" name="redirect" value="<?php echo $this->redirect ?>" />
+    			 <?php endif ?>
+                
+                </fieldset>  
+        </form>  
+                   
+ <script>
+	 //Cancel Button
+	  jQuery('#client_form').on('click','[name="cancel"]',function(){
+			 jQuery(this).text('Cancelling...');
+			 jQuery(this).addClass('disabled');
+			 location.href='<?php echo $this->url($this->isAdmin()?'admin/client':'client');?>';
+	  })
+</script>         

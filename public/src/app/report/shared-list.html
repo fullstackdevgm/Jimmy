@@ -1,0 +1,61 @@
+
+<!-- LATEST REPORTS -->
+<div class="col-md-11 center-margin">
+    <div class="content-box border-top border-blue mrg25B">
+        
+        <h3 class="content-header">
+            <div class="glyph-icon icon-separator">
+                <i class="glyph-icon icon-bar-chart-o font-blue"></i>
+            </div>&nbsp;Reports  Shared 
+        
+            <div class="button-group float-right">
+                    <a href="#/report/new-report" class="btn small bg-blue" title="Add Report">
+                        <span class="glyph-icon icon-separator">
+                            <i class="glyph-icon icon-edit"></i>
+                        </span>
+                        <span class="button-content">
+                            New Report
+                        </span>
+                    </a>
+            </div>
+        </h3>
+
+        <div class="content-box-wrapper"><p>&nbsp;</p>
+            <div class="divider"></div>
+            <p>
+
+                 <table  class="table" id="clients" style="clear:both;" my-table style="float:left">
+                    <thead>
+                        <tr>
+                           <th custom-sort order="'title'"        sort="sort">Name</th>
+                           <th ng-if="client.name==null" custom-sort order="'client.name'" sort="sort" class="text-left hidden-mobile">Client</th>
+                           <th></th>
+                        </tr>
+                    </thead>         
+                    <tbody>
+                        <tr ng-repeat="report in pagedItems[currentPage] | orderBy:sort.sortingOrder:sort.reverse">
+                            <td>
+                               <a ng-href="#/report/{{report.id}}"><span class="font-blue"><b>{{report.title}}</b> 
+                                 <small><i>by {{report.created_by.name}} on {{report.created_on}}</i></small></span>
+                               </a>
+                            </td>
+                            <td ng-if="client.name==null" style="padding:20px 0px"><span class="font-gray-dark">{{report.client.name}}</span></td>
+                            <td class="text-right hidden-mobile">
+                                <report-menu></report-menu>
+                            </td>
+                        </tr>
+                        <tr ng-if="pagedItems.length<1">
+                            <td style="padding:10px 0px">
+                                <div class="infobox font-blue">
+                                    <p><i class="glyph-icon icon-bullhorn"></i> <b>No Shared Reports !</b></p>
+                                </div>
+                            </td>
+                        </tr>
+                     </tbody>
+                     <tfoot paginate source='reports'></tfoot>
+                    </table> 
+            </p>
+        </div>
+    </div>
+</div>
+<ng-include src="'src/app/report/download.html'" ></ng-include>

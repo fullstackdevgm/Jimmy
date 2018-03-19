@@ -1,0 +1,46 @@
+  <div class="hide" id="clone-report" title="Clone Report" ng-controller="CloneReportCtrl">
+
+
+            <div class="col-md-12 center-margin" ng-include src="'/src/app/report/report-limit-warning.html'" ></div>
+
+
+            <div class="pad10A" ng-if="can_create">
+                    <div class="col-md-12">
+                        <div class="row" style="padding-left:20px">
+                            <strong>{{report.title}}</strong>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 mrg25T">
+
+                        <form action="" id="clone_form" class="col-md-12 center-margin form-vertical">
+
+                            <div class="form-row">
+                                <div class="form-label col-md-4">
+                                    <label for="">
+                                        New Report Title:
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-12">
+                                    <input data-required="true" placeholder="New Report Title" type="text" name="report_title" id="report_title" ng-model="clone_report.title">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-label col-md-4">
+                                    <label for=""></label>
+                                </div>
+                                <div class="form-input col-md-2 float-right">
+                                     <button class="btn bg-gray medium" id="done-cancel">
+                                        <span class="button-content">Cancel</span>
+                                    </button>
+                                    <button class="btn primary-bg medium" ng-click="clone()" ng-disabled="saveDisabled" data-loading-text="Cloning..." save-animate >
+                                        <span class="button-content">Clone</span>
+                                    </button>
+                                </div>
+                            </div>
+                            </form>
+                    </div>
+                </div>
+        </div>

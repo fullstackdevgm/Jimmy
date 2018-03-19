@@ -1,0 +1,7 @@
+<div id="page-title"  ng-style="!showSearch?{padding:'5px'}:null">
+    <div id="progress-bar" progress-bar style="padding:10px;display: none" >{{message}}</div>
+    <flash-message></flash-message>
+</div>
+
+<ng-include src="'/src/app/dashboard/support.html'" ></ng-include>
+<div id="content-view"  ng-view></div>

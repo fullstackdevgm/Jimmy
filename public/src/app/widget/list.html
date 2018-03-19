@@ -1,0 +1,506 @@
+<ul sortable>
+    <li class="dashboard-panel bg-white content-box ui-state-default" ng-repeat="widget in widgets" id="{{widget.id}}">
+
+        <h3 class="content-header-box no-margin" >
+            <div class="content-header">
+
+                <div class="glyph-icon icon-separator widget-head-icons">                   
+                    <i class="glyph-icon icon-spinner icon-spin icon-large" ng-show="widget.loaded==false"></i>
+                </div>
+
+                <div class="f-left">
+                    <span class="font-gray-dark">{{widget.title}}</span>
+                </div>
+
+                <span class="widget-title"></span>
+
+                <div class="float-left hide-mobile">
+                    <img ng-if="widget.channel" ng-src="/images/{{widget.channel}}.png" title="" width="100px" class="icon-service"/>
+                    <span ng-if="widget.data.args.date_range_formatted.min.length>0" class="label ui-state-default tooltip-button  bg-red font-size10">{{widget.data.args.date_range_formatted.min}}
+                        to
+                        {{widget.data.args.date_range_formatted.max}}</span>
+                    <span ng-if="widget.data.args.date_range_compare_formatted.min.length>0">-</span>
+                    <span ng-if="widget.data.args.date_range_compare_formatted.min.length>0" class="label ui-state-default tooltip-button" style="background: #ffebeb">{{widget.data.args.date_range_compare_formatted.min}}
+                        to
+                        {{widget.data.args.date_range_compare_formatted.max}}</span>
+                </div>
+
+                <widget-menu></widget-menu>
+            </div>
+        </h3>
+
+        <div class="content-box-wrapper" ng-if="widget.error_msg!=null">
+            <div class="infobox error-bg mrg0A">
+                <h4>Something went wrong</h4>
+                <p reauth-link="{{widget.client_account_id}}" message="{{widget.error_msg}}">{{widget.error_msg}}</p>
+            </div>
+        </div>
+
+        <div ng-show="widget.data.args!=null">
+            <div class="content-box-wrapper kpi-outer-box" ng-if="widget.type=='kpi'">
+                <div class="col-md-3" ng-repeat="kpiData in widget.data.kpiDataTotal">
+                    <div class="kpi-panel panel panel-danger" ng-if="widget.kpi_type[$index]==1 || widget.kpi_type==undefined || !widget.kpi_type[$index]">
+                        <div class="panel-heading">
+                            <b>
+                                <i class="glyph-icon {{kpiData.icon}}"></i>
+                                <div ibox-tools index="$parent.$index"></div>
+                            </b>
+                        </div>
+                        <div class="panel-body">
+                            <div id="dslc-content" class="dslc-content" zng-init="vipc = 2;">
+                                <div class="dslc-modules-area dslc-col dslc-3-col dslc-first-col" data-size="3">
+                                    <div id="dslc-module-15215" class="dslc-module-front dslc-module-DSLC_Info_Box dslc-in-viewport-check dslc-in-viewport-anim-none dslc-in-viewport" style="-webkit-animation: forwards 0.65s ease none; -webkit-animation-play-state: initial;">
+                                        <div class="dslc-info-box dslc-info-box-icon-pos-above">
+                                            <div class="dslc-info-box-main-wrap dslc-clearfix">
+                                                <div class="dslc-info-box-main">
+                                                  <div class="dslc-info-box-title">
+                                                      <h4 ng-bind-html="kpiData.value | to_trusted "></h4>
+                                                      <p class="kpi-subline">
+                                                        {{kpiData.caption}}
+                                                      </p>
+                                                  </div>
+                                                    <!-- .dslc-info-box-title -->
+                                                    <div class="small-line">
+                                                      &nbsp;
+                                                    </div>
+                                                    <div class="dslc-info-box-content">
+                                                        <p
+                                                            ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null"
+                                                            compare-calc-caption="{{kpiData.caption}}"
+                                                            value="{{kpiData.rawValue}}"
+                                                            compare-value="{{widget.data.kpiDataTotalCompare[$index]['rawValue']}}"
+                                                            class="font-size-15 font-gray-dark kpi-small-text"></p>
+
+                                                        <span class="font-size-18" style="color:rgb(100, 162, 232)">{{kpiData.sub_caption}}</span>
+                                                    </div>
+                                                    <!-- .dslc-info-box-content -->
+                                                </div>
+                                                <!-- .dslc-info-box-main -->
+                                            </div>
+                                            <!-- .dslc-info-box-main-wrap -->
+                                        </div>
+                                        <!-- .dslc-info-box -->
+                                    </div>
+                                    <!-- .dslc-module -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-panel panel panel-danger" ng-if="widget.kpi_type[$index]==2">
+                        <div class="panel-heading">
+                                <i class="fa {{kpiData.icon}}"></i>
+                                <div ibox-tools></div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="content-box-wrapper" style="width: 155px; height:150px; margin: 0px auto;">
+                                <div class="chart-icon" style="margin-bottom:5px">
+                                    <div class="infobox-sparkline" kpi-sparkline data="{{widget.data.kpiDataSegmented[kpiData.key]}}">
+                                        <canvas width="135" height="135" style="display: inline-block; width: 135px !important; height: 135px !important; vertical-align: bottom;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="small-line">
+                          &nbsp;
+                        </div>
+                        <div class="kpi-footer panel-footer">
+                            <table class="table kpi-footer-table" ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null">
+
+                                    <tr>
+                                        <td class="font-roboto" colspan="3">
+                                            <span class="kpi-footer-text font-gray-dark kpi-caption">{{kpiData.sub_caption}}</span>
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td >
+
+                                                <span class="kpi-footer-text font-gray-dark font-roboto" ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null" ng-bind-html="(widget.data.kpiDataTotalCompare[$index]['value']) | to_trusted_metric_value"></span>
+
+                                        </td>
+                                        <td>
+
+
+                                                    <span class="kpi-footer-text font-gray-dark font-roboto" ng-bind-html="kpiData.value | to_trusted_metric_value"></span>
+
+
+                                        </td>
+                                        <td>
+
+                                                <span ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null" compare-calc="" value="{{kpiData.rawValue}}" compare-value="{{widget.data.kpiDataTotalCompare[$index]['rawValue']}}" class="kpi-footer-text font-gray-dark font-roboto"></span>
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                      <td ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null" class="font-roboto kpi-footer-title">Previous</td>
+                                      <td class="font-roboto kpi-footer-title">Current</td>
+                                      <td ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null" class="kpi-footer-title">Variation</td>
+                                    </tr>
+                            </table>
+                            <table class="table kpi-table-caption" ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']==null">
+                                    <tr>
+                                        <td style="text-align:center;" class="font-roboto">
+                                            <span class="font-size-15 font-gray-dark kpi-caption ">{{kpiData.sub_caption}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center;" class="font-roboto">
+                                            <span class="font-size-28 kpi-data-value" ng-bind-html="kpiData.value | to_trusted_metric_value"></span>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <style>
+                        .dashboard-panel canvas {
+                            display: inline !important;
+                        }
+                    </style>
+
+                    <div class="kpi-panel panel panel-danger" ng-if="widget.kpi_type[$index]==3">
+                        <div class="panel-heading">
+                                <i class="fa {{kpiData.icon}}"></i>
+                                <div ibox-tools></div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="content-box-wrapper" style="width: 155px; height:150px; margin: 0px auto;">
+                                <div class="chart-icon" style="margin-bottom:5px">
+                                    <div class="infobox-sparkline" kpi-sparkline-top data="{{widget.data.kpiDataSegmented[kpiData.key]}}" key="kpiData.key">
+                                        <canvas width="140" height="135" style="display: inline-block; width: 140px; height: 135px; vertical-align: bottom;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="small-line">
+                          &nbsp;
+                        </div>
+                        <div class="kpi-footer panel-footer">
+                            <table class="table kpi-footer-table" ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null">
+
+                                    <tr>
+                                        <td class="font-roboto" colspan="3">
+                                            <span class="font-size-15 font-gray-dark kpi-caption">{{kpiData.sub_caption}}</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null">
+                                                <span class="kpi-footer-text font-size-15 font-gray-dark font-roboto" ng-bind-html="(widget.data.kpiDataTotalCompare[$index]['value']) | to_trusted_metric_value"></span>
+                                        </td>
+                                        <td>
+                                                    <span class="kpi-footer-text font-size-18 font-gray-dark font-roboto" ng-bind-html="kpiData.value | to_trusted_metric_value"></span>
+                                        </td>
+                                        <td>
+                                                <span ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null" compare-calc="" value="{{kpiData.rawValue}}" compare-value="{{widget.data.kpiDataTotalCompare[$index]['rawValue']}}" class="kpi-footer-text font-size-15 font-gray-dark font-roboto"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null" class=" kpi-footer-title font-roboto font-size-12">Previous</td>
+                                        <td style="text-align:left;" class=" kpi-footer-title font-roboto font-size-12">Current</td>
+                                        <td class="kpi-footer-title" ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null" >Variation</td>
+                                    </tr>
+                            </table>
+                            <table class="table kpi-table-caption" ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']==null">
+                                    <tr>
+                                        <td style="text-align:center;" class="font-roboto">
+                                            <span class="font-size-15 font-gray-dark kpi-caption ">{{kpiData.sub_caption}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center;" class="font-roboto kpi-data-value">
+                                            <span class="font-size-28" ng-bind-html="kpiData.value | to_trusted_metric_value"></span>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="kpi-panel panel panel-danger red panel-red" ng-if="widget.kpi_type[$index]==4">
+                        <div class="panel-heading">
+                                <i class="fa {{kpiData.icon}}"></i>
+                                <div ibox-tools></div>
+                        </div>
+                        <div class="panel-body red-box">
+                            <div class="content-box-wrapper" style="width: 200px;height:150px;margin: 0px auto;">
+                                <!-- <canvas linechart options="lineOptions" data="lineData" height="140" ></canvas> -->
+                                <figure style="width: 175px; height: 125px;" jimmy-chart-kpi="" key="{{widget.data.kpiDataSegmented[kpiData.key]}}" typeg="line"></figure>
+                            </div>
+                        </div>
+                        <div class="small-line">
+                          &nbsp;
+                        </div>
+                        <div class="kpi-footer panel-footer" style="background:#e4555b; border:1px solid #e4555b;">
+                            <table ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null" class="table kpi-footer-table" style="background-color: #e4555b !important;color:white !important;">
+                                    <tr>
+                                        <td class="font-roboto" colspan="3">
+                                            <span class="font-size-15" style="color:white">{{kpiData.sub_caption}}</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null">
+                                                <span style="color:white !important;" class="kpi-footer-text font-size-15 font-gray-dark font-roboto" ng-bind-html="(widget.data.kpiDataTotalCompare[$index]['value']) | to_trusted_metric_value"></span>
+                                        </td>
+                                        <td>
+                                                    <span style="color:white !important;" class="kpi-footer-text font-size-18 font-gray-dark font-roboto" ng-bind-html="kpiData.value | to_trusted_metric_value"></span>
+                                        </td>
+                                        <td>
+                                                <span
+                                                    style="color:white !important;"
+                                                    ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null"
+                                                    compare-calc=""
+                                                    value="{{kpiData.rawValue}}"
+                                                    compare-value="{{widget.data.kpiDataTotalCompare[$index]['rawValue']}}"
+                                                    class="kpi-footer-text font-size-15 font-gray-dark font-roboto"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null" style="text-align:center;color:white !important;" class="kpi-footer-title font-roboto font-size-12 kpi-footer-title">Previous</td>
+                                        <td style="text-align:center;color:white !important;" class="kpi-footer-title font-roboto font-size-12 kpi-footer-title">Current</td>
+                                        <td style="text-align:center;color:white !important;" class="kpi-footer-title" ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null" >Variation </td>
+                                    </tr>
+                            </table>
+                            <table class="table" ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']==null" style="background-color: #e4555b !important;color:white !important;">
+                                    <tr>
+                                        <td style="text-align:center;color:white" class="font-roboto">
+                                            <span class="font-size-15">{{kpiData.sub_caption}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center;" class="font-roboto">
+                                            <span class="font-size-28 kpi-data-value" ng-bind-html="kpiData.value | to_trusted_metric_value"></span>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="kpi-panel panel panel-danger" ng-if="widget.kpi_type[$index]==5">
+                        <div class="panel-heading">
+                                <i class="fa {{kpiData.icon}}"></i>
+                                <div ibox-tools></div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="content-box-wrapper" style="width: 225px;height:150px;margin: 0px auto;">
+                                <!-- <canvas linechart options="lineOptions" data="lineData" height="140" ></canvas> -->
+                                <figure style="width: 175px; height: 148px;" jimmy-chart-area-kpi="" key="{{widget.data.kpiDataSegmented[kpiData.key]}}" typeg="line"></figure>
+                            </div>
+                        </div>
+                        <div class="small-line">
+                          &nbsp;
+                        </div>
+                        <div class="panel-footer kpi-footer">
+                            <table ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null" class="table kpi-footer-table">
+                                    <tr>
+                                        <td class="font-roboto" colspan="3">
+                                            <span class="font-size-15 font-gray-dark">{{kpiData.sub_caption}}</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null">
+                                                <span class="kpi-footer-text font-size-15 font-gray-dark font-roboto" ng-bind-html="(widget.data.kpiDataTotalCompare[$index]['value']) | to_trusted_metric_value"></span>
+                                        </td>
+                                        <td>
+                                                    <span class="kpi-footer-text font-size-18 font-gray-dark font-roboto" ng-bind-html="kpiData.value | to_trusted_metric_value"></span>
+                                        </td>
+                                        <td>
+                                                <span ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']!=null" compare-calc="" value="{{kpiData.rawValue}}" compare-value="{{widget.data.kpiDataTotalCompare[$index]['rawValue']}}" class="kpi-footer-text font-size-15 font-gray-dark font-roboto"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null" class="font-roboto font-size-12 kpi-footer-title">Previous</td>
+                                        <td style="text-align:left;" class="font-roboto font-size-12 kpi-footer-title">Current</td>
+                                        <td class="kpi-footer-title" ng-if="widget.data.kpiDataTotalCompare[$index]['value']!=null">Varation</td>
+                                    </tr>
+                            </table>
+                            <table class="table table-bordered" ng-if="widget.data.kpiDataTotalCompare[$index]['rawValue']==null">
+                                    <tr>
+                                        <td style="text-align:center;border:1px solid #fff;" class="font-roboto">
+                                            <span class="font-size-15 font-gray-dark ">{{kpiData.sub_caption}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center;border :1px solid #fff !important;" class="font-roboto">
+                                            <span class="font-size-28 kpi-txt" ng-bind-html="kpiData.value | to_trusted_metric_value"></span>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="pad10L">
+                    <div class="font-gray-dark pad5" ng-if="!!widget.segment">
+                        Applied Segment:
+                        <b>{{getSegmentName(widget)}}</b>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="" style="margin-bottom:10px" ng-if="widget.type=='graph'">
+                <div class="col-md-12" style="margin-bottom:10px;">
+                    <div class="content-box-wrapper">
+                        <div class="col-md-12">
+                            <figure style="width: 100%; height: 300px;" jimmy-chart="" key="{{$index}}"></figure>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="pad10L">
+                    <div class="font-gray-dark pad5" ng-if="!!widget.segment">
+                        Applied Segment:
+                        <b>{{getSegmentName(widget)}}</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="" style="margin-bottom:10px" ng-if="widget.type=='piechart'">
+                <div class="content-box-wrapper">
+                    <nvd3 options="widget.piechartOption" data="widget.piechartData"></nvd3>
+                </div>
+            </div>
+
+            <div ng-if="widget.type=='table' && widget.data.rawData.length>0" 
+                 class="" style="background-color: #e5e9ec;">
+
+                <div id="sidebar-search" filter style="margin-bottom: 10px">
+                    <input type="text" placeholder="Search..." class="autocomplete-input input tooltip-button" data-placement="bottom" id="" name="">
+                    <i class="glyph-icon icon-search"></i>
+                </div>
+                <table class="table table-striped no-margin round-box-details" id="table-{{widget.id}}" style="clear:both;">
+                    <thead>
+                        <tr class="content-header-box no-margin">
+                            <th ng-repeat="exfield in widget.data.args.extra_fields" custom-sort order="exfield[1]" sort="sort" class="caption-{{exfield[1]}}">
+                                {{exfield[2]}}
+                                <span
+                                    data-placement="bottom"
+                                    data-original-title="Edit"
+                                    href="javascript:;"
+                                    class="btn medium filter color-green"
+                                    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true && widget.type == 'table' && isFiltered(widget.id, exfield[1])">
+                                    <i class="glyph-icon icon-filter"></i>
+                                </span>
+                            </th>
+                            <th ng-repeat="field in widget.data.headers" custom-sort order="field[1]" sort="sort" class="caption-{{field[1]}}">
+                                {{field[2]}}
+                                <small ng-if="field[4]"><br/>(
+                                    {{field[4]}}
+                                    )</small>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody ng-if="widget.data.args.report_type_id<7 || !widget.data.args.report_type_id">
+                        <tr ng-repeat="rawData in filteredItems | orderBy: natural(sort.sortingOrder):sort.reverse | pagenate: {currentPage: currentPage, itemsPerPage: itemsPerPage}" ng-if="sort.sortingOrder!=null">
+                            <td class="data-{{ex_fields[1]}} borderR" ng-repeat="ex_fields in widget.data.args.extra_fields">{{rawData[ex_fields[1]]}}</td>
+                            <td class="data-{{fields[1]}} borderR" ng-repeat="flds in widget.data.headers" ng-bind-html="rawData[flds[1]] | to_trusted_metric_value "></td>
+                        </tr>
+                        <tr ng-repeat="rawData in filteredItems | pagenate: {currentPage: currentPage, itemsPerPage: itemsPerPage}" ng-if="sort.sortingOrder==null">
+
+                            <td class="data-{{ex_fields[1]}} borderR" ng-repeat="ex_fields in widget.data.args.extra_fields">{{rawData[ex_fields[1]]}}</td>
+                            <td class="data-{{fields[1]}} borderR" ng-repeat="flds in widget.data.headers" ng-bind-html="rawData[flds[1]] | to_trusted_metric_value "></td>
+                        </tr>
+                    </tbody>
+
+                    <tbody ng-if="widget.data.args.report_type_id>=7">
+                        <tr ng-repeat="rawData in widget.data.rawData | pagenate: {currentPage: currentPage, itemsPerPage: itemsPerPage}" ng-if="sort.sortingOrder!=null">
+                            <td class="data-{{ex_fields[1]}} borderR" ng-repeat="ex_fields in widget.data.args.extra_fields">{{rawData[ex_fields[1]]}}</td>
+                            <td class="data-{{fields[1]}} borderR" ng-repeat="flds in widget.data.headers" ng-bind-html="rawData[flds[1]] | to_trusted_metric_value "></td>
+                        </tr>
+                        <tr ng-repeat="rawData in widget.data.rawData | pagenate: {currentPage: currentPage, itemsPerPage: itemsPerPage}" ng-if="sort.sortingOrder==null">
+
+                            <td class="data-{{ex_fields[1]}} borderR" ng-repeat="ex_fields in widget.data.args.extra_fields">{{rawData[ex_fields[1]]}}</td>
+                            <td class="data-{{fields[1]}} borderR" ng-repeat="flds in widget.data.headers" ng-bind-html="rawData[flds[1]] | to_trusted_metric_value "></td>
+                        </tr>
+                    </tbody>
+
+                    <tfoot>
+                        <tr class="divider">
+                            <th ng-repeat="val in widget.data.args.extra_fields" style="padding:11px 15px;text-align: left"></th>
+                            <th ng-repeat="header in widget.data.headers" style="text-align: right;padding:11px 15px" ng-bind-html="widget.data.rawDataTotal[header[1]].value | to_trusted_metric_value "></th>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="other-controller">
+                    <div class="text-center">
+                        <div paginate source="widget.data.rawData" per-page="10" sorting-order="{{widget.data.args.sort_by}}" reverse="true"></div>
+                    </div>
+                </div>
+
+                <div class="pad10L pad10R" style="background-color: #fff">
+                    <div class="font-gray-dark pad5" ng-if="!!widget.segment">
+                        Applied Segment:
+                        <b>{{getSegmentName(widget)}}</b>
+                    </div>
+                    <div class="font-gray-dark pad5" ng-if="!!widget.data.args.filter">
+                        <a href="javascript:;" ng-click="applyFilter(widget.id,$index)">
+                            Filters applied on:
+                            <b ng-repeat="exfield in widget.data.args.extra_fields" ng-if="isFiltered(widget.id,exfield[1])" class="pad10R applied-filter">{{exfield[2]}}</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="pad10L"  ng-if="widget.insights && !widgetEdit[widget.id]">
+                <i class="fa fa-magic  float-left"></i>
+                <b style="float:left" class="font-gray-dark">&nbsp; Insights</b>&nbsp; &nbsp; 
+               <!-- <i class="fa fa-edit fa-2x"></i> -->
+                <div style="text-align:justify" data-toggle="tooltip" title ="Click to edit" class="click-edit insight-container"
+                     class="pad20T  font-gray-dark widget_comments"  ng-click="editInsight(widget.id, widget.insights)"
+                    ng-bind-html="widget.data.insights | to_trusted">                       
+                </div>
+            </div>
+            <div class="pad10L"  ng-show="widgetEdit[widget.id]">
+                <textarea name="editInsight-{{widget.id}}" id="editInsight-{{widget.id}}">
+                    
+                </textarea>
+                <button class="addWidgetBtn " ng-click="saveInsights( widget.id, $index)">Save</button>
+                <button class="cancel" ng-click="cancelSaveInsights( widget.id)">Cancel</button>
+            </div>
+            
+            <div class="pad10L">
+                <i class="glyph-icon icon-comments float-left" ng-if="widget.comments.length>0"></i>
+                <b style="float:left" class="font-gray-dark" ng-if="widget.comments.length>0">&nbsp; Comments</b>
+                <p style="text-align:justify" class="pad20T font-gray-dark widget_comments"
+                   ng-bind-html="widget.comments | to_trusted "></p>
+            </div>
+
+        </div>
+        <div class="content-box-wrapper" ng-if="widget.data.notes!=null">
+            <div class="divider"></div>
+            <p style="text-align:justify" class="pad10T  font-gray-dark  float-left widget_comments" ng-bind-html="widget.data.notes | to_trusted "></p>
+        </div>
+
+    </li>
+</ul>
+
+<div id="custom_date_selector_dialog" class="hide" style="padding:10px" title="Select Date">
+    <form action="" id="date_picker" class="col-md-12 center-margin">
+        <div class="form-row">
+            <div class="form-label col-md-2">
+                <label>From</label>
+            </div>
+            <div class="form-input col-md-4">
+                <input type="text" id="min" name="min" date-picker data-required="true" ng-model="date_min"/>
+            </div>
+            <div class="form-label col-md-2">
+                <label>To</label>
+            </div>
+            <div class="form-input col-md-4">
+                <input type="text" id="max" name="max" date-picker data-required="true" ng-model="date_max"/>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-input col-md-2"></div>
+            <div class="form-input col-md-10 ">
+                <a class="btn medium primary-bg float-right" title="" id="apply-custom">
+                    <span class="button-content">Apply</span>
+                </a>
+            </div>
+        </div>
+    </form>
+
+</div>

@@ -1,0 +1,45 @@
+<div class="hide" id="conversation" title="Conversation"  ng-controller="ChatCtrl">
+    <div id="chat-15" aria-labelledby="ui-id-7" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="true" aria-hidden="false">
+
+                <div style="height:250px;">
+                    <ul class="chat-box scrollable-content scrollable-small" nice-scroll  ng-if="messages.length>0">
+                        <li ng:class="generalInfo.current_user.id==message.user_id?'float-left':''" ng-repeat="message in messages">
+                            <div class="chat-author">
+                               <img image-fallback ng-src="/resources/logos/agencies/{{message.logo}}"  style="cursor:pointer" width="36" add-client-dialog="update-logo" >
+                            </div>
+                            <div class="popover  no-shadow" ng:class="generalInfo.current_user.id==message.user_id?'right':'left'" >
+                                <div class="arrow"></div>
+                                <div class="popover-content" >
+                                        <h3>
+                                            <a href="#" title="{{message.name}" ng:class="generalInfo.current_user.id==message.user_id?'font-black':''">{{message.name}}</a>
+                                            <div class="float-right" ng-if="(generalInfo.current_user.id==message.user_id) || (generalInfo.current_user.type=='agency')">
+                                                <a href="javascript:;" class="glyph-icon icon-remove font-red" data-placement="bottom" ng-click="delete(message.id)"></a>
+                                            </div>
+                                        </h3>
+                                             {{message.message}}
+                                        <div class="chat-time">
+                                            <i class="glyph-icon icon-clock-o"></i>
+                                             {{message.date}}
+                                        </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="infobox notice-bg" ng-if="messages.length<1">
+                        <p>There are currently no messages!</p>
+                    </div>
+                </div>
+                <div class="row  mrg20T">
+                    <div class="form-input col-md-10">
+                        <textarea id="message" name="message" data-trigger="keyup" data-rangelength="[20,200]" class="parsley-validated" ng-model="chat.message"></textarea>
+                    </div>
+                    <div class="form-input col-md-2">
+                        <a href="javascript:;" class="btn large primary-bg radius-all-4" id="demo-form-2-valid"  title="Send!" ng-click="sendMessage()" style="height:40px;padding-top:10px">
+                            <span class="button-content">
+                                Send
+                            </span>
+                        </a>
+                    </div>
+                </div>
+    </div>
+</div>

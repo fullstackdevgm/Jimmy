@@ -1,0 +1,40 @@
+<div id="msg-container"></div> 
+<div id="client-container"> 
+    <div class="wrpr radius5">
+            <div class="title">
+        			<div class="ico"><span><i class="icon-user"></i></span></div>
+                    <h5>{{client.name}}</h5>
+
+                    <a href="#" class="delete"  id="delete_client" >Delete this Client</a>
+                    <a href="#" class="addBtn" class="btn btn-info" id="add_report"><span>Add Report</span></a>
+                    
+            </div>        
+            <div class="tabBx tabbable">
+                <ul class="tabs	">
+                    <li class="active"><a href="#tab1" data-toggle="tab"><img src="/images/icons/add-report-ico.png" alt="" /> {{reporttabtitle}} </a></li>
+                    <li><a href="#tab2" data-toggle="tab"><img src="/images/icons/price-tag.png" alt="" /> Client Profile </a></li>
+                </ul>
+            </div>
+        
+        <div class="clr"></div>
+          
+        <div class="addClient radius5 client-view" style="border:0px;padding-top:10px">
+                <div class="tab-content">
+                      <div class="tab-pane active" id="tab1">
+                      <div id="report-container">     
+                        <div id="msg-container"></div>
+                            <div id="report-list" ng-include src="template"  >
+                                    
+                            </div>
+                        </div>
+                      </div>
+                      <div class="tab-pane" id="tab2">
+                       
+                        <div class="" id="account" ng-include src="'/src/app/client/account.html'"></div>
+                        <div class="" id="edit" style="display:none"></div>
+
+                      </div>	
+                </div>  
+          <div class="clr"></div>
+    </div>
+</div>

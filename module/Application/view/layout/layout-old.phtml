@@ -1,0 +1,170 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <?php echo $this->headTitle($this->translate('Jimmy'))->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
+
+		<?php 
+		echo  $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/images/favicon.png'))
+						->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.min.css')
+					    ->prependStylesheet($this->basePath() . '/css/style.css')
+						->prependStylesheet($this->basePath() . '/css/bootstrap.min.css') 
+						->appendStylesheet($this->basePath() . '/css/font-awesome/css/font-awesome.min.css') 
+
+		?>
+
+	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<script>
+       var baseUrl  = "<?php echo  $this->url('home');?>";
+       var adminUrl = "<?php echo  $this->url('admin');?>";
+    </script>	
+    <?php echo $this->headScript()->appendFile($this->basePath() . '/js/html5.js','text/javascript',array('conditional' => 'lt IE 9')) 
+								  ->appendFile($this->basePath() . '/js/jQuery/jquery-1.9.1.min.js') 
+								  ->appendFile($this->basePath() . '/js/bootstrap.min.js') 
+								  ->appendFile($this->basePath() . '/js/highcharts/highcharts.js') 
+								  ->appendFile($this->basePath() . '/js/curvy.corners.trunk.js') 
+
+    ?>
+
+                                      
+
+    </head>
+    <body>
+     
+    <!--Toottip//-->
+      <a href="#" class="tooltip">Lorem <span>ipsum</span></a>
+
+    <div class="container">
+
+            <div class="header">
+                <h1><a href="<?php echo $this->url('home') ?>">Jimmy Data</a></h1>
+                
+			<?php 
+            
+                 
+                   if($this->zfcUserIdentity()):
+                         if(in_array($this->zfcUserIdentity()->getType(),array('agency' ,'coworker'))):
+                            echo $this->navigation('agencynavigation')->menu() 
+																	  ->setPartial('partial/menu.phtml')
+																	  ->render();
+                         endif; 
+                   endif;
+                   ?>
+                
+              
+ 			 <?php if($this->zfcUserIdentity()):?>
+
+
+                <div class="usersetting">
+                    <div class="user nav">
+                       
+
+                            <ul class="nav nav-pills">
+                              <li class="dropdown  pull-right">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                 <?php //echo $this->gravatar($this->zfcUserIdentity()->getEmail(),array('img_size'=>20)) ?>
+                                 Hello, <?php echo $this->zfcUserDisplayName() ?> 
+                                 <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                   <li> <a  title="" href="<?php echo $this->url('user/profile') ?>" class=""><i class="icon-info-sign"></i> Profile</a>
+                                    <?php 
+                                     if($this->zfcUserIdentity() && $this->zfcUserIdentity()->getType()=='agency'  ):
+                                    ?>
+                                     <li> <a  title="" href="<?php echo $this->url('coworker') ?>" class=""><i class="icon icon-user"></i> Coworker</a>
+                                     <li> <a  title="" href="<?php echo $this->url('user/payments') ?>" class=""><i class="icon icon-money"></i> Payments</a>
+                                     <!--<li> <a  title="" href="<?php echo $this->url('user/settings') ?>" class=""><i class="icon-gear"></i> Settings</a>-->
+                                   <?php endif; ?>   
+                                </ul>
+
+                              </li>
+                            </ul>
+                    </div>
+                    <a   title="Logout" href="<?php echo $this->url('user/logout') ?>" class="logout"></a>
+
+                </div>
+              <?php endif;?>  
+                
+            </div><!--/Header-->
+   	<div id="alert-container">
+         <?php $this->flashMessages();?>  
+		</div>
+    <?php 
+		  if($this->url()=='/dashboard'):
+		?>
+  <?php   
+  if($enable_wizard):
+    $wizard_label = "Hide Wizard"; 
+
+    if(!$this->show_wizard) {
+      $style = 'style="display:none"';
+      $wizard_label = "Use Wizard";
+    }
+
+    echo  $link  = '<a style="cursor:pointer;font-weight:bold;float:right" id="use_wizard">'.$wizard_label.'</a>'; 
+  ?>
+
+    <div  id="wizard" <?php echo $style;?> >
+    <?php 
+        echo $this->partial('application/dashboard/wizard.phtml',array('auth_link'=>$this->auth_link,'step'=>$this->wizard_step,'client'=>$this->wizard_client,'web_properties'=>$this->web_properties,'templates_used'=>$this->templates_used));
+  ?>
+    </div>
+<?php endif;?>
+
+      <div class="clr" style="margin-bottom: 50px"></div>
+      <div class="wrpr radius5">
+				<?php echo $this->content; ?>
+      </div> 
+    <?php
+		  else:
+		 	  echo $this->content;
+		  endif;
+    ?>
+         
+        <?php echo $this->inlineScript() ?>
+        <!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MKF6R5"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MKF6R5');</script>
+<!-- End Google Tag Manager -->
+
+<script type="text/javascript">
+  
+  jQuery("#use_wizard").on("click",function(){
+    if(jQuery(this).text()=='Use Wizard'){
+      jQuery("#wizard").show(500);
+      jQuery(this).text("Hide Wizard");
+      jQuery("#web_property").chosen();
+
+    } else {
+      jQuery("#wizard").hide(500);
+      jQuery(this).text("Use Wizard");
+    }
+
+  })
+
+/*
+
+  var __lc = {};
+  __lc.license = 1339372;
+
+  (function() {
+    var lc = document.createElement('script'); lc.type = 'text/javascript'; lc.async = true;
+    lc.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdn.livechatinc.com/tracking.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(lc, s);
+  })();
+*/
+</script>
+    </body>
+    
+</html>

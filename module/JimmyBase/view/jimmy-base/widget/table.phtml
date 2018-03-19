@@ -1,0 +1,141 @@
+<?php 
+if($rawData): 
+  $dash = true;
+  //var_dump(unserialize($widget->getFields()));
+?>
+   <div class="dash-table-header">
+      <h1><?php echo $widget->getTitle()?> <br/><span><?php echo date('M d, Y',$args["date_range"]["min"]).' - '.date('M d, Y',$args["date_range"]["max"]); ?></span></h1>
+      <div class="header-logo">
+        <img src="images/<?php echo $args['channel']?>.jpg" />
+      </div>
+      <!--
+      <div class="search">
+        <ul>
+            <li><label for="search">search</label></li>
+            <li id="search-<?php echo $widget->getId()?>"><input type="text" /></li>
+          </ul>
+      </div>
+      -->
+ </div>
+<div class="dash-table" style="page-break-before:avoid">
+    <table id="table<?php echo $widget->getId()?>" >
+        <thead >
+            <tr>
+                <?php	
+                  # Column Headers
+                if($args['extra_fields']){
+                    foreach($args['extra_fields'] as $field){
+                      if($field[1]=='campaign' && in_array($args['report_type'],array('KEYWORDS_PERFORMANCE_REPORT','ADGROUP_PERFORMANCE_REPORT','SEARCH_QUERY_PERFORMANCE_REPORT')) && !$args['show_campaign'])
+                        continue;
+                      
+                    if(in_array($field[0],array('Description1','Description2')))
+    							     continue;
+                            echo '<th class="'.str_replace(":","",$field[1]).'">'.$field[2].'</th>';
+                        }
+                    }
+                  
+                if($args['fields_raw_data']){
+                    foreach($args['fields_raw_data'] as $field){
+                        echo '<th class="'.$field[1].'">'.$field[2].'</th>';
+                    }
+                }
+                ?>
+              </tr>
+          </thead>
+          <tbody>
+        
+        <?php		
+        $i = 0;
+		
+		$formatFields = array('ctr','clicks','impressions','cost','costConv1PerClick','avgCPC','avgPosition','searchImprShare',
+                          'ga:percentNewVisits','ga:visitBounceRate','ga:pageviewsPerVisit','ga:entrances','ga:exitRate','ga:pageValue',
+                          'ga:transactionsPerVisit','ga:transactionRevenue','ga:avgTimeOnSite');
+
+		$formatText   = array('ad'=>array('removeDepFields'=>true));
+
+        foreach($rawData  as $key => $campaign):
+            
+            if($args['extra_fields'])
+              $dataFields = @array_merge($args['extra_fields'],$args['fields_raw_data']);
+            else
+              $dataFields = $args['fields_raw_data'];
+
+            
+
+            echo '<tr '.$class.'>';
+                    foreach($dataFields as $field){ 
+
+                       if(in_array($args['report_type'],array('KEYWORDS_PERFORMANCE_REPORT','ADGROUP_PERFORMANCE_REPORT','SEARCH_QUERY_PERFORMANCE_REPORT')) && 
+                        !$args['show_campaign'] && 
+                        $field[1] == 'campaign') {
+                        $dash = false;
+                          continue;
+                      }
+
+                    if(in_array($field[1],$formatFields))
+								        echo '<td class="'.str_replace(":","",$field[1]).'">', $this->metrics()->calculateMetrics($field[1],$campaign[$field[1]],$campaign['currency']) , '</td>';  
+                    else if(in_array($field[1],array_keys($formatText))){
+								        echo '<td class="'.str_replace(":","",$field[1]).'">', $this->metrics()->formatText($field[1],$campaign,$formatText[$field[1]],$args['extra_fields']), '</td>'; 
+								    } else if(isset($campaign[$field[1]]))
+                        echo '<td class="'.str_replace(":","",$field[1]).'">', $campaign[$field[1]].'</td>';
+                    }
+                    
+             echo '</tr>';
+         endforeach;
+         ?>
+                </tr> 
+             </tbody>
+             <tfoot>
+                	 <tr><td><strong>Total</strong></td>
+					   <?php	
+                            # Totals
+                            for($i = 1; $i < count($args['extra_fields']); $i++){
+                                if(in_array($args['extra_fields'][$i][0],array('Description1','Description2'))){
+                                        continue;
+                                }
+                                if($dash)
+                                  echo '<td>&ndash;</td>';
+                            }
+                           
+                            foreach($args['fields_raw_data'] as $field){
+                                    
+                                 if(isset($rawDataTotal[$field[1]]))
+                                    echo '<td><strong>'.$this->metrics()->formatNumber($field[1],$rawDataTotal[$field[1]],$rawDataTotal['currency']).'</strong></td>';
+                                 else
+                                    echo '<td></td>';				
+                            }
+                                            
+                		?>
+                    </tr>
+                </tfoot>
+        	</table>
+         <script>
+      			$(document).ready(function() {
+
+      				var dataTable<?php echo $widget->getId()?> =   $('#table<?php echo $widget->getId()?>').dataTable({         
+            										  "bLengthChange": false,
+            										  "iDisplayLength": 100,
+            										  "oLanguage": { "sSearch": "" },
+            										  "oPaginate": {"sNext": ""},
+            										  "oPaginate": {"sPrevious": ""},
+                                  /*"aoColumnDefs": [
+                                   { "sType": "pct", "aTargets": [ 3 ] }
+                                  ],*/
+                               //   "aoColumns": [null,null,{"sType": "percent"}],
+                                 // "aaSorting": [[0, "desc"]],
+                                  "bFilter":true
+            										 });
+            });
+        </script>     
+     
+        <?php 
+        if($comments = $widget->getComments())
+          echo '<div class="span12 comments-box" style="padding:10px 0px"><span><b><i class="icon-comment-alt"></i> Comments</b></span><div class="wysiwyg">'.$comments.'</div></div>';
+        
+        ?> 
+        <div class="clr"></div>
+      </div>  
+    <?php
+    
+    endif;  
+	

@@ -1,0 +1,41 @@
+<div class="dropdown">
+    <a href="javascript:;" title="" class="btn small bg-gray" data-toggle="dropdown">
+        <span class="button-content">
+            <i class="glyph-icon font-size-11 icon-cog"></i>
+            <i class="glyph-icon font-size-11 icon-chevron-down"></i>
+        </span>
+    </a>
+     <ul class="dropdown-menu float-right">
+        <li ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+            <a title="" class="clone" title="Clone">
+                <i class="glyph-icon icon-edit mrg5R"></i>
+                Clone
+            </a>
+        </li>
+        <li ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+            <a href="javascript:;" title="" class="share">
+                <i class="glyph-icon icon-share mrg5R"></i>
+                Share
+            </a>
+        </li>
+        <li ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+            <a href="javascript:;" title="" class="schedule">
+                <i class="glyph-icon icon-calendar mrg5R"></i>
+                Schedule
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" title="" class="download">
+                <i class="glyph-icon icon-download mrg5R"></i>
+                Download
+            </a>
+        </li>
+        <li class="divider" ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></li>
+        <li ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+            <a href="javascript:;" class="font-red delete" title="">
+                <i class="glyph-icon icon-remove mrg5R"></i>
+                Delete
+            </a>
+        </li>
+    </ul>
+</div>

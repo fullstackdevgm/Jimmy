@@ -1,0 +1,69 @@
+<div class="sideBarBox">
+    <ul id="add-widgets">
+        <li class="kpi radius5">
+            <div class="box">
+                <a href="#/reports/{{report.id}}/sources"><span>53+</span></a>
+            </div>
+               <a href="#/reports/{{report.id}}/sources"><small>Add KPI</small></a>
+        </li>
+        <li class="kpi1 radius5">
+            <div class="box">
+                <a href="#/reports/{{report.id}}/widgets/add/graph"><span><img src="/images/icons/side-ico1.png" alt="" /></span></a>
+            </div>
+            <a href="#/reports/{{report.id}}/widgets/add/graph"><small>Add Graph</small></a>
+        </li>
+        <li class="kpi2 radius5">
+            <div class="box">
+                <a href="#table"><span><img src="/images/icons/side-ico2.png" alt="" /></span></a>
+            </div>
+            <a href="#table"><small>Add Table</small></a>
+        </li>
+        <li class="kpi3 radius5">
+            <div class="box">
+                <a href="#notes"><span><img src="/images/icons/side-ico3.png" alt="" /></span></a>
+            </div>
+                <a href="#notes"><small>Add Note</small></a>
+        </li>
+    </ul>
+</div><!--/SideBox-->
+<div class="detail-right">
+    
+        <div id="msg-container"></div>
+        <div id="widgets-container" render-form >
+
+            <!--Widgets List //-->
+
+                <div class="wrpr radius5">
+                        <div class="title">
+                            <div class="ico"><span><img src="/images/icons/full-report-ico.png" alt="" /></span></div>
+                            <h5 class="" id="title">{{report.title}}</h5>
+                            <a href="#/clients/{{report.user_id}}/reports" class="cancel-report" id="cancel"  data-id="{{report.id}}" ><span>Back</span></a>
+                            <a href="#/reports/{{report.id}}/view" class="view-report"   id="view"   ><span>View</span></a>
+                        </div>
+                </div>
+
+                <div class="" id="sources"   ng-if="display==true" ng-include src="'/src/app/client/sources.html'"></div>
+      
+                <ul class="widgets-list" id="sortable" ng-repeat="widget in widgets | filter:search | orderBy:'id'" >
+                        <li class="widgets" style="cursor:pointer"  id="{{widget.id}}">
+                              <div class="row13" style="margin-top:5px;float:right;width:0px">
+                                <a href="#" class="change a1" data-id="{{widget.id}}">Change</a> 
+                                <a href="#" class="delete a3" data-id="{{widget.id}}">Delete</a>
+                              </div>
+                              <div class="wrpr radius5" id="widget-<?php echo $widget->getId()?>" style="margin:0px auto;margin-bottom:15px;height:160px">
+                                <h4 class="t4">{{widget.title}}</h4>
+                                <div class="graph">
+                                    <div class="graphBx" style="text-align:center">
+                                            <img src="/images/icons/{{widget.type}}.png" alt=""  width="75px" height="75px" />
+                                    </div>
+                                </div>
+                            </div><!--Traffic Report-->
+                            
+                      </li>  
+                </ul>
+
+
+        </div>
+</div>
+    <div class="clr"></div>
+

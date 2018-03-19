@@ -1,0 +1,509 @@
+<form action="" id="newWidgetForm" class="col-md-10 center-margin" novalidate>
+                <div class="form-row">
+                        <div class="form-label col-md-2">
+                            <label for=""> Source : </label>
+                         </div><div class="col-md-3"><b>{{report.channel}}</b></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label col-md-2">
+                        <label for=""> Widget Type :</label>
+                    </div><div class="col-md-3"><b>{{report.widget.type}}</b></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-label col-md-2">
+                        <label for="">
+                            Widget Title:
+                        </label>
+                    </div>
+                    <div class="form-input col-md-5">
+                        <input placeholder="Widget Title" type="text" name="widget_title"
+                               id="widget_title" data-required="true" required
+                               ng-model="report.widget.title">
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <div class="col-mod-4" ng-if="report.channel=='googleadwords'
+                                                   || report.channel=='bingads'">
+                            <div class="form-label col-md-2">
+                                <label for="">
+                                    Campaigns:
+                                </label>
+                            </div>
+                            <div class="form-input col-md-5">
+                                <select  ng-model="report.widget.campaigns" required ng-options="c.id as c.name for c in campaigns"
+                                         multiple ng-multiple="true" id="campaigns-select" class="chosen-select"
+                                         chosen-select="campaigns" watch-resource="campaigns.loaded">
+                                    <option value="">Select campaigns</option>
+                                </select>
+                            </div>
+                    </div>
+
+                    <div class="col-mod-4" ng-if="report.channel=='googleanalytics'">
+                            <div class="form-label col-md-2">
+                                <label for="">
+                                    Profile:
+                                </label>
+                            </div>
+                            <div class="form-input col-md-5" >
+                                <select ng-change="loadGoals()" required  ng-model="report.widget.profile_id"
+                                        ng-options="c.id as c.name for c in profiles"  id="profiles-select"
+                                        class="chosen-select" chosen-select="profiles" watch-resource="profiles.loaded">
+                                    <option value="">Select profile</option>
+                                </select>
+                            </div>
+                    </div>
+
+                    <div class="col-mod-4">
+                        <div class="form-label col-md-1">
+                            <label for="">
+                                Metrics:
+                            </label>
+                        </div>
+                        <!-- If Widget Type is Single Select//-->
+                        <div class="form-input col-md-4" ng-if="widget_type_single">
+                            <select on-change='goals' data-required="true" required
+                                    ng-options="k.id as k.title for k in metrics"
+                                    id="kpi-select" class="chosen-select"
+                                    ng-model="report.widget.metrics"  chosen-select="metrics">
+                                <option value="">Select Metrics</option>
+                            </select>
+                        </div>
+                       <!-- If Widget Type is Multi Select//-->
+                        <div class="form-input col-md-4" ng-if="!widget_type_single">
+                            <select on-change='goals'  data-required="true"  required
+                                    ng-options="k.id as k.title for k in metrics"
+                                    id="kpi-select" class="chosen-select"
+                                    multiple="multiple" ng-model="report.widget.metrics"
+                                    chosen-select="metrics">
+                                <option value="">Select Metrics</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <!--Select Goals//-->
+                <div class="form-row" ng-if="report.channel=='googleanalytics' "
+                     ng-show="widget_type_graph && (report.widget.type==2)" id="goals">
+                    <div class="col-mod-4">
+                            <div class="form-label col-md-2" >
+                                <label for="">
+                                    Goals:
+                                </label>
+                            </div>
+
+                            <div class="form-input col-md-5" ng-if="widget_type_graph">
+                                <select  ng-options="k.id as k.title for k in goals"  
+                                         id="kpi-select"
+                                         class="chosen-select"  ng-model="report.widget.goals"
+                                         chosen-select="goals"  watch-resource="goals.loaded">
+                                    <option value="">Select Goals</option>
+                                </select>
+                            </div>
+
+                            <div class="form-input col-md-5"  ng-if="!widget_type_graph">
+                                <select  ng-options="k.id as k.title for k in goals"  
+                                         id="kpi-select"
+                                         class="chosen-select"  multiple="multiple"
+                                         ng-model="report.widget.goals" chosen-select="goals"
+                                         watch-resource="goals.loaded">
+                                    <option value="">Select Goals</option>
+                                </select>
+                            </div>
+                    </div>
+                </div>
+                <div class="form-row" ng-if="report.channel=='googleanalytics'">
+                    <div class="col-mod-4">
+                            <div class="form-label col-md-2">
+                                <label for="">
+                                    Segments:
+                                </label>
+                            </div>
+                            <div class="form-input col-md-5" >
+                                <select ng-change="loadSegments()" ng-model="report.widget.segment"
+                                        ng-options="c.id as c.name for c in segments"  id="segments-select"
+                                        class="chosen-select" chosen-select="segments" watch-resource="segments.loaded">
+                                    <option value="">Select Segment</option>
+                                </select>
+                            </div>
+                    </div>
+                </div>
+                <!--Compare Metrics //-->
+                <div class="form-row" ng-if="widget_type_graph">
+                    <div class="col-mod-4">
+                            <div class="form-label col-md-2" >
+                                <label for="">
+                                    Compare Metrics:
+                                </label>
+                            </div>
+                            <div class="form-input col-md-1"  style="width:4%">
+                                <input  type="checkbox" value="1" name="compare" compare-fields="compare_metrics_field" ng-model="report.widget.compare" >
+                            </div>
+                    </div>
+                </div>
+
+                <div class="form-row compare_metrics_field" ng-if="widget_type_graph && report.widget.compare == 1" >
+                    <div class="col-mod-4 ">
+                         <div class="form-label col-md-2">
+                            <label for="">
+                                Metric Type:
+                            </label>
+                        </div>
+                        <div class="form-input form-checkbox-radio col-md-5">
+                           <label for="" ng-repeat="metrics_type in metrics_types">
+                            <input  type="radio" class="radio" name="metric_type_compare" required
+                                    display-goals-compare="goals_compare" value="{{metrics_type.id}}"
+                                    ng-click="selectMetricTypeCompare($index)"
+                                    ng-model="report.widget.metrics_type_compare">
+                               
+                           </label>
+                        </div>
+                        <div class="form-label col-md-1">
+                            <label for="">
+                                Metrics:
+                            </label>
+                        </div>
+                        <!-- If Widget Type is Graph//-->
+                        <div class="form-input col-md-4" >
+                            <select  ng-options="k.id as k.title for k in metrics_compare" required class="chosen-select"
+                                     ng-model="report.widget.metrics_compare"  chosen-select="metrics_compare">
+                                <option value="">Select Metrics</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--Compare Metrics //-->
+
+                <!--Select Goals Compare//-->
+                <div class="form-row compare_metrics_field" ng-if="report.channel=='googleanalytics'"
+                     ng-show="widget_type_graph && (report.widget.metrics_compare==2)" id="goals_compare">
+                    <div class="col-mod-4">
+                            <div class="form-label col-md-2" >
+                                <label for="">
+                                    Goals:
+                                </label>
+                            </div>
+
+                            <div class="form-input col-md-5"  ng-if="widget_type_graph">
+                                <select  ng-options="k.id as k.title for k in goals"
+                                         id="kpi-select" class="chosen-select"
+                                         ng-model="report.widget.goals_compare"
+                                         chosen-select="goals"
+                                         watch-resource="goals.loaded">
+                                    <option value="">Select Goals</option>
+                                </select>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="form-row">                   
+                        <div class="form-label col-md-2">
+                            <label for="">
+                                Date Range:
+                            </label>
+                        </div>
+                        <div class="form-input col-md-5">
+                            <div ng-if="report.type!=7 && report.type!=8">
+                                <select  data-required="true" required ng-options="k.id as k.title for k in date_ranges"
+                                        id="date-range" class="chosen-select" date-select="custom_date_selector"
+                                        ng-model="report.widget.date_range" ng-change="dateSelected(report.widget.date_range)"
+                                        chosen-select="date_ranges">
+                                    <option value="">Select Date Range</option>
+                                </select>
+                            </div>
+
+                            <select ng-if="report.type==7" data-required="true" required ng-options="k.id as k.title for k in month_ranges"
+                                    id="month-range" class="chosen-select" date-select="custom_date_selector"
+                                    ng-model="report.widget.month_range" ng-change="dateSelected(report.widget.month_range)"
+                                    chosen-select="month_ranges">
+                                <option value="">Select Month Range</option>
+                            </select>
+
+                            <select ng-if="report.type==8" data-required="true" required ng-options="k.id as k.title for k in week_ranges"
+                                    id="week-range" class="chosen-select" date-select="custom_date_selector"
+                                    ng-model="report.widget.week_range" ng-change="dateSelected(report.widget.week_range)"
+                                    chosen-select="week_ranges">
+                                <option value="">Select Week Range</option>
+                            </select>
+
+                        </div>
+                    <div class="col-md-5 col-sm-6"  ng-if="showCustom" id="custom_date_selector">
+                                <div class="form-label col-md-2" >
+                                    <label for="from">
+                                        From:
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-4" >
+                                    <input readonly="readonly" type="text" size="10" class="fromDate" 
+                                           data-required="true" required
+                                           name="from" id="from"  date-picker max-date='today'
+                                           ng-model="report.widget.date_range_custom_min">
+                                </div>
+
+                                <div class="form-label col-md-2">
+                                    <label for="to">
+                                        To:
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-4">
+                                    <input readonly="readonly" type="text" size="10" class="toDate"
+                                           name="to" data-required="true"
+                                           id="to"  date-picker max-date='today' required
+                                           ng-model="report.widget.date_range_custom_max">
+                                </div>
+                    </div>
+
+                </div>
+
+
+                 <!--Compare Date //-->
+                <div class="form-row" ng-if="widget_type_kpi">
+                    <div class="form-label col-md-2">
+                        <label for="">
+                            Compare Date:
+                        </label>
+                    </div>
+                    <div class="form-input col-md-1">
+                        <input  type="checkbox" value="1" name="compare_date" compare-fields="compare_date_field" ng-model="report.widget.compare_dates">
+                    </div>
+                </div>
+
+                <div class="form-row" id="compare_date_field"  ng-if="!widget_type_graph && report.widget.compare_dates">
+                    <div class="col-mod-4">
+                        <div class="form-label col-md-2">
+                            <label for="">
+                                Compare Date Range:
+                            </label>
+                        </div>
+                        <div class="form-input col-md-5">
+                            <select id="compare_date_range_select" required 
+                                    ng-options="k.id as k.title for k in date_range_compare"
+                                    date-select-compare="custom_date_selector_compare"
+                                    ng-model="report.widget.date_range_compare"
+                                    chosen-select="date_range_compare">
+                                <option value="">Select Date Range</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-mod-4" id="custom_date_selector_compare"
+                         ng-if ="report.widget.date_range_compare == 'custom'">
+                        <div class="form-label col-md-1" >
+                            <label for="from">
+                                From:
+                            </label>
+                        </div>
+                        <div class="form-input col-md-1" style="width:120px">
+                            <input type="text" size="10" class="fromDate" name="fromCompare"
+                                   id="fromCompare" style="width:102px" date-picker max-date='today'
+                                   required ng-model="report.widget.date_range_custom_min_compare">
+                        </div>
+
+                        <div class="form-label col-md-1">
+                            <label for="to">
+                                To:
+                            </label>
+                        </div>
+                        <div class="form-input col-md-1" style="width:120px">
+                            <input type="text"  size="10" class="toDate" name="toCompare" id="toCompare"
+                                   style="width:102px" date-picker max-date='today' required
+                                   ng-model="report.widget.date_range_custom_max_compare">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="form-row" ng-if="report.channel == 'googleadwords'">
+                        <div class="form-label col-md-2">
+                            <label for="">
+                                Device Types:
+                            </label>
+                        </div>
+                        <div class="form-checkbox-radio col-md-5">
+                            <label  ng-repeat="device in metricsoptions.device_types">
+                                <input  type="checkbox" name="deviceTypes[]" value="{{device.id}}"
+                                        device-checkbox-list >
+                                {{device.title}}
+                            </label>
+                        </div>
+                </div>
+
+
+                 <div class="form-row" ng-if="report.channel=='googleadwords'">
+                        <div class="form-label col-md-2">
+                            <label for="">
+                                Network Types:
+                            </label>
+                        </div>
+                        <div class="form-checkbox-radio col-md-5">
+                            <label   ng-repeat="network in metricsoptions.network_types">
+                                <input ng-model="report.widget.network_type" type="radio"
+                                       name="networkTypes[]" value="{{network.id}}"
+                                       network-radio-list>
+                                {{network.title}}
+                            </label>
+                        </div>
+                </div>
+                <div class="form-row" >
+                    <div ng-if="report.onecol == true || widget_type_piechart == true ">
+                        <div class="form-label col-md-2">
+                            <label for="">
+                                Show Top:
+                            </label>
+                        </div>
+                        <div class="form-checkbox-radio col-md-5">
+                            <label for>
+                                <label>
+                                   <input ng-model="report.widget.show_top" type="radio" name="show_top[]" value="" >
+                                    All
+                                </label>
+                                <label>
+                                   <input ng-model="report.widget.show_top" type="radio" name="show_top[]" value="10" >
+                                    10
+                                </label>
+                                <label>
+                                   <input ng-model="report.widget.show_top" type="radio" name="show_top[]" value="20" >
+                                   20
+                                </label>
+                                <label>
+                                   <input ng-model="report.widget.show_top" type="radio" name="show_top[]" value="50" >
+                                   50
+                                </label>
+                           </label>
+
+                        </div>
+                    </div>
+                        <div ng-show="!widget_type_piechart">
+                            <div  ng-class="{'col-md-1': report.onecol, 'col-md-2': !report.onecol}" class="form-label">
+                                <label for="">
+                                    Sort By:
+                                </label>
+                            </div>
+                            <div class="form-input col-md-4">
+                                    <select  ng-options="k.id as k.title for k in selectedMetrics"
+                                             class="chosen-select" ng-model="report.widget.sort_by"
+                                             chosen-select="selectedMetrics" watch-resource="selectedMetrics.length" >
+                                        <option value="">Select Sort By Metrics</option>
+                                    </select>
+                            </div>
+                        </div>
+                </div>
+
+
+                <div class="form-row"  ng-if="widget_type_table && report.channel=='googleadwords' && report.type<7">
+                            <div class="form-label col-md-2">
+                                <label for="">
+                                    Campaign Column:
+                                </label>
+                            </div>
+                            <div class="form-checkbox-radio col-md-9">
+                                <label for>
+                                    <input type="checkbox" class="checkbox" name="show_campaign"
+                                           value="1" ng-model="report.widget.show_campaign">
+                                    <small>Display campaign column in the tables?</small>
+                               </label>
+
+                            </div>
+                </div>
+                <div class="form-row" ng-hide="showCustom" ng-if="widget_type_table && report.channel=='googleadwords' && report.type==7">
+                    <div class="form-label col-md-2">
+                                <label for="">
+                                    Current Month:
+                                </label>
+                            </div>
+                            <div class="form-checkbox-radio col-md-9">
+                                <label for>
+                                    <input type="checkbox" class="checkbox" name="show_current_period"
+                                           value="1" ng-model="report.widget.show_current_period">
+                                    <small>Include current month in report?</small>
+                               </label>
+
+                    </div>
+                </div>
+                <div class="form-row" ng-hide="showCustom" ng-if="widget_type_table && report.channel=='googleadwords' && report.type==8">
+                    <div class="form-label col-md-2">
+                                <label for="">
+                                    Current Week:
+                                </label>
+                            </div>
+                            <div class="form-checkbox-radio col-md-9">
+                                <label for>
+                                    <input type="checkbox" class="checkbox" name="show_current_period"
+                                           value="1" ng-model="report.widget.show_current_period">
+                                    <small>Include current week in report?</small>
+                               </label>
+
+                    </div>
+                </div>
+
+                <div class="form-row" ng-hide="showCustom" ng-if="widget_type_table && report.channel=='googleanalytics' && report.type==7">
+                    <div class="form-label col-md-2">
+                                <label for="">
+                                    Current Month:
+                                </label>
+                            </div>
+                            <div class="form-checkbox-radio col-md-9">
+                                <label for>
+                                    <input type="checkbox" class="checkbox" name="show_current_period"
+                                           value="1" ng-model="report.widget.show_current_period">
+                                    <small>Include current month in report?</small>
+                               </label>
+
+                    </div>
+                </div>
+                <div class="form-row" ng-hide="showCustom"  ng-if="widget_type_table && report.channel=='googleanalytics' && report.type==8">
+                    <div class="form-label col-md-2">
+                                <label for="">
+                                    Current Week:
+                                </label>
+                            </div>
+                            <div class="form-checkbox-radio col-md-9">
+                                <label for>
+                                    <input type="checkbox" class="checkbox" name="show_current_period"
+                                           value="1" ng-model="report.widget.show_current_period">
+                                    <small>Include current week in report?</small>
+                               </label>
+
+                    </div>
+                </div>
+                <div class='form-row' ng-if='report.widget.insight'>
+                    <div class='form-label col-md-2'>
+                        <label for=''>
+                            Insights 
+                        </label>
+                    </div>
+                    <div class='form-input col-md-4'>
+                        <select  ng-model="report.widget.insights" required 
+                                 ng-options="i.id as i.id for i in insightTypes"
+                                multiple ng-multiple="true" id="insights-select" 
+                                class="chosen-select"                                
+                                chosen-select="insightTypes"
+                                watch-resource="insightTypes.length">
+                                    <option value="">Select Insight Types</option>
+                                </select>
+                    </div>
+                </div>
+                    
+                <div class="form-row" >
+                    <div class="form-label col-md-2">
+                        <label for="">
+                            Comment:
+                        </label>
+                    </div>
+                    <div class="form-input col-md-10">
+                        <textarea  class="ckeditor" cols="80" id="editor1" name="editor1" rows="10" ng-model="report.widget.comments" ck-editor></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-label col-md-2">
+                        <label></label>
+                    </div>
+                     <div class="form-input col-md-2">
+                        <div class="col-md-4 "><button type="button" ng-click="cancel()" class="cancel ">Cancel</button></div>
+                        <div class="col-md-4 "><button class="addWidgetBtn" type="submit" ng-click="save()">Save</button></div>
+                    </div>
+                </div>
+              </form>

@@ -1,0 +1,10 @@
+<div class="row-fluid">
+   <div attr="desc">
+     <div>
+      <p>Hi,</p>
+      <p><strong><?php if($agency->getName()) echo $agency->getName(); else echo $agency->getEmail();?></strong> has sent you a report.</p>
+      <p>Report Title: <strong><?php echo $report->getTitle();?></strong> </p>   
+     </div>
+   </div>
+   <br />
+</div>

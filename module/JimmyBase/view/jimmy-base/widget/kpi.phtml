@@ -1,0 +1,277 @@
+<?php
+# KPI Fields
+$fields   = unserialize($widget->getFields());
+if($args['kpi_fields']):
+$exception_list_kpi = array('costConv1PerClick');
+$widgetsbg   = array('bg-blue','bg-orange','bg-green','bg-orange','bg-green','bg-blue','bg-green','bg-blue','bg-orange','bg-blue','bg-orange','bg-green','bg-blue','bg-orange','bg-green','bg-blue','bg-orange','bg-green');
+?>
+    <div class="kpi-pdf content-box widget-box">
+      <div class="content-header-box  no-margin">
+            <div class="content-header">
+              <div class="f-left widget-header-main">
+                <img src="/images/<?php echo $widget->channel;?>-new.png" title="" width="80px"  class="icon-service" />
+                  <span class="widget-title"><?php echo ucfirst(strtolower($widget->getTitle()));?></span>
+              </div>
+              <div class="float-left hide-mobile widget-header-date" >
+                  <span class="date-content">
+                       <?php echo $args['date_range_formatted']['min']?> to <?php echo $args['date_range_formatted']['max']?>
+                  </span>
+                  <?php if($args['date_range_compare_formatted']):?>
+                    <span>-</span>
+                    <span class="date-content">
+                    <?php echo $args['date_range_compare_formatted']['min']?>-<?php echo $args['date_range_compare_formatted']['max']?>
+                    </span>
+                  <?php endif;?>
+              </div>
+            </div>
+      </div>
+      <div class="content-box-wrapper" id="kpi-box">
+           <?php
+           $kpirun=1;
+           $kpiclass='kpi-first';
+            foreach($kpiDataTotal as $key => $kpi):
+                  if(isset($kpi)):
+                     $kpi_type = $fields['kpi_type'][$key]?$fields['kpi_type'][$key]:1;
+                   if($kpirun==1) {$kpiclass='kpi-first';} elseif ($kpirun==2) {$kpiclass='kpi-second';} elseif ($kpirun==3) { $kpiclass='kpi-third';$kpirun=0;}
+           ?>
+            <div class="col-md-3 panel-wide <?php echo $kpiclass; ?>">
+                <?php echo $this->partial("jimmy-base/widget/kpi-type-".$kpi_type.".phtml",
+                        array("kpi"=>$kpi,"kpiDataTotalCompare"=>$kpiDataTotalCompare,"key"=>$key,
+                            "kpiDataSegmented"=>$kpiDataSegmented));?>
+            </div>
+            <?php 
+            $kpirun++;
+            endif;
+
+            endforeach;?>
+          <script type="text/javascript">
+              $('.infobox-sparkline-pdf').each(function(k,el){
+               $(el).sparkline($(el).data('graphdata'), {
+                        type: 'bar',
+                        height: '90',
+                        width: '8%',
+                        barWidth: 8,
+                        barSpacing: 2,
+                        zeroAxis: false,
+                        barColor: '#ccc',
+                        negBarColor: '#ddd',
+                        zeroColor: '#ccc',
+                        stackedBarColor: [
+                          '#5bccf6',
+                          '#ffebeb'
+                        ]
+                  });
+               });
+
+              $('.infobox-sparkline-top-pdf').each(function(k,el){
+                var data = $(el).data('graphdata');
+                var ac   = data;
+                var aerw = data;
+
+
+                var max = Math.max.apply(null, Object.keys(aerw).map(function (e) {
+                  return aerw[e][0];
+                }));
+
+               $(el).sparkline(data, {
+                          type: 'bar',
+                          height: '90',
+                          width: '12%',
+                          barWidth: 8,
+                          barSpacing: 2,
+                          zeroAxis: false,
+                          barColor: '#ccc',
+                          negBarColor: '#ffcc33',
+                          zeroColor: '#a9a298',
+                          stackedBarColor: [
+                            '#ffcc33',
+                            '#a9a298'
+                          ]
+                  });
+               });
+
+              $('.jimmy-chart-kpi').each(function(k,el){
+
+                var data  = $(el).data("graphdata");
+                var aerw  = data;
+                var typeg = $(el).data("typeg");
+
+                var max = Math.max.apply(null, Object.keys(aerw).map(function (e) {
+
+                  return aerw[e][0];
+                }));
+
+                var ac     = data;
+                var totasi = [];
+
+                $.each(ac, function (index,item) {
+                  totasi.push({
+                    'x': '',
+                    'y': item[0],
+                    'z': item[1]
+                  });
+                });
+
+
+
+                var yKeys  = ['y'];
+                var labels = 'Click';
+                if (1 == 1) {
+                  yKeys[1] = 'z';
+                  labels[1] = 'Impre';
+                }
+
+                var totals = totasi;
+
+                var chartData = {
+                  data: totals,
+                  xkey: 'x',
+                  ykeys: yKeys,
+                  labels: labels,
+                  barColors: [
+                    '#ffcc33',
+                    '#fa7753'
+                  ],
+                  lineColors: [
+                    '#fff',
+                    '#fa7753'
+                  ],
+                  gridTextColor: '#fff',
+                  eventLineColors: '#fff',
+                  yMax: 4,
+                  parseTime: false,
+                  integerYLabels: true,
+                  hideHover: 'auto',
+                  hoverCallbacks: function (index, options, content) {
+                    var row = '<b>' + options.data[index].x + '</b><br><b>' + options.labels[0] + '</b>: ' + options.data[index].y;
+                    if (options.data[index].z && options.labels[1])
+                      row += '<br><b>' + options.labels[1] + '</b>: ' + options.data[index].z;
+                    return row;
+                  }
+                };
+
+                var opts = {
+                  'dataFormatX': function (x) {
+                    return 'fe';
+                  },
+                  'tickFormatX': function (x) {
+                    return 'asas';
+                  }
+                };
+
+                $(el).html('');
+                chartData.element = el;
+
+                if (typeg == 'bar')
+                  Morris.Bar(chartData);
+                else
+                  Morris.Line(chartData);
+
+
+              });
+
+              $('.jimmy-chart-area-kpi').each(function(k,el){
+
+                var data  = $(el).data("graphdata");
+                var aerw  = data;
+                var typeg = $(el).data("typeg");
+
+                var max = Math.max.apply(null, Object.keys(aerw).map(function (e) {
+
+                  return aerw[e][0];
+                }));
+
+                var ac     = data;
+                var totasi = [];
+
+                $.each(ac, function (index,item) {
+                  totasi.push({
+                    'x': '',
+                    'y': item[0],
+                    'z': item[1]
+                  });
+                });
+
+
+
+                var yKeys  = ['y'];
+                var labels = 'Click';
+                if (1 == 1) {
+                  yKeys[1] = 'z';
+                  labels[1] = 'Impre';
+                }
+
+                var totals = totasi;
+
+                var chartData = {
+                  data: totals,
+                  xkey: 'x',
+                  ykeys: yKeys,
+                  labels: labels,
+                  barColors: [
+                    '#ffcc33',
+                    '#fa7753'
+                  ],
+                  lineColors: [
+                    '#f19d54',
+                    '#fa7753'
+                  ],
+                  gridTextColor: '#95a2ab',
+                  eventLineColors: '#dcdddf',
+                  yMax: 4,
+                  parseTime: false,
+                  integerYLabels: true,
+                  hideHover: 'auto',
+                  hoverCallbacks: function (index, options, content) {
+                    var row = '<b>' + options.data[index].x + '</b><br><b>' + options.labels[0] + '</b>: ' + options.data[index].y;
+                    if (options.data[index].z && options.labels[1])
+                      row += '<br><b>' + options.labels[1] + '</b>: ' + options.data[index].z;
+                    return row;
+                  }
+                };
+
+                var opts = {
+                  'dataFormatX': function (x) {
+                    return 'fe';
+                  },
+                  'tickFormatX': function (x) {
+                    return 'asas';
+                  }
+                };
+
+                $(el).html('');
+                chartData.element = el;
+
+                if (typeg == 'bar')
+                  Morris.Area(chartData);
+                else
+                  Morris.Area(chartData);
+
+
+              });
+          </script>
+
+      <?php endif;?>
+  </div>
+    <?php
+        if ($insights) {
+            ?>
+           <div class="comments-box unbreakable">
+                <div class="comments-title">Insights</div>
+                <div class="widget-comments" style="text-align:justify" ><?php echo $insights;?></div>
+            </div>
+        <?php
+
+        } ?>
+             
+  <?php
+        if ($comments = $widget->getComments()) {
+            ?>
+           <div class="comments-box unbreakable">
+                <div class="comments-title">Comments</div>
+                <div class="widget-comments" style="text-align:justify" ><?php echo $comments;?></div>
+            </div>
+        <?php
+
+        } ?>
+</div>

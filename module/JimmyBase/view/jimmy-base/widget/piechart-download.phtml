@@ -1,0 +1,100 @@
+<?php
+if ($rawData):
+?>
+<?php
+//$title  ='<div class="content-header"><div class="glyph-icon icon-separator"><i class="glyph-icon icon-minus"></i></div><div class="f-left"><span class="widget-title">'.$widget->getTitle().'</span></div><div class="float-left hide-mobile" ><img src="/images/'.$widget->channel.'.png"  width="80px"  class="icon-service" /><span class="label ui-state-default tooltip-button  bg-red font-size9">'.$args['date_range_formatted']['min'].' to '.$args['date_range_formatted']['max'].'</span>';
+//$title.=$args['date_range_compare_formatted']?'<span>-</span> <span class="label ui-state-default tooltip-button font-size9" style="background: #ffebeb">'.$args['date_range_compare_formatted']['min'].'to'.$args['date_range_compare_formatted']['max']:null.'</span></div></div>';
+
+//$title  = '<div class="glyph-icon icon-separator"><i class="glyph-icon icon-minus"></i></div><span class="widget-title">'.$widget->getTitle().'</span><span class="label ui-state-default tooltip-button mrg15R primary-bg">'.$args['date_range_formatted']['min'].'-'.$args['date_range_formatted']['max'].'</span></h3>';
+
+//$caption = '<span class="font-blue" style="font-weight:bold">'.$args['field'][0].($args['field_compare']? ' vs '. $args['field_compare'][0]:null).'</span>';
+//
+//sleep(3);
+?>
+<?php echo $title; ?>
+<div class="content-box piechart-pdf widget-box unbreakable">
+  <div class="content-header-box unbreakable no-margin" id="widget_title_<?php echo $widget->getId();?>">
+             <div class="content-header">
+              <div class="f-left widget-header-main">
+                <img src="/images/<?php echo $widget->channel;?>-new.png" title="" width="80px"  class="icon-service" /><span class="widget-title"><?php echo $widget->getTitle();?></span>
+               </div>
+              <div class="float-left hide-mobile widget-header-date" >
+                  
+                  <span class="date-content">
+                        <?php echo $args['date_range_formatted']['min']?> to <?php echo $args['date_range_formatted']['max']?>
+                   </span>
+                   <?php if ($args['date_range_compare_formatted']):?>
+                     <span>-</span>
+                     <span class="date-content">
+                     <?php echo $args['date_range_compare_formatted']['min']?>-<?php echo $args['date_range_compare_formatted']['max']?>
+                     </span>
+                   <?php endif;?>
+               </div>
+             </div>
+       </div>
+  <div class="content-box-wrapper unbreakable" style="font-size: 12px">
+        <div class="pieBlock" style="width:714px; height:400px;padding:20px 5px; overflow:hidden;">
+          <svg id="piechartBlock1_<?php echo $widget->getId();?>" style="padding: 10px 5px; width:700px; height:340px; margin:0 auto;"></svg>
+        </div>
+  </div>
+        <?php
+        if ($insights) {
+            ?>
+           <div class="comments-box unbreakable">
+                <div class="comments-title">Insights</div>
+                <div class="widget-comments" style="text-align:justify" ><?php echo $insights;?></div>
+            </div>
+        <?php
+
+        } ?>
+        <?php
+        if ($comments = $widget->getComments()) {
+            ?>
+           <div class="comments-box">
+                <div class="comments-title">Comments</div>
+                <div class="widget-comments" style="text-align:justify" ><?php echo $comments;?></div>
+            </div>
+        <?php
+
+        } ?>
+</div>
+<script>
+    var piechartData_<?php echo $widget->getId();?> = <?php echo(json_encode($rawData, JSON_PRETTY_PRINT)); ?>; //Encoding the Data to Json for drawing the graph.
+    var width = 400;
+    var height = 300;
+    var chart;
+
+
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+                      .x(function(d) { return d.key })
+                      .y(function(d) { return d.y })
+                      .color(function(d) { return d.color })
+                      .margin({"top":60,"bottom":40})
+                      .width(width)
+                      .height(height)
+                      .donut(true)
+                      .donutRatio (0.35)
+                      .showLabels (true)
+                      .labelsOutside (true)
+                      .labelThreshold (0.05)
+                      .legendPosition ("vertical")
+                      .title("<?php echo (ucfirst($args['ctitle'])); ?>")
+                      .titleOffset(-210)
+                      .id('piechart1__<?php echo $widget->getId();?>');
+
+        d3.select("#piechartBlock1_<?php echo $widget->getId();?>")
+                .datum(piechartData_<?php echo $widget->getId();?>)
+                .transition().duration(1200)
+                .attr('width', width)
+                .attr('height', height)
+                .call(chart);
+
+        return chart;
+    });
+
+</script>
+<?php
+
+endif;
+?>

@@ -1,0 +1,39 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300);
+body{margin:0;font-size:11px; color:#000; background-color:#f7f7f7;line-height:18px;font-family: 'Open Sans'}
+
+form,p,ul,li,h1,h2,h3,h4,h5,h6,label{padding:0px;margin:0px; line-height:22px; font-weight:normal;}
+img{border:0px;}
+ul{list-style-type:none;}
+a{text-decoration:none;color:#538eca;}
+a:hover{color:#538eca;outline:none;}
+.clear{clear:both;}
+.float-left{float:left;}
+.float-right{float:right;}
+.align-center{text-align:center;}
+.italic{font-style:italic;}
+.strong{font-weight:bold;}
+.underline{text-decoration:line-through;}
+.compulsory{color:#0033FF;}
+.highlight{color:#8c12cc; font-weight:bold; font-size:18px;}
+.size{font-size:18px;}
+
+.read a{ background:#f58c1c;  padding:6px 20px; font-size:14px; color:#FFF; border-radius:5px;}
+.read a:hover{ text-decoration:underline;}
+
+
+.layout{width:100%;}
+.poster{width:700px; margin:0 auto; padding:204px 0 50px 0;}
+.poster p{color:#474747; font-size:20px; line-height:30px; text-align:center;}
+
+
+
+.poster-white{width:100%; background:#FFFFFF; box-shadow:inset 0 0 2px #ccc; padding:66px 0 80px 0;}
+.poster-white .poster-white-inner{width:700px; margin:0 auto; }
+.poster-white .logo-button{width:700px;  text-align:center;}
+.poster-white .google-button{width:700px; margin:0 auto; padding:30px 0 0 0; text-align:center;}
+
+
+.poster-white .poster-content{width:700px; margin:0 auto; padding:45px 0 0 0; text-align:center; }
+.poster-white .poster-content p{color:#474747; font-size:15px; line-height:25px; text-align:center;}
+
+.poster-blank{width:100%; margin:0 auto; padding:280px 0 0 0; text-align:center;}

@@ -1,0 +1,33 @@
+RewriteEngine On
+
+
+RewriteCond %{HTTPS} off
+
+RewriteCond %{HTTP_HOST} !=localhost
+RewriteCond %{HTTP_HOST} !=reports.localhost
+RewriteCond %{HTTP_HOST} ^(app)\.
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
+
+
+RewriteBase /
+RewriteRule ^resources/report-download/([a-zA-Z0-9\.\-_\/]+)$ index.php?action=resource&dir=data/tmp-reports&path=$1 [QSA,L]
+RewriteRule ^resources/invoice-download/([a-zA-Z0-9\.\-_\/]+)$ index.php?action=resource&dir=data/tmp-invoice&path=$1 [QSA,L]
+RewriteRule ^resources/logos/clients/([a-zA-Z0-9\.\-_\/]+)$ index.php?action=resource&dir=data/logos/clients&path=$1 [QSA,L]
+RewriteRule ^resources/logos/agencies/([a-zA-Z0-9\.\-_\/]+)$ index.php?action=resource&dir=data/logos/agencies&path=$1 [QSA,L]
+RewriteRule ^resources/([a-zA-Z0-9\.\-]+)/([a-zA-Z0-9\.\-_\/]+)$ index.php?action=resource&module=$1&path=$2 [QSA,L]
+
+
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^.*$ index.php [NC,L]
+
+
+# compress text, html, javascript, css, xml:
+
+
+# Or, compress certain file types by extension:
+<files *.html>
+SetOutputFilter DEFLATE
+</files>

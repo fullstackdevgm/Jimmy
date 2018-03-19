@@ -1,0 +1,41 @@
+<div class="button-group float-right" >
+     <a data-placement="bottom" data-original-title="Edit" href="javascript:;" class="btn medium filter" ng-click="applyFilter(widget.id,$index)" ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+         <span data-toggle="tooltip" title="drag to reorder widgets"><i class="fa fa-arrows-alt handle" ></i></span>
+    </a>
+    <a data-placement="bottom" data-original-title="Edit" href="javascript:;" class="btn medium filter" ng-click="applyFilter(widget.id,$index)" ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true && widget.type == 'table'">
+        <i class="glyph-icon icon-filter"></i>
+    </a>
+     <a data-placement="bottom" data-original-title="Edit" href="javascript:;" class="btn medium chat" widget_id="{{widget.id}}" ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+        <i class="glyph-icon icon-comments-o"></i>
+    </a>
+
+    <a data-placement="bottom" data-original-title="Edit" href="javascript:;" class="btn medium" ng-click="changeGraph($index)" ng-if="widget.type=='graph' && widget.data.totals.length>0">
+        <i class="glyph-icon icon-bar-chart-o"></i>
+    </a>
+
+    <a data-placement="bottom" data-original-title="Edit" href="javascript:;" class="btn medium"  ng-click="editWidget(widget.id,$index)"  ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true">
+        <i class="glyph-icon icon-edit"></i>
+    </a>
+
+    <a  ng-if="widget.type=='table' && widget.data.rawData.length>0" data-placement="bottom" data-original-title="Export to CSV" href="javascript:;" class="btn medium" ng-csv="widget" filename="{{widget.title}}" csv-header="true">
+        <i class="glyph-icon icon-cloud-download"></i>
+    </a>
+
+    <a data-placement="bottom" data-original-title="Change Date Range" href="javascript:;" class="btn medium" data-toggle="dropdown" ng-hide="widget.data.args.report_type_id>=7">
+        <i class="glyph-icon icon-calendar"></i>
+    </a>
+
+    <ul class="dropdown-menu float-right" ng-if="metricsoptions.date_ranges" >
+        <li ng-repeat="date_range in metricsoptions.date_ranges" class="menu-item">
+            <a  title="{{date_range.title}}"  class="date_range_selector" date_range_id="{{date_range.id}}" widget_id="{{widget.id}}" key="{{$parent.$index}}">
+                <i class="glyph-icon"></i>
+                {{date_range.title}}
+            </a>
+
+        </li>
+    </ul>
+
+    <a data-placement="bottom" data-original-title="Delete Widget" href="javascript:;" class="btn medium "  ng-if="report.shared_with_me!=true" ng-click="deleteWidget(widget.id)">
+        <i class="glyph-icon icon-remove"></i>
+    </a>
+</div>

@@ -1,0 +1,151 @@
+<?php
+if($rawData):
+
+?>
+
+<div class="content-box table-pdf widget-box">
+    <div class="content-header-box unbreakable no-margin">
+            <div class="content-header">
+              <div class="f-left widget-header-main">
+                <img src="/images/<?php echo $widget->channel;?>-new.png" title="" width="80px"  class="icon-service" />
+                  <span class="widget-title"><?php echo ucfirst(strtolower($widget->getTitle()));?></span>
+              </div>
+              <div class="float-left hide-mobile widget-header-date" >
+                  <span class="date-content">
+                       <?php echo $args['date_range_formatted']['min']?> to <?php echo $args['date_range_formatted']['max']?>
+                  </span>
+                  <?php if($args['date_range_compare_formatted']):?>
+                    <span>-</span>
+                    <span class="date-content">
+                    <?php echo $args['date_range_compare_formatted']['min']?>-<?php echo $args['date_range_compare_formatted']['max']?>
+                    </span>
+                  <?php endif;?>
+              </div>
+            </div>
+      </div>
+<div class="content-box-wrapper" style="font-size: 12px; border:none;">
+<table  class='table table-striped no-margin' id="table<?php echo $widget->getId()?>" style="border-bottom:1px solid #C7C5C5 !important" >
+    <thead >
+        <tr class=" no-margin">
+            <?php
+            //echo  '<pre>';
+            //print_r($args);
+
+            # Column Headers
+           
+            if($args['extra_fields']){
+                foreach($args['extra_fields'] as $field){
+
+                //  if(in_array($field[0],array('Description1','Description2')))
+		//			         continue;
+                  
+                 echo '<th class="'.str_replace(":","",$field[1]).' tbl-header">'.$field[2].'</th>';
+                }
+            }
+
+            if($args['fields_raw_data']){
+                foreach($args['fields_raw_data'] as $field){
+                    echo '<th class="'.$field[1].'  tbl-header">'.$field[2], $field[4]?"<small><br/>(".$field[4].")</small>":null ,'</th>';
+                }
+            }
+
+            ?>
+            </tr>
+      </thead>
+      <tbody>
+
+    <?php
+    $i = 0;
+  //echo '<pre>';
+  // print_r($args);
+  // print_r($rawDataTotal);
+
+//$formatFields = array('ctr','clicks','impressions','cost','spend','conversions','conversionrate','costperconversion','costConvertedClick','avgCPC','averagecpc','avgPosition','averageposition','searchImprShare','ga:percentNewVisits','ga:visitBounceRate','ga:pageviewsPerVisit','ga:entrances','ga:exitRate','ga:pageValue','ga:transactionsPerVisit','ga:transactionRevenue','ga:avgTimeOnSite');
+
+$formatText   = array('ad'=>array('removeDepFields'=>true));
+
+    foreach($rawData  as $key => $data):
+
+        if($args['extra_fields'])
+          $dataFields = @array_merge($args['extra_fields'],$args['fields_raw_data']);
+        else
+          $dataFields = $args['fields_raw_data'];
+
+
+
+        echo '<tr '.$class.'>';
+              foreach($dataFields as $k=>$field){
+               // print_r($field);
+                echo '<td class="data-'.str_replace(":","",$field[1]).' ">', $data[$field[1]],'</td>';
+                continue;
+                if(in_array(strtolower($k),$formatFields)){
+                    echo '<td class="data-'.str_replace(":","",$field[1]).' ">', $this->metrics()->calculateMetrics($k,$data[$k],$this->currency) , '</td>';
+                } else if(in_array($k,array_keys($formatText))){
+                    echo '<td class="data-'.str_replace(":","",$field[1]).' ">', $this->metrics()->formatText($k,$data,$formatText[$k],$args['extra_fields']), '</td>';
+                } else if(isset($data[$k]) && is_numeric($data[$k])) {
+                    echo '<td class="data-'.str_replace(":","",$field[1]).' ">', $this->metrics()->formatNumber($k,$data[$k],$this->currency).'</td>';
+                } else if(isset($data[$k])){
+                    echo '<td class="data-'.str_replace(":","",$field[1]).' ">', $data[$k],'</td>';
+                }
+              }
+
+        echo '</tr>';
+
+     endforeach;
+     ?>
+            </tr>
+         </tbody>
+         <tfoot>
+            	 <tr><th><strong></strong></th>
+			   <?php
+                        $formatFieldsTotal = array('costConvertedClick','CostPerConversion');
+
+                        # Totals
+                        for($i = 1; $i < count($args['extra_fields']); $i++){
+                            if(in_array($args['extra_fields'][$i][0],array('Description1','Description2'))){
+                                    continue;
+                            }
+
+                            echo '<th>&ndash;</th>';
+                        }
+
+                       foreach($args['fields_raw_data'] as $key=>$field){
+                         echo '<th>'.$rawDataTotal[$field[1]]['value'].'</th>';
+                         continue;
+                             if(in_array($key,$formatFields))
+                                echo '<th><strong>'.$this->metrics()->formatNumber($key,$rawDataTotal[$key],$rawDataTotal['currency']).'</strong></th>';
+                             else if(isset($rawDataTotal[$key]))
+                                echo '<th><strong>'.$this->metrics()->formatNumber($key,$rawDataTotal[$key],$rawDataTotal['currency']).'</strong></th>';
+                             else
+                                echo '<th></th>';
+                        }
+
+            		?>
+                </tr>
+            </tfoot>
+    	</table>
+  </div> <!--Content Box Wrapper Ends -->
+     <?php
+        if ($insights) {
+            ?>
+           <div class="comments-box unbreakable">
+                <div class="comments-title">Insights</div>
+                <div class="widget-comments" style="text-align:justify" ><?php echo $insights;?></div>
+            </div>
+        <?php
+
+        }?>
+    <?php
+    if($comments = $widget->getComments()){
+    ?>
+       <div class="comments-box unbreakable">
+                <div class="comments-title">Comments</div>
+                <div class="widget-comments" style="text-align:justify" ><?php echo $comments;?></div>
+        </div>
+    <?php } ?>
+  </div>
+<?php
+
+endif;
+
+?>

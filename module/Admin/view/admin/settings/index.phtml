@@ -1,0 +1,83 @@
+<div class="row-fluid">
+            <div id="message"></div> 
+            
+    <div class="tabbable">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab">General</a></li>
+                <li><a href="#tab2" data-toggle="tab">Administrator Account</a></li>
+                <li><a href="#tab3" data-toggle="tab">Cache</a></li>
+            </ul>
+     
+              <div class="tab-content">
+                  <div class="tab-pane active" id="tab1">
+                     Comming Soon
+                  </div>
+                  
+                  <div class="tab-pane" id="tab2">
+                            <div class="" id="account">   
+                                <?php echo $this->partial('admin-account');?>
+                            </div>
+                            <div class="" id="edit" style="display:none">   
+                                <?php echo $this->partial('admin-edit');?>
+                            </div>
+                            <div class="" id="changePwdForm" style="display:none">   
+                                <?php echo $this->partial('admin-changepwd');?>
+                            </div>
+                  </div>
+                  <div class="tab-pane" id="tab3">
+                         <button  type="button" class="btn" id="clearcache" onclick="location.href=adminUrl +'/settings/clearcache'">Clear Cache</button>  
+                  </div>
+                  
+                </div>
+      </div>
+ 
+</div>    
+
+<script>
+
+jQuery(document).ready(function(){
+  
+
+  
+  // Toggle for Change Button
+  jQuery('#account').on('click','#change',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#edit').toggle(); 
+  })
+  
+  // Toggle for Cancel Button
+  jQuery('#edit').on('click','#cancel',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#edit').toggle(); 
+  })
+  
+  // Save Client Function
+  jQuery('#edit').on('click','#save',function(){
+	JimmyJS.updateAdminAccount();
+  })
+  
+  
+  //// Password Change Form ////
+
+  // Toggle for Change Password Button
+  jQuery('#account').on('click','#changePwd',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#changePwdForm').toggle(); 
+  })
+  
+  
+  // Toggle for Cancel Change Password Button
+  jQuery('#changePwdForm').on('click','#cancelChangePwd',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#changePwdForm').toggle(); 
+  })
+  
+  // Toggle for Cancel Change Password Button
+  jQuery('#changePwdForm').on('click','#savePwd',function(){
+  	JimmyJS.changeAdminPwd();
+ })
+
+
+})
+
+</script>

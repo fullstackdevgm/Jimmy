@@ -1,0 +1,199 @@
+  <div class="hide" id="schedule-report" title="Schedule Report"  ng-controller="ScheduleReportCtrl">
+            <div class="pad10A">
+
+                <div class="col-md-12">
+                    <div class="row" style="padding-left:20px">
+                        <strong>{{report.title}}</strong>
+                    </div>
+                </div>
+
+                <div class="col-md-12 mrg10T">
+                    <form action="" id="schedule_form" class="col-md-12 center-margin form-vertical">
+
+
+                        <div class="form-row">
+                           <div class="form-label col-md-2">
+                                <label for="">
+                                    Schedule Frequency:
+                                </label>
+                            </div>
+                            <div class="form-checkbox-radio col-md-10">
+
+                                <label for="" ng-repeat="freq in frequency">
+                                    <input data-error-container="#report_type_error" data-required-message="Please select the report type"  data-required="true" type="radio" class="" name="frequency"  value="{{freq.id}}" ng-model="schedule_report.frequency" ng-click="selectFreq(freq.id)" >
+                                    {{freq.title}}
+                               </label>
+
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-left:-20px" >
+
+                            <div class="col-md-3" ng-show="schedule_report.frequency!='send-now'" >
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        Start Date
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-12">
+                                    <input  readonly="readonly" placeholder="Start Date" size="" type="text" name="start_date" id="start_date"  ng-model="schedule_report.start_date" date-picker min-date='today'>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3" ng-show="schedule_report.frequency!='send-now'" >
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        Time
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-12 bootstrap-timepicker dropdown">
+                                    <input readonly="readonly" placeholder="Time" size="10" type="text" name="time" id="time"  ng-model="schedule_report.time" time-picker  style="width:127px">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" ng-show="schedule_report.frequency!='send-now'" >
+                                <div class="form-label col-md-3">
+                                    <label for="">
+                                        Time Zone (Default is UTC/GMT)
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-9">
+                                    <select  ng-model="schedule_report.timezone"  ng-options="c.name group by c.group for c in timezones"  id="timezone" class="chosen-select"  chosen-select="timezones" watch-resource="timezones.loaded">
+                                     <option value="">Select Timezone</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                        <div class="row mrg5T" style="margin-left:-20px">
+
+                            <div class="col-md-6">
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        Send To
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-11">
+                                    <input data-required="true" placeholder="Email Address" type="text" name="email" id="email"  type="email" ng-model="schedule_report.email">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        From Email
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-11">
+                                    <input  placeholder="From Email" type="text" name="from_email" id="from_email"  type="email" ng-model="schedule_report.from_email">
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mrg5T" style="margin-left:-20px">
+                             <div class="col-md-6"  >
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        From Name
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-11">
+                                    <input placeholder="From Name" type="text" name="from_name" id="from_name"  ng-model="schedule_report.from_name">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6"  >
+                                <div class="form-label col-md-1">
+                                    <label for="">
+                                        Subject of the Email
+                                    </label>
+                                </div>
+                                <div class="form-input col-md-11">
+                                    <input type="text" name="subject"  value="" ng-model="schedule_report.subject" >
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="row mrg5T" style="margin-left:-20px">
+
+                            <div class="col-md-12">
+                                    <div class="form-label col-md-1">
+                                        <label for="">
+                                            Body of the Email
+                                        </label>
+                                    </div>
+                                    <div class="form-input col-md-11">
+                                 <textarea  class="ckeditor"  id="editor2" name="editor2" ng-model="schedule_report.body" cols="20"  rows="4" ></textarea>
+                                    </div>
+                            </div>
+                        </div>
+
+                         <div class="form-row mrg5T">
+                           <div class="form-label col-md-4">
+                                <label for="">
+                                 <input type="checkbox" class="radio" name="frequency"  value="1" ng-model="schedule_report.ccme" ng-checked="schedule_report.ccme" >Send a copy to me
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label col-md-4">
+                                <label for=""></label>
+                            </div>
+
+                            <div class="form-input col-md-2  float-right">
+                                 <button class="btn bg-gray medium" id="done-share">
+                                    <span class="button-content">Cancel</span>
+                                </button>
+                                 <button class="btn primary-bg medium" ng-click="save()" ng-disabled="saveDisabled">
+                                    <span class="button-content">{{schedule_label}}</span>
+                                </button>
+                            </div>
+                        </div>
+                     </form>
+                </div>
+
+
+
+                <div class="col-md-12" ng-if="scheduled_list.length>0">
+
+
+                			<div class="content-box bg-white mrg25T">
+					            <h3 class="content-box-header ui-state-default">
+					                <div class="glyph-icon icon-separator remove-bg">
+					                    <i class="glyph-icon icon-comments"></i>
+					                </div>
+					                <span>Schedules  </span>
+					            </h3>
+					            <div class="content-box-wrapper">
+					                <div class="scrollable-content" tabindex="5005" style="overflow: hidden; outline: none;">
+
+					                    <ul class="todo-box todo-sort ui-sortable">
+					                        <li class="border-red" ng-repeat="schedule in scheduled_list">
+					                            <label for="sec-todo-1">
+                                                <small><b>Recipient</b> - {{schedule.email}} - {{schedule.frequency}} - <b>Next</b> {{schedule.next_schedule_date}} - <b>Timezone</b> {{schedule.timezone}}</small>
+                                                </label>
+
+                                                <a  href="javascript:;" class="btn small font-red float-right" title="" ng-click="removeSchedule(schedule.id)">
+                                                    <i class="glyph-icon icon-remove"></i>
+                                                </a>
+
+                                                 <a href="javascript:;" class="btn small font-blue float-right" title="" ng-click="editSchedule(schedule.id)">
+                                                    <i class="glyph-icon icon-edit"></i>
+                                                </a>
+
+					                        </li>
+
+					                    </ul>
+
+					                </div>
+					            </div>
+					        </div>
+                </div>
+
+          </div>
+
+        </div>

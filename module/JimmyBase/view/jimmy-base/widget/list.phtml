@@ -1,0 +1,46 @@
+<div class="wrpr radius5">
+        <div class="title">
+            <div class="ico"><span><img src="/images/icons/full-report-ico.png" alt="" /></span></div>
+                <h5 class="" id="title_<?php echo $report->getId();?>"><?php echo $this->report->getTitle();?></h5>
+              	<a class="cancel-report" id="cancel"  data-id="<?php echo $report->getUserId();?>" ><span>Back</span></a>
+              	<a class="view-report"   id="view"   ><span>View</span></a>
+       	    </div>
+        </div>
+<?php 
+if ($this->widgets->count()):
+    $class  = array('kpi' => 't2','graph'=>'t1' ,'table' => 't3' ,'notes' => 't4' );
+?>
+<ul class="widgets-list" id="sortable">
+  <?php foreach ($this->widgets as $widget):?>
+      <li class="widgets" style="cursor:pointer"  id="<?php echo $widget->getId();?>">
+            <div class="row13 widget-edit" style="margin-top:5px;float:right;width:0px;">
+              <a class="change a1" data-id="<?php echo $widget->getId();?>">Change</a> 
+              <a class="delete a3" data-id="<?php echo $widget->getId();?>">Delete</a>
+            </div>
+            <div class="wrpr radius5" id="widget-<?php echo $widget->getId()?>" style="margin:0px auto;margin-bottom:15px;height:160px">
+              <h4 class="<?php echo $class[$widget->getType()]?>"><?php echo $widget->getTitle()?></h4>
+              <div class="graph">
+                  <div class="graphBx" style="text-align:center">
+                      <img src="/images/icons/<?php echo $widget->getType()?>.png" alt=""  width="75px" height="75px" />
+                  </div>
+              </div>
+          </div><!--Traffic Report-->
+      </li>  
+  <?php endforeach;?>
+</ul>
+<script>
+$(function() {
+	$( "#sortable" ).sortable({ cursor: "move" });
+	$( "#sortable" ).disableSelection();
+	$( "#sortable" ).on( "sortupdate", function( event, ui ) {
+		var idsInOrder = $('#sortable').sortable("toArray");
+		var report_id  = '<?php echo $this->report_id;?>';
+		JimmyJS.sortUpdate('<?php echo $this->url('jimmy-widget/sortupdate') ?>',{'widget_ids':idsInOrder,'report_id':report_id},'msg-container');
+	});
+});
+</script>
+<?php else:?>
+<div class="alert alert-info">
+<?php echo $this->partial('jimmy-base/partials/jimmy-suggests-widget.phtml');?>
+</div>
+<?php endif; ?>

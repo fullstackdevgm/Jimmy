@@ -1,0 +1,89 @@
+<?php 
+$form = $this->registerForm;
+$form->prepare();
+$form->setAttribute('action', $this->url('admin/agency/add'));
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal');
+$form->setAttribute('id', 'client_form');
+$form->setAttribute('enctype','multipart/form-data');
+
+$email  = $form->get('email');
+$name   = $form->get('name');
+$logo   = $form->get('logo');
+$id     = $form->get('id');
+$state   = $form->get('state');
+
+
+$email->setValue($this->agency->getEmail());
+$name->setValue($this->agency->getName());
+$id->setValue($this->agency->getId());
+$state->setValue($this->agency->getState());
+
+?>
+
+
+	<?php echo $this->form()->openTag($form) ?>
+           
+              <?php echo $this->formHidden($id) . $this->formElementErrors($name) ?> 
+
+        	<div class="inpBox-left">
+                <div class="smBx">
+                    <span class="lab">Agency Name:</span>
+                    <div class="inpField radius5">
+                        <div class="ico">
+                            <span><img src="/images/icons/add-client-ico01.png" alt="" /></span>
+                        </div>
+			 			<?php echo $this->formText($name) . $this->formElementErrors($name) ?>                   
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                
+                <div class="smBx">
+                    <span class="lab">Email:</span>
+                    <div class="inpField radius5">
+                        <div class="ico">
+                            <span><img src="/images/icons/add-client-ico01.png" alt="" /></span>
+                        </div>
+			 			<?php echo $this->formText($email) . $this->formElementErrors($email) ?>                   
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                
+                <div class="smBx">
+                    <span class="lab">Status:</span>
+                    <div class="inpField radius5">
+                        <div class="ico">
+                            <span><img src="/images/icons/add-client-ico01.png" alt="" /></span>
+                        </div>
+			 			<?php echo $this->formSelect($state) . $this->formElementErrors($state) ?>                   
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                
+                <div  style="height:0px"></div>
+                
+                <a href="#" class="save" id="save-agency">Save</a>
+                <a href="#" class="cancel" id="cancel-agency">Cancel</a>
+                
+               
+                <div class="clr"></div>
+            </div><!--Add Client Form Left-->
+    	     <div class="logoUpload">
+            	<div class="radius5" id="img">
+		 		  <?php  if(is_file("data/logos/agencies/".str_replace('-NAME-','-thumb-',$user_mapper->getMeta($this->agency->getId(),'logo-thumb')))):?>
+                  <img width="153" height="142" src="/resources/logos/agencies/<?php echo str_replace('-NAME-','-thumb-',$user_mapper->getMeta($this->agency->getId(),'logo-thumb'));?>"  /></td>
+                 <?php else:?>
+                  <img width="153" height="142" src="/images/no-image.png"  />
+                 <?php endif;?>                
+                 
+                 </div>
+                <span id="path"></span><br />
+                <a href="#" class="upload">Browse</a>
+
+               <div  style="display:none"> <?php echo $this->formFile($logo) ?> </div><?php echo  $this->formElementErrors($logo) ?>                   
+
+            </div><!--Logo Upload-->
+
+<?php echo $this->form()->closeTag() ?>
+        <div class="clr"></div>
+</div>

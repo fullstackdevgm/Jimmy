@@ -1,0 +1,61 @@
+<?php 
+$form = $this->registerForm;
+$form->prepare();
+?>
+
+        <form class="form-horizontal" method="post" name="client_form" id="client_form" >  
+        		 <input type='hidden'    name="id" value="<?php echo $this->client->getId();?>"/>
+        		 <input type='hidden'    name="type" value="client"/>
+                 <fieldset>  
+				  <legend>Account</legend>  
+                  <div class="control-group">  
+                    <label class="control-label" for="name">Client Name</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="name" name="name" value="<?php echo $this->client->getName();?>" >    <?php echo  $this->formElementErrors($form->get('name')) ?>
+                      <p class="help-block">Customer's Full Name.</p>  
+                    </div>  
+                  </div>  
+                  <div class="control-group">  
+                    <label class="control-label" for="email" name='email'>Client Email</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" name="email" id="email"    readonly="readonly"   value="<?php echo $this->client->getEmail();?>">  <?php echo  $this->formElementErrors($form->get('email')) ?>
+                      <p class="help-block">Customer's email registered in Adwords.</p>  
+                    </div>  
+                  </div>  	
+                  <div class="control-group">  
+                    <label class="control-label" for="adwords_client_id">Adwords Client Id</label>  
+                    <div class="controls">  
+                      <input type="text" class="input-xlarge" id="adwords_client_id" name="adwords_client_id" value="<?php echo $this->client->getAdwordsClientId();?>" > <?php echo  $this->formElementErrors($form->get('adwords_client_id')) ?> 
+                      <p class="help-block">Customer's Id as shown in Adwords</p>  
+                    </div>  
+                  </div>  
+                  
+                     <div class="control-group">  
+                    <label class="control-label" for="logo">Logo</label>  
+                    <div class="controls">  
+                      <input type="file" class="input-xlarge" id="logo" name="logo"> <?php echo  $this->formElementErrors($form->get('logo')) ?> 
+                      <p class="help-block">(supported types are jpeg,gif,png)</p>  
+                    </div>  
+                  </div>  
+                  
+                   <div class="control-group">  
+                    <label class="control-label" for="adwords_client_id">Account Status (Active?)</label>  
+                    <div class="controls">  
+                     <select name="state">
+                     	<option value="1" <?php  if($this->client->getState()) echo 'selected="selected"'?>>Enabled</option>
+                     	<option value="0" <?php  if(!$this->client->getState()) echo 'selected="selected"'?>>Disabled</option>
+                     </select>
+                      <p class="help-block">Account Status</p>  
+                    </div>  
+                  </div>  
+                  
+                  
+                  <div class="form-actions">  
+                    <button type="button" class="btn btn-primary" id="save">Save changes</button>  
+                    <button  type="button" class="btn" id="cancel">Cancel</button>  
+                  </div>  
+         
+                </fieldset>  
+        </form>  
+                   
+ 

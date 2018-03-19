@@ -1,0 +1,40 @@
+            <div class="title_2">
+                <h5>Select Source</h5>
+            </div>
+            <form action="#">
+                <div class="inpBox-left new-inpbox-left">
+
+                            <?php 
+                               foreach ($this->client_accounts as $key => $ac):
+                            ?>
+
+                             <div class="smBx">
+                                <div class="input_field">
+                                <input type="radio"  class="<?php echo $ac->getChannel();?> source-account" value="<?php echo $ac->getId();?>"  data-channel="<?php echo $ac->getChannel();?>"  name="client-accounts"> 
+                                    <img  width='100px' src="/images/<?php echo $ac->getChannel();?>.jpg" title="This is <?php echo $ac->getChannel();?>" alt="<?php echo $ac->getChannel();?>" />
+                                    <?php 
+                                        if($ac->getName())
+                                            echo "&nbsp;(",$ac->getName(),")" ; 
+                                    ?>
+                                    <span>&nbsp;-&nbsp; <?php echo $ac->getAccountId();?></span>
+                                    <?php 
+                                      if($ac->getChannel()=='googleanalytics'){
+                                    ?>
+                                    <span style="padding-left:10px" class="profiles">
+                                     <select   name="properties<?php echo $ac->getId();?>" id="properties-<?php echo $ac->getId();?>" style="display:none;width:auto"></select>
+                                    </span>
+                                    <?php
+                                     }
+                                    ?>
+                                </div>
+                                <div class="clr"></div>
+                            </div>                          
+                        <?php
+                           endforeach;
+                        ?>
+                    <a href="#" class="addBtn" id="continue" style="display:block"><span>Continue</span></a>
+                    <a href="#" class="cancel" id="cancel-report" style="margin:5px 5px 15px 0"><span>Cancel</span></a>
+                <div class="clr"></div>
+            </div><!--Add Client Form Left-->
+               </form>
+        <?php endif; ?>  

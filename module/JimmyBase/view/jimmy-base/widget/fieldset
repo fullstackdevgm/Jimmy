@@ -1,0 +1,110 @@
+
+        <?php if ($element instanceof Zend\Form\Element\Button): ?>
+          
+        <?php elseif($element instanceof Zend\Form\Element\Select): 
+			
+			     $class='';
+				 $style='';
+				 
+			if( $element->getName() == 'fields_metrics_type_compare' or $element->getName() == 'fields_metrics_compare'){
+			    $class = 'metricstype_compare';
+				
+				if(!$element->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+			
+			if( $element->getName() == 'fields_date_range_compare'){
+			    $class = 'daterange_compare';
+				
+				if(!$element->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+		
+		 ?>
+         
+           <div class="smBx <?php echo $class;?>" <?php echo $style;?>>  
+			 	<span class="lab"><?php echo $this->formLabel($element) ?></span>
+       		 	 <div class="selectField radius5">
+                     <div class="ico">
+		 				<?php echo $this->formSelect($element);  ?>    
+                	 </div>
+            	 </div>
+                 <span class="errors"><?php echo $this->formElementErrors($element);?></span> 
+                 <div class="clr"></div>
+                      <?php if($element->getName() == 'fields_campaigns'): ?>
+                     	<div id="campaigns-selector"  style="float:left;margin-left:167px;height:30px">
+                            <a  class="show-campaigns" title="All">All</a>  
+                            <a  class="show-campaigns active" title="Active">Active</a>
+                            <a  class="show-campaigns" title="Paused">Paused</a>
+							-- <strong><a  class="select-all" data-id='campaigns' title="Select All">Select All</a> </strong>
+						</div>
+                      <?php elseif($element->getName() == 'fields_kpi' ):?>   
+						<div id="kpi-selector"  style="float:left;margin-left:167px;height:30px">
+							<strong><a  class="select-all" data-id='kpi' title="Select All">Select All</a></strong>
+						</div>        
+					  <?php elseif($element->getName() == 'fields_raw_data' ):?>   
+						<div id="kpi-selector"  style="float:left;margin-left:167px;height:30px">
+							<strong><a  class="select-all" data-id='raw_data' title="Select All">Select All</a></strong>
+						</div>                      
+					<?php endif;?>
+          </div>  
+		<?php elseif($element instanceof Zend\Form\Element\Hidden):  ?>
+		   <?php echo $this->formHidden($element);?>
+		<?php elseif($element instanceof Zend\Form\Element\Textarea):  ?> 
+          <div class="smBx">  
+				<span class="lab"><?php echo $this->formLabel($element) ?></span>
+ 				<div class="" style="float:right">
+					<?php echo $this->formTextarea($element); ?>                   
+           		 </div>
+                 <span class="errors"><?php echo $this->formElementErrors($element);?></span> 
+                 <div class="clr"></div>
+          </div>
+          <?php elseif($element instanceof Zend\Form\Element\Checkbox):  ?> 
+              <div class="smBx">  
+                     	<span class="lab"><?php echo $this->formLabel($element) ?></span>
+                     	<div style="margin-left: 165px;padding-top: 10px;"><?php echo $this->formElement($element) ?></div>                 
+                 <span class="errors"><?php echo $this->formElementErrors($element);?></span> 
+                 <div class="clr"></div>
+              </div>
+		  <?php else: 
+		 		$style = ''; 
+		   		$class = '';
+				
+			if( $element->getName() == 'fields_date_range_custom_min' or $element->getName() == 'fields_date_range_custom_max'){
+			    $class = 'date_range_custom';
+				
+				if(!$element->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+			
+			
+			if( $element->getName() == 'fields_date_range_custom_min_compare' or $element->getName() == 'fields_date_range_custom_max_compare'){
+			    $class = 'date_range_custom_compare';
+				
+				if(!$element->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+		  ?> 
+          <div class="smBx <?php echo $class;?>" <?php echo $style;?>>  
+				<span class="lab"><?php  echo $this->formLabel($element) ?></span>
+				<div class="inpField radius5">
+                        <div class="ico"></div>				 	
+					<?php echo $this->formInput($element) ?>                   
+            	</div>
+                 <span class="errors"><?php echo $this->formElementErrors($element);?></span> 
+                 <div class="clr"></div>
+          </div>
+        <?php endif; ?>
+                 <div class="clr"></div>

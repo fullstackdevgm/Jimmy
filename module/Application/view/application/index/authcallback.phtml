@@ -1,0 +1,16 @@
+<div  close="<?php echo $this->close_window ?>">
+<div  ng-controller="AuthCallbackCtrl"  >
+    <?php if($this->error):?>
+        <script type="text/javascript">
+            window.error = true;
+            window.error_msg = '<?php echo $this->error_msg;?>';
+            window.authorized = false;
+        </script>
+    <?php else:?>
+        <script type="text/javascript">
+             window.authorized = true;
+        </script>
+        <?php endif; ?>
+
+</div>
+</div>

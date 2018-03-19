@@ -1,0 +1,95 @@
+<div id="message"></div> 
+<div class="wrpr radius5">
+	<div class="title">
+            <div class="ico"><span><img src="/images/icons/dashboard-ico.png" alt="" /></span></div>
+            <h5><?php echo $this->agency->getName();?></h5>
+            <a href="#" class="addBtn" class="btn btn-info"  id="add_client" ><span>Add Client For this Agency</span></a>
+            <a href="#" class="delete"  id="delete_client">Delete This Agency</a>
+    </div>
+ 
+	  <div class="tabBx tabbable">
+            <ul class="tabs	">
+                <li class="active"><a href="#tab1" data-toggle="tab"><img src="/images/icons/add-report-ico.png" alt="" /> Clients</a></li>
+                <li><a href="#tab2" data-toggle="tab"><img src="/images/icons/price-tag.png" alt="" /> Account</a></li>
+            </ul>
+    </div>
+    
+    <div class="clr"></div>
+      
+<div class="tabbable">
+      
+    <div class="addClient radius5 client-view" style="border:0px;padding-top:10px">
+         <div class="tab-content">
+                
+                <div class="tab-pane active" id="tab1">
+                  <?php echo $this->partial('jimmy-base/client/list.phtml');?>
+                </div>
+              
+                <div class="tab-pane" id="tab2">
+                    <div class="" id="account">   
+                        <?php echo $this->partial('agency-account');?>
+                    </div>
+                    <div class="" id="edit" style="display:none">   
+                        <?php echo $this->partial('agency-edit');?>
+                    </div>
+                 </div>		
+    		</div>
+ 		</div>   
+	</div>    
+</div>
+
+<script>
+
+jQuery(document).ready(function(){
+  
+  jQuery('#add_client').on('click',function(){
+  	location.href='<?php echo $this->url('admin/agency/client/add').'/'.$this->agency->getId(); ?>';
+  })
+  
+
+  jQuery('#delete_client').on('click',function(){
+
+	    var href = '<?php echo $this->url('admin/agency/delete').'/'.$this->agency->getId(); ?>';
+		var msg  = 'Are you sure you want to delete this client and its reports?'; 
+		
+        if (!$('#dataConfirmModal').length) {
+            $('body').append('<div id="dataConfirmModal" class="modal" role="dialog" aria-labelledby="dataConfirmLabel" aria-hidden="true"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3 id="dataConfirmLabel">Please Confirm</h3></div><div class="modal-body"></div><div class="modal-footer"><button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button><a class="btn btn-primary" id="dataConfirmOK">OK</a></div></div>');
+        } 
+		
+        $('#dataConfirmModal').find('.modal-body').text(msg);
+        $('#dataConfirmOK').attr('href', href);
+        $('#dataConfirmModal').modal({show:true});
+        return false;
+  })
+  
+  
+  
+  // Toggle for Change Button
+  jQuery('#account').on('click','#change',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#edit').toggle(); 
+  })
+  
+  // Toggle for Cancel Button
+  jQuery('#edit').on('click','#cancel-agency',function(){
+	 jQuery('#account').toggle(); 
+	 jQuery('#edit').toggle(); 
+  })
+  
+  // Save Client Function
+  jQuery('#edit').on('click','#save-agency',function(){
+	JimmyJS.saveAgency();
+  })
+  
+  
+  //// Password Change Form ////
+
+  // Toggle for Change Password Button
+  jQuery('#account').on('click','#changePwd',function(){
+	 jQuery('#account').toggle();   })
+  
+
+
+})
+
+</script>

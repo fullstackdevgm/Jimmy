@@ -1,0 +1,196 @@
+<div class="hide" id="add-source" addClientDialog="add-source"
+     title="" 
+     ng-controller="ClientSourceAddCtrl">
+            <div class="title">New source</div>
+            <div class="sub-title">Lets add a new client</div>
+
+            <div class="content">
+                <div class="section">
+                  <div class="section-number" id="section-one" ng-class="{active: hasSelectedSource()}">1</div>
+                  <div class="section-title">Select Source</div>
+                  <div class="clear"></div>
+                  <div class="section-content box" style="height:137px;overflow-y: auto;">
+                      <div ng-repeat="source in sources"
+                        class="source-item" on-finish-render="sourcesListed"
+                        ng-click="selectSource(source,source.channel)" ng-class="{active: source.isSelected}" id="sourceItem-{{source.id}}">
+                        <img src="/images/{{source.channel}}-icon.png">
+                        
+                        <div class="name">
+                          {{source.name}}
+                        </div>
+                        <img ng-show="source.isSelected"class="selected" src="images/icons/tick_gr.png">                        
+                      </div>
+                  </div>
+                  <div class="source-additionBtn" ng-hide="showSourceAddition">
+                    <button class="btn btnGrey" ng-click="showSourceAddition=true">
+                      <i class="fa fa-plus"></i> &nbsp;&nbsp;
+                      New Source
+                    </button>
+                  </div>
+                </div>
+
+                <div class="section" ng-hide="showSourceAddition">
+                  <div ng-if="sourcesLoading" class="section-number" style="background: url('images/loading_orange.gif'); background-size:32px 32px;32px; margin-right:2px; border:none;">&nbsp;</div>
+                  <div ng-if="!sourcesLoading" class="section-number" id="section-two" ng-class="{active: hasSelectedAccount()}">2</div>
+                  <div class="section-title">Select Account</div>
+                  <div class="clear"></div>
+                  <div class="section-content" style="width: 325px;">
+                    <div class="form-input col-md-12" style="padding:0px;">
+                          <select name="client_account" chosen-select="client_accounts" ng-options="c.id as c.name for c in client_accounts" ng-selected="client.account" data-trigger="change" ng-change="clientAccountUpdate()" data-required="true" ng-model="client.account" id="client_account">
+                            <option value="">Select a client account</option>
+                          </select>
+                    </div>
+                  </div>
+                </div>
+
+              <div class="clear"></div>
+
+              <div style="width:135px; margin: 0 auto; margin-top: 15px;" ng-hide="showSourceAddition">
+                <button class="rectangularBtn" style="width:135px;" ng-class="{active: hasSelectedSource()&&hasSelectedAccount()}" ng-click="save()" ng-disabled="!hasSelectedSource()||!hasSelectedAccount()">Save</button>
+              </div>
+
+              <div class="clear"></div>
+
+              <div class="section" ng-show="showSourceAddition">
+                <form id="addSourceForm" novalidate>
+                  <div class="section-content box source-addition" style="">
+                    <div class="form-input col-md-12" style="padding:0px; float:left;">
+                            <input type="text" class="clientNameTxt" data-required="true" placeholder="Enter new source name" ng-model="newSourceName" style="width: 305px;" required id="sourceName" >
+                    </div>
+                    <div class="clear" style="margin-bottom:8px;"></div>
+                    Select Source
+                    <div class="clear" style="margin-bottom:8px;"></div>
+                    <div class="channel col-md-6" ng-click="channelSelect(channel)" ng-class="{active: channel.isSelected}" ng-repeat="channel in channels">
+                      <img src="{{channel.img}}"> <div class="channel-title">{{channel.name}}</div>
+                    </div>
+
+                    <div class="clear" style="margin-bottom:10px;"></div>
+                    
+                    <button class="rectangularBtn" style="width:100px; float:left;" ng-click="showClientAddition()">Cancel</button>
+                   
+                    <button type="submit" class="rectangularBtn sourceItem" style="width:100px; float:right;" ng-disabled="!isSourceFormValid() || saveDisabled"  ng-class="{active: isSourceFormValid()}" data="{{selectedChannel.data}}">Add</button>
+
+                  </div>
+                </form>
+              </div>
+
+            </div>
+
+            <!--div class="pad10A">
+          
+            
+            <div class="col-md-12" id="sourceForm">
+                   <div class="row">
+                       <div class="form-label col-md-12">
+                                    <label>Select Source</label>
+                       </div>
+                    <div class="col-md-5 sourceList scrollable">
+                        <button ng-repeat="source in sources"
+                                class="btn sourceItem selected-source"
+                                id="sourceItem-{{source.id}}"
+                                ng-click="selectSource(source.id,source.channel)" >                           
+                                <img src="/images/{{source.channel}}-icon.png">
+                                    {{source.name}}                          
+                        </button> 
+                        <div class="warning" ng-if="noSource==true">
+                                <strong><i class="fa fa-exclamation-triangle"></i></strong> No Sources found! <br> Please add a source.
+                        </div>
+                     
+                    </div>
+                    
+                       
+                       
+                       
+                    <form action="" id="client_source_form" class="col-md-7">                       
+
+                         <div class="loading-gif" style="height:100%; padding-top:50px"><img src="/images/loading_orange.gif" height=100><br>Loading client list...</div>
+                        <div class="form-row">
+                            <div class="form-label col-md-4">
+                                <label for="">
+                                    Account:
+                                </label>
+                            </div>
+                            <div class="form-input col-md-8">
+                                <select  data-required="true" ng-model="client.account"
+                                         ng-options="c.id as c.name for c in client_accounts" 
+                                         id="client-accounts-select" class="chosen-select"  
+                                         chosen-select="client_accounts"
+                                         watch-resource="client_accounts.loaded">
+                                    <option value="">Select Client Account</option>
+                                </select>
+                            </div>
+                        </div>
+                    
+                        <div class="form-row">
+                            <div class="form-label col-md-4">
+                                <div class="messageBox danger" id="addClientError">
+                                    <strong><i class="fa fa-exclamation-triangle"></i></strong>   {{errorMessage}}
+                                </div>                       
+                            </div>
+                       
+                            <div class="form-input col-md-8">
+                                 <button class="btn primary-bg medium float-right" 
+                                         ng-click="save()" ng-disabled="saveDisabled"
+                                         data-loading-text="Saving..." save-animate>
+                                    <span class="button-content">Save</span>
+                                </button>
+                            </div>
+
+                        </div>
+                   </form>
+                   </div>
+                    <div class='row'>
+                        <div class='col-md-12'>
+                            <button class='btn bg-green medium' id='adSourceBtn'>Add Source</button>
+                        </div>
+                            
+                    </div>
+                </div>
+                <div id="add-source-data">
+                    <form id="addSourceForm" novalidate>
+                       <div class="row">                        
+                                     <div class="form-label col-md-12">
+                                         <label for="migrateSourceName">Enter Source Name</label>
+                                     </div>
+                                     <div class="form-input col-md-12">
+                                         <input type="text" required id="sourceName">
+                                     </div>  
+                      </div> 
+                      <div class="row">
+                            <div class="form-label col-md-12">
+                                <label>Select A source</label>
+                            </div>                            
+                            <div class="form-input col-md-4">
+                               <button  class="btn btn-success sourceItem col-md-4" data="googleadwords">  
+                                   <img src="/images/googleadwords-icon.png"> <span>Google Adwords</span>
+                               </button>
+                            </div>
+                            <div class="form-input col-md-4">
+                               <button class="btn btn-success sourceItem" data="googleanalytics">  
+                                   <img src="/images/googleanalytics-icon.png"> Google Analytics
+                               </button>
+                            </div>
+                            <div class="form-input col-md-4">
+                               <button class="btn btn-success sourceItem" data="bingngads">  
+                                   <img src="/images/bingads-icon.png"> Bing                              
+                               </button>
+                            </div>
+                        </div>                       
+                                                    
+                    </form>
+                    <div class="form-label col-md-1" style="margin-top:100px;">
+                                 <button id="backBtn" class="btn bg-red">Back</button>
+                    </div>
+                      <div class="row">
+                        <div class="messageBox danger" id="addSourceError">
+                          <strong><i class="fa fa-exclamation-triangle"></i></strong>   {{error_msg}}
+                        </div>
+                      </div>
+                    
+                </div> 
+      
+
+
+          </div-->
+
+</div>

@@ -1,0 +1,61 @@
+<div class="col-md-4">
+        <div class="content-box border-top border-orange mrg25B">
+           <h3 class="content-header-box no-margin">
+                <div class="content-header">
+                    <div class="glyph-icon icon-separator">
+                        <i class="glyph-icon icon-users font-red"> </i> 
+                    </div>&nbsp; Clients
+                    <div class="button-group float-right">
+                        <a href="javascript:;" class="btn small bg-red" id ="add-client-btn" title="Add Client" add-client-dialog="add-client">
+                            <span class="glyph-icon icon-separator">
+                                <i class="glyph-icon icon-edit"></i>
+                            </span>
+                            <span class="button-content">
+                                New Client
+                            </span>
+                        </a>
+                    </div>
+                </div>      
+            </h3>
+
+            <div class="content-box-wrapper">
+                <table  class="table" id="clients" style="clear:both;" my-table="clients" style="float:left">
+
+                   <tbody>
+                       <tr ng-repeat="client in clients | filter:search | orderBy:'client_id'">
+                           <td style="width:65%" click-link="/clients/{{client.client_id}}/reports">
+                                  <a ng-href="#/clients/{{client.client_id}}/reports"><span class="font-gray-dark">{{client.name}}</span></a>
+                           </td>
+                           <td><div class="label bg-orange">{{client.reports}}</div></td>
+                           <td class="text-right hidden-mobile">
+                               <div class="dropdown">
+                                   <a href="javascript:;" title="" class="btn small bg-gray" data-toggle="dropdown">
+                                       <span class="button-content">
+                                           <i class="glyph-icon font-size-11 icon-cog"></i>
+                                           <i class="glyph-icon font-size-11 icon-chevron-down"></i>
+                                       </span>
+                                   </a>
+                                   <ul class="dropdown-menu float-right">
+
+                                       <li>
+                                           <a href="#/clients/{{client.client_id}}" title="">
+                                               <i class="glyph-icon icon-edit mrg5R"></i>
+                                               View
+                                           </a>
+                                       </li>
+                                       <li class="divider"></li>
+                                       <li>
+                                           <a href="javascript:;" class="font-red" title="" ng-click="$parent.deleteClient(client.client_id)">
+                                               <i class="glyph-icon icon-remove mrg5R"></i>
+                                               Delete
+                                           </a>
+                                       </li>
+                                   </ul>
+                               </div>
+                           </td>
+                       </tr>
+                    </tbody>
+                </table> 
+            </div>
+        </div>
+    </div>

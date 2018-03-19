@@ -1,0 +1,39 @@
+{
+    "name": "zendframework/skeleton-application",
+    "description": "Skeleton Application for ZF2",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "framework",
+        "zf2"
+    ],
+    "minimum-stability": "dev",
+    "homepage": "http://framework.zend.com/",
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.3.*",
+	"zf-commons/zfc-base": "0.*",
+	"zf-commons/zfc-user": "1.1.*",
+        "bjyoungblood/bjy-authorize": "1.4.*",
+
+        "aaron4m/zf2-mailchimp": "dev-master",
+        "socalnick/scn-social-auth": "dev-master",
+        "webgig/zf2-bingads": "dev-master",
+        "zendframework/zftool": "dev-master",
+        "evandotpro/edp-superluminal":"dev-master",
+        "bjyoungblood/bjy-authorize":"dev-master",
+        "eway/eway-rapid-php": "^1.1",
+        "braintree/braintree_php" : "3.9.0",
+        "daniel-zahariev/php-aws-ses": "^0.8.8"
+
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/webgig/zf2-bingads"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/webgig/ScnSocialAuth.git"
+        }
+    ]
+}

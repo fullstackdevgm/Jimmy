@@ -1,0 +1,82 @@
+<?php
+ $kpi = $this->kpi;
+ $kpiDataTotalCompare = $this->kpiDataTotalCompare;
+ $kpiDataSegmented    = $this->kpiDataSegmented;
+ $key = $this->key;
+ ?>
+ <div class="panel panel-danger">
+
+    <div class="panel-heading">
+        <?php echo $kpi['caption'];?>
+    </div>
+
+    <div class="panel-body">
+        <div class="content-box-wrapper" style="width: 140px;height:100px;margin: 0px auto;  border:none !important; display:table;">
+            <div class="chart-icon" style="margin-bottom:5px">
+                <div class="infobox-sparkline-top-pdf" data-graphdata='<?php echo json_encode($kpiDataSegmented[$kpi['key']]);?>'>
+                    <canvas width="120" height="100" style="display: inline-block; width: 130px; height: 100px; vertical-align: bottom;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+                                        <div class="kpi-dash-line">&nbsp;</div>
+
+    <div class="panel-footer">
+        <?php if(!is_null($kpiDataTotalCompare[$key]['rawValue'])):?>
+            <table class="table table-bordered table-footer">
+                <thead>
+                    <tr>
+                        <th colspan="3"><span class="font-size-10 font-gray-dark font-roboto"><?php echo $kpi['sub_caption'];?></span></th>
+                    </tr>
+                    <tr>
+                        <?php if(!is_null($kpiDataTotalCompare[$key]['value'])):?>
+                            <th class="font-roboto font-size-10">Previous</th>
+                        <?php endif;?>
+                        <th style="text-align:center;" class="font-roboto font-size-10">Current</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <?php if(!is_null($kpiDataTotalCompare[$key]['value'])):?>
+                        <td>
+                            <b>
+                                <small class="font-size-10 font-gray-dark font-roboto" ><?php echo $kpiDataTotalCompare[$key]['value'];?></small>
+                            </b>
+                        </td>
+                        <?php endif;?>
+                        <td>
+                            <b>
+                                <span class="font-size-10 font-gray-dark font-roboto"><small ><?php echo $kpi['value'];?></small></span>
+                            </b>
+                        </td>
+                        <td>
+                            <b>
+                             <?php if(!is_null($kpiDataTotalCompare[$key]['rawValue'])):?>
+                                <small class="font-size-10 font-gray-dark font-roboto">
+                                    <?php echo $this->metrics()->calcComparedMetrics($kpi['value'],$kpiDataTotalCompare[$key]['value'])?>
+                                </small>
+                             <?php endif;?>
+                            </b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+         <?php else:?>
+            <table class="table table-bordered table-footer">
+                <thead>
+                    <tr>
+                        <th style="text-align:center;" class="font-roboto"><span class="font-size-15 font-gray-dark "><?php echo $kpi['sub_caption'];?></span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="text-align:center;" class="font-roboto">
+                            <small class="kpi-caption"><?php echo $kpi['value'];?></small>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+          <?php endif;?>
+    </div>
+</div>

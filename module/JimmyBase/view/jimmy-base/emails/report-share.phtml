@@ -1,0 +1,14 @@
+<div class="row-fluid">
+   <div attr="desc">
+     <div>
+      <p>Hi I'm Jimmy,</p>
+      <p><strong><?php if($agency->getName()) echo $agency->getName(); else echo $agency->getEmail();?></strong> wants to share a report with you.</p>
+      <p>Report: <strong><?php echo $report->getTitle();?></strong> </p>   
+      <?php $url = 'https://reports.jimmydata.com'; if($user->getType()=='agency') $url = 'https://app.jimmydata.com'; ?>
+      <p>To access your new reporting dashboard you can login to <a href="<?php echo $url?>" target="_blank"><?php echo $url; ?></a><br /></p>
+      <p>The report you will be viewing will be real time data. Remember you can also change the date range if you want to view your data in another timeframe.</p>
+      <p>Love using Jimmy to view your reports? Then why go backwards? Get your Agency to use Jimmy and access all your real time data in the one place!</p>
+     </div>
+   </div>
+   <br />
+</div>

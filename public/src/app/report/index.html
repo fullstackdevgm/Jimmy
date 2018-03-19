@@ -1,0 +1,50 @@
+<div class="col-md-12">
+    <div class="content-box mrg25B">
+        <h3 class="content-header-box no-margin">
+            <div class="content-header">
+                <div class="f-left">
+                    <span class="font-gray-dark font-normal" id="report_title"  data-placement="bottom" data-original-title="Click to Edit" title-edit="report">
+						{{report.title}}
+					</span>
+                </div>
+
+				<ng-if ng-show="report.message">
+					<div class="col-md-5  center-margin">
+						<div class="infobox error-bg mrg0A center-margin" >
+							<p style="text-align:center">{{report.message}}</p>
+						</div>
+					</div>
+				</ng-if>
+
+                <div class="f-right">
+
+				<!--	<report-menu   ng-if="report.show"></report-menu> -->
+					<report-button></report-button>
+                                    <!--    <report-button ng-if="generalInfo.current_user.type!='user' &&  report.show==true && !report.shared_with_me"></report-button> -->
+                    <!--div class="edit-buttons">
+                        <small><i class="glyph-icon icon-calendar-o font-gray left mrg10R"></i></small>
+                        <small><i class="glyph-icon icon-chevron-down font-gray left mrg10R"></i></small>
+                        <small><i class="glyph-icon icon-cog font-gray left mrg10R"></i></small>
+                        <small><i class="glyph-icon icon-remove font-gray left mrg10R"></i></small>
+                    </div-->
+
+                </div>
+            </div>
+        </h3>
+    </div>
+</div>
+
+
+<div class="col-md-12 " id="" ng-include src="template"  ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"> </div>
+<!-- Clone Report Template -->
+<ng-include src="'src/app/report/clone.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/share.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/schedule.html'"    ng-if="generalInfo.current_user.type!='user'  &&  report.shared_with_me!=true"></ng-include>
+<ng-include src="'src/app/report/download.html'"></ng-include>
+<ng-include src="'src/app/report/chat.html'"       ng-if="generalInfo.current_user.type!='user'"></ng-include>
+<ng-include src="'src/app/report/filter.html'"       ng-if="generalInfo.current_user.type!='user'"></ng-include>
+<div class="hide" id="billing-info-dialog" title="Billing Information">
+    <div class="pad10A" ng-controller="UserCtrl"> 
+       <ng-include src="'src/app/dashboard/cc-recurring.html'"></ng-include>
+    </div>
+</div>

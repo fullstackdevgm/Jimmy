@@ -1,0 +1,218 @@
+<?php
+/*if (!$this->enableRegistration) {
+    print "Registration is disabled";
+    return;
+}
+*/
+
+$form = $this->reportForm;
+$form->prepare();
+$form->setAttribute('action', $this->url('admin/client/createreport'));
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal');
+$form->get('usernames')
+?>
+
+    <ul class="breadcrumb">
+      <li><a href="<?php echo $this->url('admin') ?>">Home</a> <span class="divider">/</span></li>
+      <li><a href="<?php echo $this->url('admin/client') ?>">Clients</a> <span class="divider">/</span></li>
+      <li><a href="<?php echo $this->url('admin/client/view') ?>/<?php echo $this->client->getId();?>"><?php echo $this->client->getName();?></a> <span class="divider">/</span></li>
+      <li class="active"><?php echo $this->report?$this->report->getTitle():'New Report';?></li>
+    </ul>
+
+<?php echo $this->form()->openTag($form) ?>
+   <fieldset>  		
+   		  <legend><?php echo $this->report?'Edit':'Add';?> New Report</legend>  
+    <?php foreach ($form as $element):	 ?>
+        
+        <?php if ($element instanceof Zend\Form\Element\Button): ?>
+          
+            <div class="form-actions"><?php echo $this->formButton($element->setLabelAttributes(array('class'=>'btn btn-primary'))); ?></div>
+       
+        <?php elseif($element instanceof Zend\Form\Element\Select):  ?>
+           <?php 
+		   $class = '';
+		   $style = '';
+		   
+			 	   
+		   if($element->getName() == 'metrics_compare' or $element->getName() == 'metrics_type_compare' ){
+			  $style = "style = 'display:none'";
+			  $class = 'hidden';	
+		   } else if($element->getName() == 'raw_data'){
+			  $class = 'hidden_raw_data';
+			  $style = "style = 'display:none'";
+		   }
+		   
+		   ?>
+           
+           <div class="control-group <?php echo  $class; ?>" <?php  echo  $style; ?>>  
+			<?php echo $this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))) ?>
+       		 	<div class="controls">  
+			 		<?php echo $this->formSelect($element) . $this->formElementErrors($element) ?>                   
+            		<p class="help-block">
+                      <?php if($element->getName() == 'campaigns'): ?>
+                            <a  class="show-campaigns" title="All">Show All</a> | 
+                            <a  class="show-campaigns" title="Active">Show Active</a> | 
+                            <a  class="show-campaigns" title="Paused">Show Paused</a>
+                      <?php endif;?>
+                    </p>  
+            	</div>
+           </div>  
+           <?php 
+		   if($element->getName() == 'report_type' ){
+			   echo '<hr>';
+		   }
+		   
+		   ?>
+		<?php elseif($element instanceof Zend\Form\Element\Hidden):  ?>
+           
+		   <?php echo $this->formHidden($element);?>
+           
+		<?php elseif($element instanceof Zend\Form\Element\Textarea):  ?> 
+          <div class="control-group">  
+			<?php echo $this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))) ?>
+            <div class="controls">  
+			 	<?php echo $this->formTextarea($element) . $this->formElementErrors($element) ?>                   
+            	<p class="help-block"></p>  
+            </div>
+          </div>
+		  <?php else:  ?> 
+          <div class="control-group">  
+			<?php echo $this->formLabel($element->setLabelAttributes(array('class'=>'control-label'))) ?>
+            <div class="controls">  
+			 	<?php echo $this->formInput($element) . $this->formElementErrors($element) ?>                   
+            	<p class="help-block"></p>  
+            </div>
+          </div>
+        <?php endif; ?>
+
+    <?php endforeach ?>
+  
+    </fieldset>
+<?php echo $this->form()->closeTag() ?>
+ 
+ <script>
+ $(document).ready(function() {		
+	
+	var data = <?php echo $this->metrics_options; ?>
+	 //$("#metrics_type").select();
+	//var campaign_type = $("#campaign_type").val();
+	
+	 $('#metrics_type option:selected').removeAttr('selected');
+	 $('#metrics_type option[value=1]').attr('selected', true);   
+	 
+	 $('#metrics_type_compare option:selected').removeAttr('selected');
+	 $('#metrics_type_compare option[value=1]').attr('selected', true);   
+	 
+	 var metrics = <?php echo $this->report?$this->report->getMetrics():0?>;
+	 var metrics_compare = <?php echo $this->report?$this->report->getMetricsCompare():0?>;
+	 
+	 if(metrics_compare)
+	    $(".hidden").toggle();
+
+	 	
+	 $.each(data[1], function(index, value) {
+		$("#metrics").append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+		$('select[name="metrics"]').find('option[value="'+metrics+'"]').attr("selected",true);
+	 });
+	 
+	 $.each(data[1], function(index, value) {
+		$("#metrics_compare").append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+		$('select[name="metrics_compare"]').find('option[value="'+metrics_compare+'"]').attr("selected",true);
+	 });
+			
+	//$("#metrics option[value='7']").remove();
+	//$("#metrics_compare option[value='7']").remove();
+
+	$("#compare").bind('click',function(){
+			$(".hidden").toggle();
+	})
+	
+	var show_raw_data = <?php echo $this->report?1:0?>;
+	
+	if(show_raw_data)
+	   $(".hidden_raw_data").toggle();
+
+	
+	$("#show_raw_data").bind('click',function(){
+		$(".hidden_raw_data").toggle();
+	})
+
+    /* $("#campaign_type").change(function() {
+		 	
+			var key = $(this).val();
+
+			var metrics_type_val = $("#metrics_type").val();
+			var metrics	         = $("#metrics");
+			
+			if(key != 2 &&  metrics_type_val==1){
+				$("#metrics option[value='7']").remove();
+				$("#metrics_compare option[value='7']").remove();
+			} else {
+				 metrics.append("<option value='7'>" + value + "</option>");
+
+			}
+			
+	 });*/
+	 
+
+
+    $("#metrics_type").change(function() {
+
+		var key = $(this).val();
+		
+		var metrics = $("#metrics");
+			metrics.empty();
+		
+		var campaign_type = $("#campaign_type").val();
+		
+		$.each(data[key], function(index, value) {
+		/*	
+			if(campaign_type != 2 &&  index==7){
+				$("#metrics option[value='7']").remove();
+				$("#metrics_compare option[value='7']").remove();
+			} else {
+				 metrics.append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+			}*/
+			
+			metrics.append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+			
+		});
+
+    }); 
+	
+	$("#metrics_type_compare").change(function() {
+
+		var key = $(this).val();
+		
+		var metrics = $("#metrics_compare");
+			metrics.empty();
+		
+		$.each(data[key], function(index, value) {
+			metrics.append("<option value='" + parseInt(index)   +"'>" + value + "</option>");
+		});
+      
+    });
+	
+	$('.show-campaigns').bind('click',function(){
+			var show =  $(this).attr('title');
+			$("#campaigns").empty();
+			//$("#campaigns").attr('');
+			
+			$.post('<?php echo $this->url('admin/client/fetchcampaigns');?>',
+					{ 'show' : show, 'client_id' : <?php echo $this->client->getId();?>}, 
+					function(response){
+					
+							if (response.success == true){
+								 
+								 $.each(response.data, function(index, value) {
+									$("#campaigns").append("<option value='" + parseInt(index)  +"'>" + value + "</option>");
+								 });
+							}
+					
+			}, 'json');
+	})
+	
+})
+ 
+ </script>

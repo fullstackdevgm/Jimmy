@@ -1,0 +1,44 @@
+<div class="col-md-12">
+    <form id="">
+            
+    <div class="form-row">
+        <div class="form-label col-md-2">
+            <label for="">
+               Email Settings:
+            </label>
+        </div>	
+        <div class="form-input form-label col-md-3">
+            <label class="" for="">From Name</label><input type="text" class="form-control" name="" id="from_name" ng-model="settings.from_name">
+        </div>
+            <div class="form-input form-label col-md-3">
+            <label class="" for="">From Email</label><input type="text" class="form-control" name="" id="from_email" ng-model="settings.from_email">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-label col-md-2">
+        </div>	
+        <div class="form-input form-label col-md-10">
+            <label for="">
+               Report Share Email Body:
+            </label>
+            <ul class="font-gray-dark font-size-11">
+                <li><b>[agency-name]</b> = Your Name , <b>[report-title]</b> = Title of the report you are sharing, <b>[url]</b> =  Url of the dashboard , <b>[newuser]Your username and password [/newuser]</b> = Username and Password for new users</li>
+            </ul>
+            <textarea  ng-model="settings.share_report_email_body" cols="80" rows="3" ck-editor></textarea>
+        </div>
+    </div>
+    <div class="form-row mrg30T">
+        <div class="form-label col-md-2">
+
+        </div>
+        <div class="form-label col-md-2">
+            <a href="javascript:;" class="btn medium primary-bg" ng-click="saveSettings()" save-animate>
+                <span class="button-content">
+                    <i class="glyph-icon icon-cog float-left"></i>
+                    Save Settings
+                </span>
+            </a>
+        </div>	
+    </div>
+    </form>
+</div>

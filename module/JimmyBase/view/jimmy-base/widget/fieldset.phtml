@@ -1,0 +1,178 @@
+
+        <?php if ($el instanceof Zend\Form\Element\Button): ?>
+          
+        <?php elseif($el instanceof Zend\Form\Element\Select): 
+			
+			     $class='';
+				 $style='';
+
+		
+			if( $el->getName() == 'channel[fields_metrics_type_compare]' or $el->getName() == 'channel[fields_metrics_compare]'){
+			    $class = 'metricstype_compare';
+				
+				if(!$el->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+			
+			if( $el->getName() == 'channel[fields_date_range_compare]'){
+			    $class = 'daterange_compare';
+
+				if(!$el->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+
+			if( $el->getName() == 'channel[fields_goals]'){
+			    $class = 'fields_goals';
+
+				if(!$el->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+		 ?>
+         
+           <div class="smBx <?php echo $class;?>" <?php echo $style;?>>  
+			 	<span class="lab"><?php echo $this->formLabel($el) ?></span>
+       		 	 <div class="selectField radius5">
+                     <div class="ico">
+		 				<?php echo $this->formSelect($el);  ?>    
+                	 </div>
+            	 </div>
+                 <span class="errors"><?php echo $this->formElementErrors($el);?></span> 
+                 <div class="clr"></div>
+                      <?php if($el->getName() == 'channel[fields_campaigns]'): ?>
+                     	<div id="campaigns-selector"  style="float:left;margin-left:187px;height:30px">
+                            <a  class="show-campaigns" title="All">All</a>  
+                            <a  class="show-campaigns active" title="Active">Active</a>
+                            <a  class="show-campaigns" title="Paused">Paused</a>
+							-- <strong><a  class="select-all" data-id='campaigns' title="Select All">Select All</a> </strong>
+						</div>
+                      <?php elseif($el->getName() == 'channel[fields_kpi]' ):?>   
+						<div id="kpi-selector"  style="float:left;margin-left:187px;height:30px">
+							<strong><a  class="select-all" data-id='kpi' title="Select All">Select All</a></strong>
+						</div>        
+					  <?php elseif($el->getName() == 'channel[fields_raw_data]' ):?>   
+						<div id="kpi-selector"  style="float:left;margin-left:187px;height:30px">
+							<strong><a  class="select-all" data-id='raw_data' title="Select All">Select All</a></strong>
+						</div>       
+					  <?php elseif($el->getName() == 'channel[fields_goals]' ):?>   
+						<div id="kpi-selector"  style="float:left;margin-left:187px;height:30px">
+							<strong><a  class="select-all" data-id='goals' title="Select All">Select All</a></strong>
+						</div>     
+					<?php endif;?>
+          </div>  
+		<?php elseif($el instanceof Zend\Form\Element\Hidden):  ?>
+		   <?php echo $this->formHidden($el);?>
+		<?php elseif($el instanceof Zend\Form\Element\Textarea):  ?> 
+          <div class="smBx">  
+				<span class="lab"><?php echo $this->formLabel($el) ?></span>
+ 				<div class="" style="float:right">
+					<?php echo $this->formTextarea($el); ?>                   
+           		 </div>
+                 <span class="errors"><?php echo $this->formElementErrors($el);?></span> 
+                 <div class="clr"></div>
+          </div>
+          <?php elseif($el instanceof Zend\Form\Element\Checkbox): 
+			if( $el->getName() == 'channel[fields_metrics_type_compare]' or $el->getName() == 'channel[fields_metrics_compare]'){
+			    $class = 'metricstype_compare';
+				
+				if(!$el->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+			}
+
+			
+
+			if( $el->getName() == 'channel[fields_device_type]'){
+			    $class = 'device_type';	
+
+			    if($el->getAttribute('id') != 'all' ){
+					$el->setAttribute('class','all-options');
+					$input_class = "all";
+				}
+			}
+
+			if( $el->getName() == 'channel[fields_network_type]'){
+				    $class = 'network_type';	
+				    
+					if($el->getValue())
+					    $style = 'style="display:block"';
+			}
+
+			if( $el->getName() == 'channel[fields_show_campaign]'){
+				$fields_report_type = $form->get('channel')->get("fields_report_type");
+
+				    $class  = 'show_campaign';	
+				    $style  = 'style="display:none"';
+
+					if($el->getValue() ||  in_array($fields_report_type->getValue(),array(3,5,6)))
+					    $style = 'style="display:block"';
+			}
+           ?> 
+
+              <div class="smBx <?php echo $class;?>" <?php echo $style;?>>  
+                    <span class="lab"><?php echo $this->formLabel($el) ?></span>
+                    <div style="margin-left: 185px;padding-top: 10px;"><?php echo $this->formElement($el) ?></div>                 
+                 <span class="errors"><?php echo $this->formElementErrors($el);?></span> 
+                 <div class="clr"></div>
+              </div>
+		  <?php elseif($el instanceof Zend\Form\Element\Radio): 
+				if( $el->getName() == 'channel[fields_network_type]'){
+				    $class = 'network_type';	
+
+					if(!$el->getValue())
+						$style = 'style="display:none"';
+					else
+					    $style = 'style="display:block"';
+				}
+		   ?> 
+              <div class="smBx <?php echo $class;?>" <?php echo $style;?>>  
+                    <span class="lab"><?php echo $this->formLabel($el) ?></span>
+                    <div style="margin-left: 185px;padding-top: 10px;"><?php echo $this->formElement($el) ?></div>                 
+                 	<span class="errors"><?php echo $this->formElementErrors($el);?></span> 
+                 <div class="clr"></div>	
+              </div>
+		  <?php else: 
+		 		$style = ''; 
+		   		$class = '';
+				
+			if( $el->getName() == 'channel[fields_date_range_custom_min]' or $el->getName() == 'channel[fields_date_range_custom_max]'){
+			    $class = 'date_range_custom';
+				
+				if(!$el->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+			
+			
+			if( $el->getName() == 'channel[fields_date_range_custom_min_compare]' or $el->getName() == 'channel[fields_date_range_custom_max_compare]'){
+			    $class = 'date_range_custom_compare';
+				
+				if(!$el->getValue())
+					$style = 'style="display:none"';
+				else
+				    $style = 'style="display:block"';
+					
+			}
+		  ?> 
+          <div class="smBx <?php echo $class;?>" <?php echo $style;?>>  
+				<span class="lab"><?php  echo $this->formLabel($el) ?></span>
+				<div class="inpField radius5">
+                    <div class="ico"></div>				 	
+					<?php echo $this->formInput($el) ?>                   
+            	</div>
+                 <span class="errors"><?php echo $this->formElementErrors($el); //print_r($el);?></span> 
+                 <div class="clr"></div>
+          </div>
+        <?php endif; ?>
+        <div class="clr"></div>

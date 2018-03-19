@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8">
+        <?php echo $this->headTitle($this->translate('Jimmy'))->setSeparator(' - ')->setAutoEscape(false) ?>
+        <meta name="description" content="">
+
+          <?php
+    echo  $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' =>  '/images/favicon.png'))
+            ->appendStylesheet('/css/style-invoice.css', "all")
+    ?>
+
+    </head>
+<body>
+<div id="page-wrapper">
+      <div class="content-box" id="page-header-box" style="border:none;">
+            <div class="content-header left">
+                  <img src="/images/logo-jimmy-print.png" alt="Jimmy Data" class="header-logo" />
+            </div>
+            <div class="content-header right">
+                  <div class="header-address">
+                    <b>Jimmy Data</b><br>
+                    406, 77<br>
+                    Dunning Ave, Rosebery<br>
+                    Sydney, NSW 2018,<br>
+                    Australia<br>
+                    Phone:+61 2 9697 9452<br>
+                    ABN: 59 122 272 306
+                  </div>
+            </div>
+
+            <div style="clear: both"></div>
+
+      </div>
+      <div id="title-box">
+        <span id="title-box-content">INVOICE</span>
+      </div>
+
+      <div class="content-box" id="invoice-number">INVOICE# <?php echo $invoiceNumber; ?></div>
+
+      <div class="content-box">
+        <table class="invoice-table billing-address" width="40%" border="1">
+          <tr><th>Bill To:</th></tr>
+          <tr><td><?php echo $customerFirstName.' '.$customerLastName; ?></td></tr>
+        </table>
+      </div>
+
+      <div class="content-box">
+        <table class="details-table" border="1">
+          <tr><th>Date</th><th>Terms</th><th>Due Date</th><th>P.O.#</th></tr>
+          <tr><td><?php echo $paymentDate; ?></td><td>Due on Receipt</td><td><?php echo $dueDate; ?></td><td></td></tr>
+        </table>
+      </div>
+
+      <div class="content-box">
+        <table class="invoice-table invoice-items" width="100%" border="1">
+          <tr>
+            <th width="20%">Item</th>
+            <th>Description</th>
+            <th class="right-align">Qty</th>
+            <th class="right-align">Price</th>
+            <th class="right-align" width="12%">Discount(%)</th>
+            <th class="right-align">Amount</th>
+          </tr>
+          <tbody>
+            <tr id="invoice-itemlist">
+              <td></td>
+              <td>JimmyData Subscription</td>
+              <td class="right-align">1</td>
+              <td class="right-align"><?php echo $displayAmount; ?></td>
+              <td class="right-align">0.00</td>
+              <td class="right-align"><?php echo $displayAmount; ?></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="content-box">
+        <table class="invoice-additional">
+            <tr><td class="item">Sub Total:</td><td class="cost"><?php echo $displayAmount; ?></td></tr>
+            <tr><td class="item brdrSB">GST FREE(<?php echo $gst; ?>%):</td><td class="cost brdrSB"><?php echo $amount*($gst/100); ?></td></tr>
+            <tr><td class="item">Total:</td><td class="cost"><?php echo $amount; ?></td></tr>
+            <tr><td class="item">Late Fee:</td><td class="cost">0.00</td></tr>
+            <tr><td class="item">Payment Made:</td><td class="cost">(-)<?php echo number_format($paid, 2, '.', ''); ?></td></tr>
+            <tr><td class="item">Credits Applied:</td><td class="cost">(-)<?php echo $amount; ?></td></tr>
+            <tr class="strong"><td class="item brdrST brdrSB">Balance Due:</td><td class="cost brdrST brdrSB"><?php echo number_format($amount-$paid, 2, '.', ''); ?></td></tr>
+        </table>
+      </div>
+
+      <div class="dashboard-panel bg-white content-box"></div>
+        <footer class="unbreakable"></footer>
+</div> <!-- /container -->
+</body>
+</html>

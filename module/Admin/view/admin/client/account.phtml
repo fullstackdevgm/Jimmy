@@ -1,0 +1,28 @@
+
+<i class="icon-info-sign"></i><h3>Account Info</h3>  
+  
+<dl class="dl-horizontal">
+        <dt>Client Name</dt>
+        <dd> <?php echo $this->client->getName();?></dd>
+        
+        <dt>Client Email</dt>
+        <dd> <?php echo $this->client->getEmail();?></dd>
+        
+        <dt>Adwords Client Id</dt>
+        <dd> <?php echo $this->client->getAdwordsClientId();?></dd>
+        <dt>Logo</dt>
+        <dd> 				ss
+		 <?php if(is_file("data/logos/clients/".$user_mapper->getMeta($client->getId(),'logo-thumb'))):?>
+          <img width="50" src="/resources/logos/clients/<?php echo $user_mapper->getMeta($client->getId(),'logo-thumb');?>"  /></td>
+         <?php else:?>
+          <img width="50" src="/images/no-image.png"  /></td>
+         <?php endif;?>
+        </dd>
+         
+        <dt>Status</dt>
+        <dd><?php  if($this->client->getState()) echo 'Enabled'; else echo 'Disabled'?></dd>
+</dl>
+<div class="btn-group">      
+ <button class="btn"  id="change">Edit Client</button>
+ <button class="btn"  id="changePwd">Change Password</button>
+</div>

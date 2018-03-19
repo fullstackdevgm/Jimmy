@@ -1,0 +1,49 @@
+<div id="step-3" class="content col-md-11 center-margin" style="">
+             <form action="" id="report_form" class="col-md-12 center-margin">
+
+                <div class="form-row">
+                    <div class="form-label col-md-2">
+                        <label for="">
+                            Note Title:
+                        </label>
+                    </div>
+                    <div class="form-input col-md-5">
+                        <input placeholder="Widget Title" type="text" name="widget_title" id="widget_title" data-required="true" class="parsley-validated" ng-model="report.widget.title">
+                    </div>
+                </div>
+                
+             
+                <div class="form-row" >
+                    <div class="form-label col-md-2">
+                        <label for="">
+                            Comment:
+                        </label>
+                    </div>
+                    <div class="form-input col-md-10">
+                        <textarea class="ckeditor" cols="80" id="editor1" name="editor1" rows="10" ng-model="report.widget.notes" ck-editor></textarea>
+                    </div>
+                </div>
+                <div class="form-row" >
+                        <div class="form-label col-md-2">
+                                <label for="">
+                                </label>
+                            </div>
+                        <div class="form-label col-md-2" id="note_error_container"></div>
+                </div>
+                <div class="form-row" >
+                    <div class="form-label col-md-2">
+                    </div>
+                    <div class="form-input col-md-2">
+                        <a class="btn medium primary-bg" title="" ng-click="save()" data-loading-text="Saving..." save-animate>
+                            <span class="button-content">Save Changes</span>
+                        </a>
+                    </div>
+                    <div class="form-input col-md-1">
+                        <a class="btn medium bg-gray" title="" ng-click="cancel()">
+                            <span class="button-content">Cancel</span>
+                        </a>
+                    </div>
+                </div>
+                
+              </form>  
+        </div>

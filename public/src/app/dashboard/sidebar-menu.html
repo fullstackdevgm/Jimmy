@@ -1,0 +1,27 @@
+ <div id="sidebar-menu">
+     <div class="main-menu">
+        <ul>              
+            <li ng-repeat="item in menu" class="menu-item main-item" ng-click="slideMenu()">
+                <a  ng-href="{{item.route}}" title="{{item.title}}">
+                    <i class="glyph-icon {{item.color}} {{item.icon}}"></i>
+                    {{item.title}}
+                </a>
+                <ul ng-if="item.children.length>0">
+                    <li ng-repeat="childItem in item.children" class="main-item" ng-click="slideMenu()">
+                        <a ng-href="{{childItem.route}}" title="{{childItem.title}}">
+                            <i class="glyph-icon {{childItem.icon}}"></i>
+                            {{childItem.title}}
+                        </a>
+                    </li>
+                </ul>
+            </li>           
+            <ng-include src="'src/app/dashboard/report-options.html'" ng-if="sideBarOptions === true" ng-controller = "SideBarCtrl" ></ng-include>
+          
+        </ul>
+    </div>
+     
+    
+ </div>
+
+
+

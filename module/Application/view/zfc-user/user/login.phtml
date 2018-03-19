@@ -1,0 +1,122 @@
+
+<?php
+$form = $this->loginForm;
+$form->prepare();
+$form->setAttribute('action', $this->url('zfcuser/login'));
+$form->setAttribute('method', 'post');
+?>
+<?php echo $this->form()->openTag($form) ?>
+     <div id="loginBlock" style="display:block">
+         <h4>LOGIN</h4>
+         <div class="loginIn">
+
+            <?php if($error	 = $this->formElementErrors($form->get('identity'))):?>
+            <div class="alert alert-error" style="width:76%;">
+            		<?php echo $error; ?>
+            </div>
+            <?php else:?>
+ 				<div class="clr" style="margin-top:20px"></div>
+     		<?php endif; ?>
+     		<div style="width:70%;margin-left:96px;margin-bottom:20px">
+     			<?php $this->flashMessages();?>
+     		</div>
+            <div class="smBx">
+                <span>Email</span>
+                <?php echo $this->formInput($form->get('identity')) ?>
+            </div>
+
+            <div class="smBx">
+                <span>Password</span>
+                <?php echo $this->formInput($form->get('credential')) ?>
+            </div>
+
+            <?php if ($this->redirect): ?>
+                <input type="hidden" name="redirect" value="home" />
+            <?php endif ?>
+
+                <!--<div class="smBx">
+                    <input type="checkbox" value="" id="forget" />
+                    <label for="forget">Remember my password</label>
+                    <div class="clr"></div>
+                </div>-->
+ 				<div class="clr" style="margin-top:5px"></div>
+                <?php echo $this->formButton($form->get('submit')) ?>
+                <p>Forgot <a  id="forgotpass_link" href="#">Password?</a></p>
+            </div>
+      </div>
+<?php echo $this->form()->closeTag() ?>
+
+     <div id="forgotpass" style="display:none">
+              <h4>Forgot Your Password</h4>
+            <div class="loginIn" style="">
+            <?php echo $this->formElementErrors($form->get('identity')) ?>
+
+    		<div id="alert-container" style="width:70%;margin-left:96px">
+
+			</div>
+            <div class="smBx">
+                <span>Email</span>
+				<input type="text" id="identity"  name="identity" />
+            </div>
+                <button type="submit" name="submit" value="" id="submit">Submit</button>
+                <p>Back to  <a href="#" id="back_to_login">Login?</a></p>
+            </div>
+     </div>
+
+
+ <script>
+   jQuery(document).ready(function(e) {
+
+	  jQuery('#forgotpass_link').on('click',function(){
+
+		 jQuery('#loginBlock').hide();
+		 jQuery('#forgotpass').show();
+
+
+	  })
+
+
+	  jQuery('#back_to_login').on('click',function(){
+
+		 jQuery('#forgotpass').hide();
+		 jQuery('#loginBlock').show();
+
+
+	  })
+
+
+	 jQuery('#back_to_login').on('click',function(){
+
+		 jQuery('#forgotpass').hide();
+		 jQuery('#loginBlock').show();
+
+
+	  })
+
+
+	 jQuery('#submit').on('click',function(){
+
+		 		 		jQuery.post('<?php echo $this->url('user/resetpass');?>',{email:$('#identity').val()})
+						 .done(function ( data ) {
+							var jsonData = jQuery.parseJSON(data);
+							    if(jsonData.success == true){
+
+								  jQuery("#alert-container").html("<div class='alert alert-success'>"+jsonData.message+"</div>");
+								}else
+								  jQuery("#alert-container").html("<div class='alert alert-error'>"+jsonData.message+"</div>");
+						});
+
+
+	  })
+
+
+
+});
+
+
+ </script>
+
+
+<?php if ($this->enableRegistration) : ?>
+Not registered? <a href="<?php echo $this->url('zfcuser/register') . ($this->redirect ? '?redirect='.$this->redirect : '') ?>">Sign up!</a>
+<?php endif; ?>

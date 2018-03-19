@@ -1,0 +1,8 @@
+# Logs and databases #
+######################
+*.log
+logos/
+log/
+tmp-reports/
+cache/
+modulecache/
